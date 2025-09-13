@@ -1,0 +1,101 @@
+package com.bunary.vocab.model;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.UuidGenerator;
+
+import com.bunary.vocab.model.enums.GenderEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
+@Entity
+public class User {
+    @Id
+    @UuidGenerator
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String fullName;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private LocalDate dateOfBirth;
+
+    private String address;
+
+    @Column(length = 1000)
+    private String avatar;
+
+    private int status;
+
+    private boolean isEmailVerified = false;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
+
+    private Instant deletedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+        updateFullName();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+        updateFullName();
+    }
+
+    private void updateFullName() {
+        this.fullName = (firstName != null ? firstName : "")
+                + " "
+                + (lastName != null ? lastName : "");
+        this.fullName = this.fullName.trim();
+    }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RefreshToken> refreshToken;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private VerifyCode verifyCode;
+
+    @OneToMany(mappedBy = "user")
+    private List<WordSet> wordSet;
+
+}
