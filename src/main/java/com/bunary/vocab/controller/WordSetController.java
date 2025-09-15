@@ -50,7 +50,7 @@ public class WordSetController {
     @GetMapping("/wordsets")
     public ResponseEntity<?> getAllWordSet(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
 
         String sortField = sort[0];

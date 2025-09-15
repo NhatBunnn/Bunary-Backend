@@ -3,6 +3,7 @@ package com.bunary.vocab.model;
 import java.time.Instant;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +32,7 @@ public class WordSet {
 
     private String description;
 
+    @Column(length = 1000)
     private String thumbnail;
 
     private Instant createdAt;

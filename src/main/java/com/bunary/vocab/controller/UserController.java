@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
+import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.exception.GlobalErrorCode;
@@ -68,10 +73,31 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers() throws Exception {
-        List<UserResponseDTO> result = this.userService.findAllVerifiedUsers();
+    public ResponseEntity<?> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+
+        String sortField = sort[0];
+        Sort.Direction direction;
+
+        if (sort.length > 1 && "desc".equalsIgnoreCase(sort[1])) {
+            direction = Sort.Direction.DESC;
+        } else {
+            direction = Sort.Direction.ASC;
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+
+        Page<UserResponseDTO> result = this.userService.findAllVerifiedUsers(pageable);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("ok rồi"), result));
+                .body(SuccessReponseDTO.builder()
+                        .timestamp(LocalDateTime.now())
+                        .statusCode(202)
+                        .message(List.of("ok rồi"))
+                        .data(result.getContent())
+                        .pagination(new PageResponseDTO(result))
+                        .build());
     }
 }

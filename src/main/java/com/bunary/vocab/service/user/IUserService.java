@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
@@ -15,9 +17,9 @@ public interface IUserService {
 
     User findByEmail(String email);
 
-    List<UserResponseDTO> getAllUsers();
+    Page<UserResponseDTO> getAllUsers(Pageable pageable);
 
-    List<UserResponseDTO> findAllVerifiedUsers();
+    Page<UserResponseDTO> findAllVerifiedUsers(Pageable pageable);
 
     Optional<User> findById(UUID userId);
 

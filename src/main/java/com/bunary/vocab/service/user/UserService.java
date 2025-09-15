@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,15 +48,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponseDTO> getAllUsers() {
-        return this.userMapper.convertToUserResponseDTO(this.userRepository.findAll());
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
+        return this.userMapper.convertToUserResponseDTO(this.userRepository.findAll(pageable));
     }
 
     @Override
-    public List<UserResponseDTO> findAllVerifiedUsers() {
+    public Page<UserResponseDTO> findAllVerifiedUsers(Pageable pageable) {
         UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
-        return this.userMapper.convertToUserResponseDTO(this.userRepository.findAllVerifiedUsers(userId));
-
+        return this.userMapper
+                .convertToUserResponseDTO(this.userRepository.findAllVerifiedUsers(pageable, userId));
     }
 
     @Override

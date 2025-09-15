@@ -3,6 +3,8 @@ package com.bunary.vocab.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -44,14 +46,14 @@ public class UserMapper {
         return userDTO;
     }
 
-    public List<UserResponseDTO> convertToUserResponseDTO(List<User> users) {
+    public Page<UserResponseDTO> convertToUserResponseDTO(Page<User> users) {
         List<UserResponseDTO> userReponseList = new ArrayList<>();
 
         for (User user : users) {
             userReponseList.add(this.convertToUserResponseDTO(user));
         }
 
-        return userReponseList;
+        return new PageImpl<>(userReponseList, users.getPageable(), users.getTotalElements());
     }
 
     public UserRequestDTO convertToUserRequestDTO(User user) {

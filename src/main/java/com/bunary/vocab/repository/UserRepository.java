@@ -3,6 +3,9 @@ package com.bunary.vocab.repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,10 +18,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByEmail(String email);
 
-    List<User> findAll();
+    Page<User> findAll(Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE u.isEmailVerified = true")
-    List<User> findAllVerifiedUsers(@Param("myId") UUID myId);
+    Page<User> findAllVerifiedUsers(Pageable pageable, @Param("myId") UUID myId);
 
     Optional<User> findById(UUID id);
 

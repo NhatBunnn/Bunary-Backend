@@ -7,12 +7,14 @@ import java.util.Map;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
+@Builder
 public class SuccessReponseDTO<T> {
     private LocalDateTime timestamp;
     private int statusCode;
