@@ -1,8 +1,6 @@
 package com.bunary.vocab.model;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,33 +21,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "WordSets")
+@Table(name = "Collections")
 @Entity
-public class WordSet {
+public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    @Column(nullable = false)
+    private String name;
 
-    private String description;
-
-    @Column(length = 1000)
-    private String thumbnail;
-
-    private Instant createdAt;
-
-    private Instant updatedAt;
-
-    private Instant deletedAt;
+    @ManyToMany
+    @JoinTable(name = "collection_wordset", joinColumns = @JoinColumn(name = "collection_id"), inverseJoinColumns = @JoinColumn(name = "wordset_id"))
+    private List<WordSet> wordSets;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToMany(mappedBy = "wordSet")
-    private List<Word> Words;
-
-    @ManyToMany(mappedBy = "wordSets")
-    private List<Collection> collections;
 }

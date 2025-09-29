@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bunary.vocab.dto.reponse.CollectionResDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.model.WordSet;
@@ -23,5 +24,7 @@ public interface IWordSetService {
     public Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
 
     WordSetReponseDTO findById(Long id);
+
+    Page<WordSetReponseDTO> findAllByCollectionId(Long collectionId, Pageable pageable);
 
 }

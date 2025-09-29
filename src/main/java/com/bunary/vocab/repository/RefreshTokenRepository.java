@@ -1,6 +1,5 @@
 package com.bunary.vocab.repository;
 
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

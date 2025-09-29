@@ -98,4 +98,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<WordSet> wordSet;
 
+    @OneToMany(mappedBy = "user")
+    private List<Collection> collection;
+
 }

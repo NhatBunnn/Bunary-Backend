@@ -10,14 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
-import com.bunary.vocab.service.word.IWordService;
 
 import lombok.AllArgsConstructor;
 
@@ -26,8 +24,6 @@ import lombok.AllArgsConstructor;
 public class WordSetMapper {
     private final SecurityUtil securityUtil;
     private final IUserService userService;
-    private final IWordService wordService;
-    private final WordMapper wordMapper;
 
     public WordSetReponseDTO convertToWordSetReponseDTO(WordSet wordSet) {
         WordSetReponseDTO wordSetRep = new WordSetReponseDTO();
@@ -49,6 +45,17 @@ public class WordSetMapper {
         }
 
         return new PageImpl<>(wordSetDTO, wordSet.getPageable(), wordSet.getTotalElements());
+    }
+
+    public List<WordSetReponseDTO> convertToWordSetReponseDTO(List<WordSet> wordSet) {
+
+        List<WordSetReponseDTO> wordSetDTO = new ArrayList<>();
+
+        for (WordSet ws : wordSet) {
+            wordSetDTO.add(convertToWordSetReponseDTO(ws));
+        }
+
+        return wordSetDTO;
     }
 
     public WordSet convertToWordSet(WordSetRequestDTO wordSetReq) {

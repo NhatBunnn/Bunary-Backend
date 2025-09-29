@@ -89,4 +89,11 @@ public class WordSetService implements IWordSetService {
         return this.wordSetMapper.convertToWordSetReponseDTO(wordSet.get());
     }
 
+    @Override
+    public Page<WordSetReponseDTO> findAllByCollectionId(Long collectionId,
+            Pageable pageable) {
+        return this.wordSetMapper
+                .convertToWordSetReponseDTO(this.wordSetRepository.findByCollections_Id(collectionId, pageable));
+    }
+
 }
