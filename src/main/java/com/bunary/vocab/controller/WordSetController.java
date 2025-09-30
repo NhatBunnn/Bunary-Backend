@@ -22,6 +22,7 @@ import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.service.wordSet.IWordSetService;
+import com.bunary.vocab.util.PageableUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -30,82 +31,74 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1")
 public class WordSetController {
-    private final IWordSetService wordSetService;
+        private final IWordSetService wordSetService;
 
-    @PostMapping("/wordsets")
-    public ResponseEntity<?> createWordSet(@RequestPart("wordSet") String wordSetString,
-            @RequestPart(value = "thumbnailFile", required = false) MultipartFile file) throws Exception {
+        @PostMapping("/wordsets")
+        public ResponseEntity<?> createWordSet(@RequestPart("wordSet") String wordSetString,
+                        @RequestPart(value = "thumbnailFile", required = false) MultipartFile file) throws Exception {
 
-        ObjectMapper mapper = new ObjectMapper();
-        WordSetRequestDTO wordSet = mapper.readValue(wordSetString, WordSetRequestDTO.class);
+                ObjectMapper mapper = new ObjectMapper();
+                WordSetRequestDTO wordSet = mapper.readValue(wordSetString, WordSetRequestDTO.class);
 
-        WordSetReponseDTO result = this.wordSetService.createWordSet(wordSet, file);
+                WordSetReponseDTO result = this.wordSetService.createWordSet(wordSet, file);
 
-        return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Tạo bộ từ vựng thành công"), result));
-    }
-
-    @GetMapping("/wordsets")
-    public ResponseEntity<?> getAllWordSet(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
-
-        String sortField = sort[0];
-        Sort.Direction direction;
-
-        if (sort.length > 1 && "desc".equalsIgnoreCase(sort[1])) {
-            direction = Sort.Direction.DESC;
-        } else {
-            direction = Sort.Direction.ASC;
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("WordSet created successfully")
+                                                .data(result)
+                                                .build());
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+        @GetMapping("/wordsets")
+        public ResponseEntity<?> getAllWordSet(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
 
-        Page<WordSetReponseDTO> result = this.wordSetService.findAllWithAuthor(pageable);
+                Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
-        PageResponseDTO pageResponseDTO = new PageResponseDTO(result);
+                Page<WordSetReponseDTO> result = this.wordSetService.findAllWithAuthor(pageable);
 
-        return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Success"), result.getContent(),
-                        pageResponseDTO));
-    }
-
-    @GetMapping("/wordsets/{wordSetId}")
-    public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId) throws Exception {
-
-        WordSetReponseDTO result = this.wordSetService.findById(wordSetId);
-
-        return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Success"), result));
-    }
-
-    @PostMapping("/collections/{collectionId}/wordsets")
-    public ResponseEntity<?> findByCollectionId(@PathVariable Long collectionId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) {
-
-        String sortField = sort[0];
-        Sort.Direction direction;
-
-        if (sort.length > 1 && "desc".equalsIgnoreCase(sort[1])) {
-            direction = Sort.Direction.DESC;
-        } else {
-            direction = Sort.Direction.ASC;
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("WordSets retrieved successfully")
+                                                .data(result.getContent())
+                                                .pagination(new PageResponseDTO(result))
+                                                .build());
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction,
-                sortField));
+        @GetMapping("/wordsets/{wordSetId}")
+        public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId) throws Exception {
 
-        Page<WordSetReponseDTO> result = this.wordSetService.findAllByCollectionId(collectionId, pageable);
+                WordSetReponseDTO result = this.wordSetService.findById(wordSetId);
 
-        PageResponseDTO pageResponseDTO = new PageResponseDTO(result);
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("WordSets retrieved successfully")
+                                                .data(result)
+                                                .build());
+        }
 
-        return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Success"),
-                        result.getContent(),
-                        pageResponseDTO));
-    }
+        @PostMapping("/collections/{collectionId}/wordsets")
+        public ResponseEntity<?> findByCollectionId(@PathVariable Long collectionId,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(defaultValue = "id,asc") String[] sort) {
+
+                Pageable pageable = PageableUtil.createPageable(page, size, sort);
+
+                Page<WordSetReponseDTO> result = this.wordSetService.findAllByCollectionId(collectionId, pageable);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("Colections retrieved successfully")
+                                                .data(result.getContent())
+                                                .pagination(new PageResponseDTO(result))
+                                                .build());
+        }
 
 }

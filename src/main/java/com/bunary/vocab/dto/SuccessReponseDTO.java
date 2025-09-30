@@ -18,48 +18,17 @@ import lombok.Setter;
 public class SuccessReponseDTO<T> {
     private LocalDateTime timestamp;
     private int statusCode;
-    private List<String> message;
+    private String message;
     private T data;
-    private Map<String, Object> dataMap;
     private PageResponseDTO pagination;
 
-    public SuccessReponseDTO(LocalDateTime timestamp, int statusCode, List<String> message, T data) {
-        this.timestamp = timestamp;
-        this.statusCode = statusCode;
-        this.message = message;
-        this.data = data;
-    }
-
-    public SuccessReponseDTO(LocalDateTime timestamp, int statusCode, List<String> message, T data,
-            Map<String, Object> dataMap) {
-        this.timestamp = timestamp;
-        this.statusCode = statusCode;
-        this.message = message;
-        this.data = data;
-        this.dataMap = dataMap;
-    }
-
-    public SuccessReponseDTO(LocalDateTime timestamp, int statusCode, List<String> message, T data,
-            Map<String, Object> dataMap, PageResponseDTO pagination) {
-        this.timestamp = timestamp;
-        this.statusCode = statusCode;
-        this.message = message;
-        this.data = data;
-        this.dataMap = dataMap;
-        this.pagination = pagination;
-    }
-
-    public SuccessReponseDTO(LocalDateTime timestamp, int statusCode, List<String> message, T data,
+    public SuccessReponseDTO(LocalDateTime timestamp, int statusCode, String message, T data,
             PageResponseDTO pagination) {
-        this.timestamp = timestamp;
+        this.timestamp = LocalDateTime.now();
         this.statusCode = statusCode;
         this.message = message;
         this.data = data;
         this.pagination = pagination;
-    }
-
-    public SuccessReponseDTO() {
-        this.timestamp = LocalDateTime.now();
     }
 
 }

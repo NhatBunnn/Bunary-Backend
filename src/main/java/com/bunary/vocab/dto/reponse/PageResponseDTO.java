@@ -2,9 +2,7 @@ package com.bunary.vocab.dto.reponse;
 
 import org.springframework.data.domain.Page;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter

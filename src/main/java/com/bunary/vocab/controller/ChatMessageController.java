@@ -32,6 +32,10 @@ public class ChatMessageController {
                 UUID.fromString(receiverId));
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("ok rồi"), result));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("Fetched messages successfully")
+                        .data(result)
+                        .build());
     }
 }

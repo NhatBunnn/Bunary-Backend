@@ -27,8 +27,11 @@ public class WordController {
         List<WordReponseDTO> result = this.wordService.findByWordSetId(wordSetId);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Success"), result));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("Words retrieved successfully")
+                        .data(result)
+                        .build());
     }
 
-    
 }

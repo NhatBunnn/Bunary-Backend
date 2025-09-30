@@ -7,11 +7,11 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
+import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.AuthResponseDTO;
 import com.bunary.vocab.dto.reponse.VerifyCodeReponseDTO;
-import com.bunary.vocab.exception.GlobalErrorCode;
+import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.UserMapper;
-import com.bunary.vocab.exception.CustomException.BadRequestException;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.VerifyCode;
 import com.bunary.vocab.repository.VerifyCodeRepository;
@@ -64,7 +64,7 @@ public class VerifyCodeService implements IVerifyCodeService {
             verifyCode.setUser(user);
         } else {
             if (verifyCode.getRetryAvailableAt().isAfter(Instant.now()))
-                throw new BadRequestException(GlobalErrorCode.TOO_MANY_ATTEMPTS);
+                throw new ApiException(ErrorCode.EMAIL_CODE_ATTEMPTS_EXCEEDED);
         }
 
         verifyCode.setUsed(false);
@@ -84,13 +84,13 @@ public class VerifyCodeService implements IVerifyCodeService {
         VerifyCode currentVerifyCode = this.verifyCodeRepository.findByUser(user);
 
         if (user.isEmailVerified())
-            throw new BadRequestException(GlobalErrorCode.USER_INVALID);
+            throw new ApiException(ErrorCode.USER_NOT_VERIFIED);
 
         if (currentVerifyCode.getRetryAvailableAt().isAfter(Instant.now()))
-            throw new BadRequestException(GlobalErrorCode.TOO_MANY_ATTEMPTS);
+            throw new ApiException(ErrorCode.EMAIL_CODE_ATTEMPTS_EXCEEDED);
 
         if (currentVerifyCode.isUsed())
-            throw new BadRequestException(GlobalErrorCode.CODE_IS_USED);
+            throw new ApiException(ErrorCode.EMAIL_CODE_USED);
 
         if (verifyCode.getCode().isEmpty() || !verifyCode.getCode().equals(currentVerifyCode.getCode())) {
             currentVerifyCode.setUsed(true);
@@ -107,11 +107,11 @@ public class VerifyCodeService implements IVerifyCodeService {
 
             this.verifyCodeRepository.save(currentVerifyCode);
 
-            throw new BadRequestException(GlobalErrorCode.CODE_INVALID);
+            throw new ApiException(ErrorCode.EMAIL_CODE_INVALID);
         }
 
         if (currentVerifyCode.getExpiresAt().isBefore(Instant.now()))
-            throw new BadRequestException(GlobalErrorCode.CODE_IS_EXPIRED);
+            throw new ApiException(ErrorCode.EMAIL_CODE_EXPIRED);
 
         this.verifyCodeRepository.save(currentVerifyCode);
 

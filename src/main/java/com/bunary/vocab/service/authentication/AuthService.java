@@ -13,14 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.AuthResponseDTO;
 import com.bunary.vocab.dto.reponse.VerifyCodeReponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
-import com.bunary.vocab.exception.FieldErrorCode;
-import com.bunary.vocab.exception.GlobalErrorCode;
-import com.bunary.vocab.exception.CustomException.BadCredentialsException;
-import com.bunary.vocab.exception.CustomException.ConflictException;
-import com.bunary.vocab.exception.CustomException.UnauthorizedException;
+import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.RefreshToken;
 import com.bunary.vocab.model.User;
@@ -62,7 +59,7 @@ public class AuthService implements IAuthService {
         boolean isEmailExit = this.userService.existsByEmail(user.getEmail());
 
         if (isEmailExit) {
-            throw new ConflictException(FieldErrorCode.EMAIL_EXISTS);
+            throw new ApiException(ErrorCode.EMAIL_EXISTS);
         }
 
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
@@ -88,7 +85,7 @@ public class AuthService implements IAuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (Exception e) {
-            throw new BadCredentialsException(FieldErrorCode.BAD_CREDENTIALS);
+            throw new ApiException(ErrorCode.AUTH_INVALID);
         }
 
         User currentUser = this.userService.findByEmail(user.getEmail());
@@ -114,7 +111,7 @@ public class AuthService implements IAuthService {
     @Override
     public AuthResponseDTO RefreshAccessToken(String refreshToken) throws Exception {
         if (refreshToken.equals(""))
-            throw new UnauthorizedException(GlobalErrorCode.SESSION_INVALID);
+            throw new ApiException(ErrorCode.AUTH_SESSION_INVALID);
 
         Jwt decodedJwt = this.jwtUtil.decodeToken(refreshToken);
         UUID userId = UUID.fromString(decodedJwt.getSubject());
@@ -127,7 +124,7 @@ public class AuthService implements IAuthService {
         if (currentUser.get() == null || currentRefreshToken == null ||
                 currentRefreshToken.isRevoked() == true
                 || Instant.now().isAfter(currentRefreshToken.getExpiryDate()))
-            throw new UnauthorizedException(GlobalErrorCode.SESSION_EXPIRED);
+            throw new ApiException(ErrorCode.AUTH_SESSION_EXPIRED);
 
         currentRefreshToken.setRevoked(true);
         this.refreshTokenService.update(currentRefreshToken);
@@ -152,7 +149,7 @@ public class AuthService implements IAuthService {
     @Override
     public AuthResponseDTO Logout(String refreshToken) throws Exception {
         if (refreshToken.equals(""))
-            throw new UnauthorizedException(GlobalErrorCode.SESSION_INVALID);
+            throw new ApiException(ErrorCode.AUTH_SESSION_INVALID);
 
         Jwt decodedJwt = this.jwtUtil.decodeToken(refreshToken);
         UUID userId = UUID.fromString(decodedJwt.getSubject());
@@ -165,7 +162,7 @@ public class AuthService implements IAuthService {
         if (currentUser.get() == null || currentRefreshToken == null ||
                 currentRefreshToken.isRevoked() == true
                 || Instant.now().isAfter(currentRefreshToken.getExpiryDate()))
-            throw new UnauthorizedException(GlobalErrorCode.SESSION_EXPIRED);
+            throw new ApiException(ErrorCode.AUTH_SESSION_EXPIRED);
 
         currentRefreshToken.setRevoked(true);
         this.refreshTokenService.update(currentRefreshToken);

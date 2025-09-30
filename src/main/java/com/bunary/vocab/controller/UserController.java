@@ -19,16 +19,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
+import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.exception.GlobalErrorCode;
-import com.bunary.vocab.exception.CustomException.BadRequestException;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.scheduler.AccountCleanupTask;
 import com.bunary.vocab.service.user.IUserService;
+import com.bunary.vocab.util.PageableUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -52,11 +54,15 @@ public class UserController {
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String id) throws Exception {
         User currentUser = this.userService.findById(UUID.fromString(id)).orElseThrow(
-                () -> new BadRequestException(GlobalErrorCode.USER_NOT_FOUND));
+                () -> new ApiException(ErrorCode.USER_NOT_FOUND));
         UserResponseDTO result = this.userMapper.convertToUserResponseDTO(currentUser);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("ok rồi"), result));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("User retrieved successfully")
+                        .data(result)
+                        .build());
     }
 
     @PutMapping("/users/{id}")
@@ -67,7 +73,11 @@ public class UserController {
         UserResponseDTO result = this.userService.updateUser(id, requestDTO, file);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("ok rồi"), result));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("User updated successfully")
+                        .data(result)
+                        .build());
     }
 
     @GetMapping("/users")
@@ -76,16 +86,7 @@ public class UserController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
 
-        String sortField = sort[0];
-        Sort.Direction direction;
-
-        if (sort.length > 1 && "desc".equalsIgnoreCase(sort[1])) {
-            direction = Sort.Direction.DESC;
-        } else {
-            direction = Sort.Direction.ASC;
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+        Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
         Page<UserResponseDTO> result = this.userService.findAllVerifiedUsers(pageable);
 
@@ -93,7 +94,7 @@ public class UserController {
                 .body(SuccessReponseDTO.builder()
                         .timestamp(LocalDateTime.now())
                         .statusCode(202)
-                        .message(List.of("ok rồi"))
+                        .message("Users retrieved successfully")
                         .data(result.getContent())
                         .pagination(new PageResponseDTO(result))
                         .build());

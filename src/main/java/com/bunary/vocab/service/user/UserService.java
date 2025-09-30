@@ -1,7 +1,6 @@
 package com.bunary.vocab.service.user;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,13 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
-import com.bunary.vocab.exception.CustomException.BadRequestException;
-import com.bunary.vocab.exception.CustomException.ConflictException;
 import com.bunary.vocab.mapper.UserMapper;
-import com.bunary.vocab.exception.FieldErrorCode;
-import com.bunary.vocab.exception.GlobalErrorCode;
+import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.security.SecurityUtil;
@@ -73,7 +70,7 @@ public class UserService implements IUserService {
     public UserResponseDTO updateUser(String userId, UserRequestDTO userDTO, MultipartFile avatarFile) {
 
         User user = this.findById(UUID.fromString(userId)).orElseThrow(
-                () -> new BadRequestException(GlobalErrorCode.USER_NOT_FOUND));
+                () -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         if (userDTO.getFirstName() != null) {
             user.setFirstName(userDTO.getFirstName());

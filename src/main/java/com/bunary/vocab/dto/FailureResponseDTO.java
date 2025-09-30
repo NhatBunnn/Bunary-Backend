@@ -1,8 +1,6 @@
 package com.bunary.vocab.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -14,9 +12,9 @@ import lombok.Setter;
 @Setter
 public class FailureResponseDTO {
     private LocalDateTime timestamp;
-    private int statusCode;
-    private List<String> error;
-    private Map<String, String> fieldError;
+    private int code;
+    private String errorCode;
+    private String message;
 
     public FailureResponseDTO() {
         this.timestamp = LocalDateTime.now();

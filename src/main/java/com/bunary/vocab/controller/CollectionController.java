@@ -17,6 +17,8 @@ import com.bunary.vocab.dto.reponse.CollectionResDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.request.CollectionReqDTO;
 import com.bunary.vocab.service.collection.CollectionService;
+import com.bunary.vocab.util.PageableUtil;
+
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +36,11 @@ public class CollectionController {
         CollectionResDTO result = this.collectionService.create(collection);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Tạo bộ sưu tập thành công"), result));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("Collection created successfully")
+                        .data(result)
+                        .build());
     }
 
     @GetMapping("/collections")
@@ -42,22 +48,17 @@ public class CollectionController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String[] sort) {
 
-        String sortField = sort[0];
-        Sort.Direction direction;
-
-        if (sort.length > 1 && "desc".equalsIgnoreCase(sort[1])) {
-            direction = Sort.Direction.DESC;
-        } else {
-            direction = Sort.Direction.ASC;
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+        Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
         Page<CollectionResDTO> result = this.collectionService.findAll(pageable);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Tạo bộ sưu tập thành công"),
-                        result.getContent(), new PageResponseDTO(result)));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("Fetched all collections successfully")
+                        .data(result)
+                        .pagination(new PageResponseDTO(result))
+                        .build());
     }
 
     @PostMapping("/collections/{collectionId}/wordsets/{wordSetId}")
@@ -67,7 +68,10 @@ public class CollectionController {
         this.collectionService.addWordSetToCollection(collectionId, wordSetId);
 
         return ResponseEntity.ok()
-                .body(new SuccessReponseDTO<>(LocalDateTime.now(), 202, List.of("Tạo bộ sưu tập thành công"), null));
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(200)
+                        .message("WordSet added to collection successfully")
+                        .build());
     }
 
     // @GetMapping("/collection/{collectionId}")
