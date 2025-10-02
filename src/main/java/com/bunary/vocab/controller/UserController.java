@@ -25,7 +25,6 @@ import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.exception.ApiException;
-import com.bunary.vocab.exception.GlobalErrorCode;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.scheduler.AccountCleanupTask;
@@ -40,63 +39,63 @@ import lombok.AllArgsConstructor;
 
 // @RequestMapping("/api/v1/users")
 public class UserController {
-    private final IUserService userService;
-    private final AccountCleanupTask accountCleanupTask;
-    private final UserMapper userMapper;
+        private final IUserService userService;
+        private final AccountCleanupTask accountCleanupTask;
+        private final UserMapper userMapper;
 
-    @GetMapping("/removeaccount")
-    public String removeAccount() {
-        long result = this.accountCleanupTask.removeAccount();
+        @GetMapping("/removeaccount")
+        public String removeAccount() {
+                long result = this.accountCleanupTask.removeAccount();
 
-        return "đã xóa " + result;
-    }
+                return "đã xóa " + result;
+        }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<?> getUserByEmail(@PathVariable String id) throws Exception {
-        User currentUser = this.userService.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        UserResponseDTO result = this.userMapper.convertToUserResponseDTO(currentUser);
+        @GetMapping("/users/{id}")
+        public ResponseEntity<?> getUserByEmail(@PathVariable String id) throws Exception {
+                User currentUser = this.userService.findById(UUID.fromString(id)).orElseThrow(
+                                () -> new ApiException(ErrorCode.USER_NOT_FOUND));
+                UserResponseDTO result = this.userMapper.convertToUserResponseDTO(currentUser);
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("User retrieved successfully")
-                        .data(result)
-                        .build());
-    }
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("User retrieved successfully")
+                                                .data(result)
+                                                .build());
+        }
 
-    @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @ModelAttribute UserRequestDTO requestDTO,
-            @RequestParam(value = "avatarFile", required = false) MultipartFile file)
-            throws Exception {
+        @PutMapping("/users/{id}")
+        public ResponseEntity<?> updateUser(@PathVariable String id, @ModelAttribute UserRequestDTO requestDTO,
+                        @RequestParam(value = "avatarFile", required = false) MultipartFile file)
+                        throws Exception {
 
-        UserResponseDTO result = this.userService.updateUser(id, requestDTO, file);
+                UserResponseDTO result = this.userService.updateUser(id, requestDTO, file);
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("User updated successfully")
-                        .data(result)
-                        .build());
-    }
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("User updated successfully")
+                                                .data(result)
+                                                .build());
+        }
 
-    @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+        @GetMapping("/users")
+        public ResponseEntity<?> getAllUsers(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
 
-        Pageable pageable = PageableUtil.createPageable(page, size, sort);
+                Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
-        Page<UserResponseDTO> result = this.userService.findAllVerifiedUsers(pageable);
+                Page<UserResponseDTO> result = this.userService.findAllVerifiedUsers(pageable);
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .timestamp(LocalDateTime.now())
-                        .statusCode(202)
-                        .message("Users retrieved successfully")
-                        .data(result.getContent())
-                        .pagination(new PageResponseDTO(result))
-                        .build());
-    }
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .timestamp(LocalDateTime.now())
+                                                .statusCode(202)
+                                                .message("Users retrieved successfully")
+                                                .data(result.getContent())
+                                                .pagination(new PageResponseDTO(result))
+                                                .build());
+        }
 }

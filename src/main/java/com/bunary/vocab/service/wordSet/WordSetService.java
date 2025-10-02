@@ -9,8 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
+import com.bunary.vocab.exception.ApiException;
+import com.bunary.vocab.mapper.CollectionMapper;
+import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.mapper.WordSetMapper;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
@@ -26,6 +30,8 @@ public class WordSetService implements IWordSetService {
     private final WordSetRepository wordSetRepository;
     private final IWordService wordService;
     private final WordSetMapper wordSetMapper;
+    private final UserMapper userMapper;
+    private final CollectionMapper collectionMapper;
     private final CloudinaryService cloudinaryService;
 
     @Override
@@ -94,6 +100,18 @@ public class WordSetService implements IWordSetService {
             Pageable pageable) {
         return this.wordSetMapper
                 .convertToWordSetReponseDTO(this.wordSetRepository.findByCollections_Id(collectionId, pageable));
+    }
+
+    @Override
+    public WordSetReponseDTO findByIdWithUserAndCollection(Long id) {
+        WordSet wordSet = this.wordSetRepository.findByIdWithUserAndCollection(id)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+
+        WordSetReponseDTO wordSetDTO = this.wordSetMapper.convertToWordSetReponseDTO(wordSet);
+        wordSetDTO.setAuthor(this.userMapper.convertToUserResponseDTO(wordSet.getUser()));
+        wordSetDTO.getCollections().addAll(this.collectionMapper.convertToCollectionResDTO(wordSet.getCollections()));
+
+        return wordSetDTO;
     }
 
 }

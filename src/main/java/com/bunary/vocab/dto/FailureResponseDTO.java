@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class FailureResponseDTO {
     private LocalDateTime timestamp;
-    private int code;
+    private int statusCode;
     private String errorCode;
     private String message;
 

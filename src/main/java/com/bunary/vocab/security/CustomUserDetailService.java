@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.exception.ApiException;
-import com.bunary.vocab.exception.GlobalErrorCode;
 import com.bunary.vocab.service.user.UserService;
 
 import lombok.AllArgsConstructor;

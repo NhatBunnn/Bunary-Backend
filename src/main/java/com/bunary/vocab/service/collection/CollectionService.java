@@ -3,9 +3,12 @@ package com.bunary.vocab.service.collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.CollectionResDTO;
 import com.bunary.vocab.dto.request.CollectionReqDTO;
+import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.CollectionMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.Collection;
@@ -19,7 +22,6 @@ import lombok.AllArgsConstructor;
 @Service
 public class CollectionService implements ICollectionService {
 
-    private final UserMapper userMapper;
     private final CollectionRepository collectionRepository;
     private final CollectionMapper collectionMapper;
     private final WordSetRepository wordSetRepository;
@@ -36,19 +38,30 @@ public class CollectionService implements ICollectionService {
     }
 
     @Override
-    public Page<CollectionResDTO> findAll(Pageable pageable) {
-        return this.collectionMapper.convertToCollectionResDTO(this.collectionRepository.findAll(pageable));
+    public Page<CollectionResDTO> findAllWithUser(Pageable pageable) {
+        return this.collectionMapper.convertToCollectionResDTO(this.collectionRepository.findAllWithUser(pageable));
     }
 
     @Override
     public void addWordSetToCollection(Long collectionId, Long wordSetId) {
-        Collection collection = collectionRepository.findById(collectionId).orElseThrow();
-        WordSet wordSet = this.wordSetRepository.findById(wordSetId).orElseThrow();
+
+        boolean exists = collectionRepository.existsWordSetInCollection(collectionId, wordSetId);
+        if (exists)
+            throw new ApiException(ErrorCode.ALREADY_EXISTS);
+
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+        WordSet wordSet = this.wordSetRepository.findById(wordSetId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         collection.getWordSets().add(wordSet);
         collectionRepository.save(collection);
     }
 
-
+    @Override
+    public CollectionResDTO findById(Long collectionId) {
+        return this.collectionMapper.convertToCollectionResDTO(this.collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND)));
+    }
 
 }

@@ -70,34 +70,25 @@ public class WordSetController {
         }
 
         @GetMapping("/wordsets/{wordSetId}")
-        public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId) throws Exception {
+        public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId,
+                        @RequestParam(value = "include", required = false) String include) throws Exception {
 
-                WordSetReponseDTO result = this.wordSetService.findById(wordSetId);
+                boolean includeUser = include != null && include.contains("user");
+                boolean includeCollection = include != null && include.contains("collection");
+
+                WordSetReponseDTO result = new WordSetReponseDTO();
+
+                if (includeUser && includeCollection) {
+                        result = this.wordSetService.findByIdWithUserAndCollection(wordSetId);
+                } else {
+                        result = this.wordSetService.findById(wordSetId);
+                }
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(201)
                                                 .message("WordSets retrieved successfully")
                                                 .data(result)
-                                                .build());
-        }
-
-        @PostMapping("/collections/{collectionId}/wordsets")
-        public ResponseEntity<?> findByCollectionId(@PathVariable Long collectionId,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "20") int size,
-                        @RequestParam(defaultValue = "id,asc") String[] sort) {
-
-                Pageable pageable = PageableUtil.createPageable(page, size, sort);
-
-                Page<WordSetReponseDTO> result = this.wordSetService.findAllByCollectionId(collectionId, pageable);
-
-                return ResponseEntity.ok()
-                                .body(SuccessReponseDTO.builder()
-                                                .statusCode(201)
-                                                .message("Colections retrieved successfully")
-                                                .data(result.getContent())
-                                                .pagination(new PageResponseDTO(result))
                                                 .build());
         }
 

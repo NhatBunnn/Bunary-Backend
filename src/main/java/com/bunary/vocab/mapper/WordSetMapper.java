@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,17 @@ public class WordSetMapper {
         wordSetRep.setTitle(wordSet.getTitle());
         wordSetRep.setDescription(wordSet.getDescription());
         wordSetRep.setThumbnail(wordSet.getThumbnail());
-        wordSetRep.setAuthorId(wordSet.getUser().getId());
+
+        // if (Hibernate.isInitialized(wordSet.getUser()) && wordSet.getUser() != null)
+        // {
+        // wordSetRep.setAuthor(this.userMapper.convertToUserResponseDTO(wordSet.getUser()));
+        // }
+
+        // if (Hibernate.isInitialized(wordSet.getCollections()) &&
+        // wordSet.getCollections() != null) {
+        // wordSetRep.getCollections()
+        // .addAll(this.collectionMapper.convertToCollectionResDTO(wordSet.getCollections()));
+        // }
 
         return wordSetRep;
     }

@@ -12,9 +12,9 @@ public interface ICollectionService {
 
     CollectionResDTO create(CollectionReqDTO collection);
 
-    Page<CollectionResDTO> findAll(Pageable pageable);
+    Page<CollectionResDTO> findAllWithUser(Pageable pageable);
 
     void addWordSetToCollection(Long collectionId, Long wordSetId);
 
-    
+    CollectionResDTO findById(Long collectionId);
 }

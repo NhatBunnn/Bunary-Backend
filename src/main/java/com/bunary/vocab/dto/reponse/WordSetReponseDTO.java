@@ -1,5 +1,6 @@
 package com.bunary.vocab.dto.reponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class WordSetReponseDTO {
     private Long id;
 
@@ -30,7 +31,9 @@ public class WordSetReponseDTO {
 
     private UserResponseDTO author;
 
-    private List<WordReponseDTO> words;
+    private List<WordReponseDTO> words = new ArrayList<>();
+
+    private List<CollectionResDTO> collections = new ArrayList<>();
 
     public WordSetReponseDTO(Long id, String title, String description, String thumbnail, UUID authorId,
             UserResponseDTO author) {

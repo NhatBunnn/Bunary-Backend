@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,7 +14,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.bunary.vocab.Queue.MessageQueue.IChatMessageQueue;
 import com.bunary.vocab.dto.reponse.ChatMessageResponseDTO;
-import com.bunary.vocab.exception.GlobalErrorCode;
 import com.bunary.vocab.mapper.ChatMessageMapper;
 import com.bunary.vocab.service.ChatMessage.IChatMessageService;
 import com.bunary.vocab.service.user.IUserService;

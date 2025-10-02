@@ -12,10 +12,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<FailureResponseDTO> handleApiException(ApiException ex) {
         FailureResponseDTO response = new FailureResponseDTO();
-        response.setCode(ex.getCode());
+        response.setStatusCode(ex.getStatusCode());
         response.setErrorCode(ex.getErrorCode());
         response.setMessage(ex.getMessage());
-        return ResponseEntity.status(ex.getCode()).body(response);
+        return ResponseEntity.status(ex.getStatusCode()).body(response);
     }
 
     @ExceptionHandler(Exception.class)
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         ex.printStackTrace();
 
         FailureResponseDTO response = new FailureResponseDTO();
-        response.setCode(500);
+        response.setStatusCode(500);
         response.setErrorCode("INTERNAL_ERROR");
         return ResponseEntity.status(500).body(response);
     }

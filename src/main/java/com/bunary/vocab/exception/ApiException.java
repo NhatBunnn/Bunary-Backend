@@ -24,12 +24,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiException extends RuntimeException {
-    private final int code;
+    private final int statusCode;
     private final String errorCode;
     private final String message;
 
     public ApiException(ErrorCode errorCode) {
-        this.code = errorCode.getCode();
+        this.statusCode = errorCode.getCode();
         this.errorCode = errorCode.getErrorCode();
         this.message = errorCode.getMessage();
     }

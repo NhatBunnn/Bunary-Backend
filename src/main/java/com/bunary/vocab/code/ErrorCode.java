@@ -6,6 +6,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
+    // Common
+    ID_NOT_FOUND(404, "ID_NOT_FOUND", "not found with id"),
+    NOT_FOUND(404, "NOT_FOUND", "not found"),
+    ALREADY_EXISTS(409, "ALREADY_EXISTS", "already exists"),
+
     // User
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "User not found"),
     USER_NOT_VERIFIED(403, "AUTH_NOT_VERIFIED", "Account not verified"),

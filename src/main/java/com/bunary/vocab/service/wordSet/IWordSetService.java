@@ -27,4 +27,5 @@ public interface IWordSetService {
 
     Page<WordSetReponseDTO> findAllByCollectionId(Long collectionId, Pageable pageable);
 
+    WordSetReponseDTO findByIdWithUserAndCollection(Long id);
 }
