@@ -18,6 +18,8 @@ import com.bunary.vocab.service.wordSet.IWordSetService;
 import com.bunary.vocab.util.PageableUtil;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -105,4 +107,27 @@ public class CollectionController {
                                                 .build());
         }
 
+        @DeleteMapping("/collections/{collectionId}/wordsets/{wordSetId}")
+        public ResponseEntity<?> removeCollectionAndWordSet(@PathVariable Long collectionId,
+                        @PathVariable Long wordSetId) {
+
+                this.collectionService.removeCollectionAndWordSet(collectionId, wordSetId);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("Colections deleted successfully")
+                                                .build());
+        }
+
+        @DeleteMapping("/collections/{collectionId}")
+        public ResponseEntity<?> removeCollection(@PathVariable Long collectionId) {
+                this.collectionService.removeCollection(collectionId);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("Colections deleted successfully")
+                                                .build());
+        }
 }

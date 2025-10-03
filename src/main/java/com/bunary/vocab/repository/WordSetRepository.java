@@ -18,17 +18,21 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long> {
     Page<WordSet> findAll(Pageable pageable);
 
     // Làm thử nào rảnh sửa -> construcotor đang bị set cứng ko linh hoạt
-    @Query("""
-                SELECT new com.bunary.vocab.dto.reponse.WordSetReponseDTO(
-                    w.id, w.title, w.description, w.thumbnail, u.id,
-                    new com.bunary.vocab.dto.reponse.UserResponseDTO(
-                        u.fullName, u.avatar
-                    )
-                )
-                FROM WordSet w
-                JOIN w.user u
-            """)
-    Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
+    // @Query("""
+    // SELECT new com.bunary.vocab.dto.reponse.WordSetReponseDTO(
+    // w.id, w.title, w.description, w.thumbnail, u.id,
+    // new com.bunary.vocab.dto.reponse.UserResponseDTO(
+    // u.fullName, u.avatar
+    // )
+    // )
+    // FROM WordSet w
+    // JOIN w.user u
+    // """)
+    // Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
+
+    @EntityGraph(attributePaths = { "user" })
+    @Query("SELECT w FROM WordSet w")
+    Page<WordSet> findAllWithAuthor(Pageable pageable);
 
     Optional<WordSet> findById(Long id);
 

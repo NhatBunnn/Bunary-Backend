@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +52,19 @@ public class WordSetService implements IWordSetService {
 
     @Override
     public Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable) {
-        return this.wordSetRepository.findAllWithAuthor(pageable);
+        Page<WordSet> page = this.wordSetRepository.findAllWithAuthor(pageable);
+
+        List<WordSetReponseDTO> dtoList = page.stream().map(ws -> {
+            WordSetReponseDTO dto = wordSetMapper.convertToWordSetReponseDTO(ws);
+
+            if (ws.getUser() != null) {
+                dto.setAuthor(this.userMapper.convertToUserResponseDTO(ws.getUser()));
+            }
+
+            return dto;
+        }).toList();
+
+        return new PageImpl<>(dtoList, pageable, page.getTotalElements());
     }
 
     @Override

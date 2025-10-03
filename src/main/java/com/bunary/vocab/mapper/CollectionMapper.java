@@ -28,7 +28,7 @@ public class CollectionMapper {
         return collectionResDTO;
     }
 
-    public Collection covertToCollection(CollectionReqDTO collectionReqDTO) {
+    public Collection convertToCollection(CollectionReqDTO collectionReqDTO) {
         Collection collection = new Collection();
         collection.setName(collectionReqDTO.getName());
 

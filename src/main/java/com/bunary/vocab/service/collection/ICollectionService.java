@@ -2,6 +2,7 @@ package com.bunary.vocab.service.collection;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.bunary.vocab.dto.reponse.CollectionResDTO;
 import com.bunary.vocab.dto.request.CollectionReqDTO;
@@ -17,4 +18,9 @@ public interface ICollectionService {
     void addWordSetToCollection(Long collectionId, Long wordSetId);
 
     CollectionResDTO findById(Long collectionId);
+
+    void removeCollectionAndWordSet(@PathVariable Long collectionId,
+            @PathVariable Long wordSetId);
+
+    void removeCollection(@PathVariable Long collectionId);
 }

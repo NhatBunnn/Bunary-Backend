@@ -1,6 +1,11 @@
 package com.bunary.vocab.service.collection;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +17,13 @@ import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.CollectionMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.Collection;
+import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.repository.CollectionRepository;
 import com.bunary.vocab.repository.WordSetRepository;
+import com.bunary.vocab.security.SecurityUtil;
+import com.bunary.vocab.service.user.IUserService;
+import com.bunary.vocab.service.user.UserService;
 
 import lombok.AllArgsConstructor;
 
@@ -24,7 +33,10 @@ public class CollectionService implements ICollectionService {
 
     private final CollectionRepository collectionRepository;
     private final CollectionMapper collectionMapper;
+    private final UserMapper userMapper;
     private final WordSetRepository wordSetRepository;
+    private final IUserService userService;
+    private final SecurityUtil securityUtil;
 
     @Override
     public Collection save(Collection collection) {
@@ -32,14 +44,39 @@ public class CollectionService implements ICollectionService {
     }
 
     @Override
-    public CollectionResDTO create(CollectionReqDTO collection) {
-        return this.collectionMapper
-                .convertToCollectionResDTO(this.save(this.collectionMapper.covertToCollection(collection)));
+    public CollectionResDTO create(CollectionReqDTO collectionReqDTO) {
+        User user = new User();
+        user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()))
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        Collection collection = this.collectionMapper.convertToCollection(collectionReqDTO);
+        collection.setUser(user);
+        this.save(collection);
+
+        CollectionResDTO collectionResDTO = this.collectionMapper.convertToCollectionResDTO(collection);
+        collectionResDTO.setUser(this.userMapper.convertToUserResponseDTO(user));
+
+        return collectionResDTO;
     }
 
     @Override
     public Page<CollectionResDTO> findAllWithUser(Pageable pageable) {
-        return this.collectionMapper.convertToCollectionResDTO(this.collectionRepository.findAllWithUser(pageable));
+        Page<Collection> collections = this.collectionRepository.findAllWithUser(pageable);
+
+        if (!collections.hasContent())
+            throw new ApiException(ErrorCode.NOT_FOUND);
+
+        List<CollectionResDTO> collectionDTOList = collections.map((c) -> {
+            CollectionResDTO collectionResDTO = this.collectionMapper.convertToCollectionResDTO(c);
+
+            if (c.getUser() != null) {
+                collectionResDTO.setUser(this.userMapper.convertToUserResponseDTO(c.getUser()));
+            }
+
+            return collectionResDTO;
+        }).toList();
+
+        return new PageImpl<>(collectionDTOList, pageable, collections.getTotalElements());
     }
 
     @Override
@@ -62,6 +99,31 @@ public class CollectionService implements ICollectionService {
     public CollectionResDTO findById(Long collectionId) {
         return this.collectionMapper.convertToCollectionResDTO(this.collectionRepository.findById(collectionId)
                 .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND)));
+    }
+
+    @Override
+    public void removeCollectionAndWordSet(Long collectionId, Long wordSetId) {
+        boolean exists = collectionRepository.existsWordSetInCollection(collectionId, wordSetId);
+        if (!exists)
+            throw new ApiException(ErrorCode.NOT_FOUND);
+
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+        WordSet wordSet = this.wordSetRepository.findById(wordSetId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+
+        collection.getWordSets().remove(wordSet);
+
+        this.save(collection);
+    }
+
+    @Override
+    public void removeCollection(Long collectionId) {
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+
+        collection.getWordSets().clear();
+        this.collectionRepository.delete(collection);
     }
 
 }
