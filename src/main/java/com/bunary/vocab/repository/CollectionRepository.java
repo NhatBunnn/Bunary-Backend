@@ -1,7 +1,9 @@
 package com.bunary.vocab.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -15,6 +17,8 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
         Collection save(Collection collection);
 
         Page<Collection> findAll(Pageable pageable);
+
+        Page<Collection> findAllByUser_Id(UUID userId, Pageable pageable);
 
         // @EntityGraph(attributePaths = { "user" })
         Optional<Collection> findById(Long id);

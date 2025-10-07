@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -45,6 +46,23 @@ public class WordSetController {
                         .build());
     }
 
+    @PutMapping("/wordsets/{wordSetId}")
+    public ResponseEntity<?> update(@RequestPart("wordSet") String wordSetString, @PathVariable Long wordSetId,
+            @RequestPart(value = "thumbnailFile", required = false) MultipartFile file) throws Exception {
+
+        ObjectMapper mapper = new ObjectMapper();
+        WordSetRequestDTO wordSet = mapper.readValue(wordSetString, WordSetRequestDTO.class);
+
+        WordSetReponseDTO result = this.wordSetService.update(wordSet, wordSetId, file);
+
+        return ResponseEntity.ok()
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(201)
+                        .message("WordSet created successfully")
+                        .data(result)
+                        .build());
+    }
+
     @GetMapping("/wordsets")
     public ResponseEntity<?> getAllWordSet(
             @RequestParam(defaultValue = "0") int page,
@@ -70,11 +88,14 @@ public class WordSetController {
 
         boolean includeUser = include != null && include.contains("user");
         boolean includeCollection = include != null && include.contains("collection");
+        boolean includeWord = include != null && include.contains("word");
 
         WordSetReponseDTO result = new WordSetReponseDTO();
 
         if (includeUser && includeCollection) {
             result = this.wordSetService.findByIdWithUserAndCollection(wordSetId);
+        } else if (includeWord) {
+            result = this.wordSetService.findByIdWithWords(wordSetId);
         } else {
             result = this.wordSetService.findById(wordSetId);
         }

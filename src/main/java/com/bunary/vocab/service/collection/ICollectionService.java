@@ -15,6 +15,8 @@ public interface ICollectionService {
 
     Page<CollectionResDTO> findAllWithUser(Pageable pageable);
 
+    Page<CollectionResDTO> findAllByCurrentUser(Pageable pageable);
+
     void addWordSetToCollection(Long collectionId, Long wordSetId);
 
     CollectionResDTO findById(Long collectionId);

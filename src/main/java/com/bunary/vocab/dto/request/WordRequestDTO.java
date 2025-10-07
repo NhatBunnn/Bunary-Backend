@@ -12,6 +12,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class WordRequestDTO {
+    private Long id;
+
     private String thumbnail;
 
     private String term;

@@ -16,11 +16,18 @@ import lombok.AllArgsConstructor;
 public class WordMapper {
     public Word convertToWord(WordRequestDTO wordDTO) {
         Word word = new Word();
-        word.setIpa(wordDTO.getIpa());
-        word.setMeaning(wordDTO.getMeaning());
-        word.setPartOfSpeech(wordDTO.getPartOfSpeech());
-        word.setTerm(wordDTO.getTerm());
-        word.setThumbnail(wordDTO.getThumbnail());
+        if (wordDTO.getId() != null)
+            word.setId(wordDTO.getId());
+        if (wordDTO.getIpa() != null)
+            word.setIpa(wordDTO.getIpa());
+        if (wordDTO.getMeaning() != null)
+            word.setMeaning(wordDTO.getMeaning());
+        if (wordDTO.getPartOfSpeech() != null)
+            word.setPartOfSpeech(wordDTO.getPartOfSpeech());
+        if (wordDTO.getTerm() != null)
+            word.setTerm(wordDTO.getTerm());
+        if (wordDTO.getThumbnail() != null)
+            word.setThumbnail(wordDTO.getThumbnail());
 
         return word;
     }
@@ -45,5 +52,15 @@ public class WordMapper {
         }
 
         return wordDTO;
+    }
+
+    public List<Word> convertToWords(List<WordRequestDTO> wordDTO) {
+        List<Word> words = new ArrayList<>();
+
+        for (WordRequestDTO w : wordDTO) {
+            words.add(this.convertToWord(w));
+        }
+
+        return words;
     }
 }

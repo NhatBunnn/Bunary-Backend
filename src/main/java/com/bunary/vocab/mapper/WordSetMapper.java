@@ -71,15 +71,16 @@ public class WordSetMapper {
 
     public WordSet convertToWordSet(WordSetRequestDTO wordSetReq) {
 
-        Optional<User> user = Optional.of(new User());
-        user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
-
         WordSet wordSet = new WordSet();
-        wordSet.setTitle(wordSetReq.getTitle());
-        wordSet.setDescription(wordSetReq.getDescription());
-        wordSet.setThumbnail(wordSetReq.getThumbnail());
-        wordSet.setCreatedAt(Instant.now());
-        wordSet.setUser(user.get());
+
+        if (wordSetReq.getTitle() != null)
+            wordSet.setTitle(wordSetReq.getTitle());
+
+        if (wordSetReq.getDescription() != null)
+            wordSet.setDescription(wordSetReq.getDescription());
+
+        if (wordSetReq.getThumbnail() != null)
+            wordSet.setThumbnail(wordSetReq.getThumbnail());
 
         return wordSet;
     }

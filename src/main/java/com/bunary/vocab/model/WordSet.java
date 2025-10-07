@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -49,7 +50,7 @@ public class WordSet {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Word> Words;
 
     @ManyToMany(mappedBy = "wordSets", fetch = FetchType.LAZY)

@@ -1,14 +1,12 @@
 package com.bunary.vocab.service.collection;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.CollectionResDTO;
@@ -23,7 +21,6 @@ import com.bunary.vocab.repository.CollectionRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
-import com.bunary.vocab.service.user.UserService;
 
 import lombok.AllArgsConstructor;
 
@@ -45,9 +42,10 @@ public class CollectionService implements ICollectionService {
 
     @Override
     public CollectionResDTO create(CollectionReqDTO collectionReqDTO) {
+
         User user = new User();
-        user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()))
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+        // nào rảnh sửa lại chỉ truyền nguyên id vào thôi đớ 1 query
+        user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get())).orElseThrow();
 
         Collection collection = this.collectionMapper.convertToCollection(collectionReqDTO);
         collection.setUser(user);
@@ -124,6 +122,14 @@ public class CollectionService implements ICollectionService {
 
         collection.getWordSets().clear();
         this.collectionRepository.delete(collection);
+    }
+
+    @Override
+    public Page<CollectionResDTO> findAllByCurrentUser(Pageable pageable) {
+        Page<Collection> collections = this.collectionRepository
+                .findAllByUser_Id(UUID.fromString(this.securityUtil.getCurrentUser().get()), pageable);
+
+        return this.collectionMapper.convertToCollectionResDTO(collections);
     }
 
 }

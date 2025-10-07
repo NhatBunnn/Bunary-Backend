@@ -93,10 +93,6 @@ public class UserService implements IUserService {
             user.setAddress(userDTO.getAddress());
         }
 
-        if (userDTO.getAvatar() != null) {
-            user.setAvatar(userDTO.getAvatar());
-        }
-
         if (userDTO.getDateOfBirth() != null) {
             user.setDateOfBirth(userDTO.getDateOfBirth());
         }

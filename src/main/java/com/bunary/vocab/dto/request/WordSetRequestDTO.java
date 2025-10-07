@@ -24,4 +24,6 @@ public class WordSetRequestDTO {
     private String author;
 
     private List<WordRequestDTO> word;
+
+    private List<Long> removedWordIds;
 }

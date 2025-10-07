@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.CollectionResDTO;
@@ -17,6 +18,7 @@ import com.bunary.vocab.service.collection.ICollectionService;
 import com.bunary.vocab.service.wordSet.IWordSetService;
 import com.bunary.vocab.util.PageableUtil;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +34,7 @@ public class CollectionController {
         private final IWordSetService wordSetService;
 
         @PostMapping("/collections")
-        public ResponseEntity<?> create(@RequestBody CollectionReqDTO collection) throws Exception {
+        public ResponseEntity<?> create(@Valid @RequestBody CollectionReqDTO collection) throws Exception {
 
                 CollectionResDTO result = this.collectionService.create(collection);
 
@@ -52,6 +54,24 @@ public class CollectionController {
                 Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
                 Page<CollectionResDTO> result = this.collectionService.findAllWithUser(pageable);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("Fetched all collections successfully")
+                                                .data(result)
+                                                .pagination(new PageResponseDTO(result))
+                                                .build());
+        }
+
+        @GetMapping("/collections/me")
+        public ResponseEntity<?> findAllByCurrentUser(@RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(defaultValue = "id,asc") String[] sort) {
+
+                Pageable pageable = PageableUtil.createPageable(page, size, sort);
+
+                Page<CollectionResDTO> result = this.collectionService.findAllByCurrentUser(pageable);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()

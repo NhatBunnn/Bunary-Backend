@@ -1,5 +1,6 @@
 package com.bunary.vocab.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -40,6 +41,17 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long> {
     @Query("SELECT w FROM WordSet w WHERE w.id = :id")
     Optional<WordSet> findByIdWithUserAndCollection(Long id);
 
+    @EntityGraph(attributePaths = { "Words" })
+    @Query("SELECT w FROM WordSet w WHERE w.id = :id")
+    Optional<WordSet> findByIdWithWords(Long id);
+
     Page<WordSet> findByCollections_Id(Long collectionId, Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(w.id)
+            FROM Word w
+            WHERE w.id IN :wordIds AND w.wordSet.id = :wordSetId
+            """)
+    long countWordsInWordSet(@Param("wordSetId") Long wordSetId, @Param("wordIds") List<Long> wordIds);
 
 }

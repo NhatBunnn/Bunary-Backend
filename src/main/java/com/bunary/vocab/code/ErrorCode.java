@@ -21,6 +21,11 @@ public enum ErrorCode {
     AUTH_SESSION_INVALID(401, "AUTH_SESSION_INVALID", "Invalid session"),
     AUTH_SESSION_EXPIRED(401, "AUTH_SESSION_EXPIRED", "Session expired"),
 
+    // Collection
+    COLLECTION_NAME_NOT_BLANK(400, "COLLECTION__NAME_NOT_BLANK", "Tên bộ sưu tập không được để trống"),
+    COLLECTION_NAME_TOO_LONG(400, "COLLECTION_NAME_TOO_LONG", "Tên bộ sưu tập không được vượt quá 100 ký tự"),
+    COLLECTION_NOT_FOUND(404, "COLLECTION_NOT_FOUND", "Collection not found"),
+
     // Email
     EMAIL_EXISTS(409, "EMAIL_EXISTS", "Email already exists"),
     EMAIL_INVALID(400, "EMAIL_INVALID", "Email format is invalid"),

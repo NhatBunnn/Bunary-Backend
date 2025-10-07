@@ -1,6 +1,9 @@
 package com.bunary.vocab.exception;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -8,6 +11,21 @@ import com.bunary.vocab.dto.FailureResponseDTO;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<FailureResponseDTO> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorCode = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse("Invalid input");
+
+        FailureResponseDTO response = new FailureResponseDTO();
+        response.setStatusCode(400);
+        response.setErrorCode(errorCode);
+
+        return ResponseEntity.badRequest().body(response);
+    }
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<FailureResponseDTO> handleApiException(ApiException ex) {
@@ -29,4 +47,5 @@ public class GlobalExceptionHandler {
         response.setErrorCode("INTERNAL_ERROR");
         return ResponseEntity.status(500).body(response);
     }
+
 }
