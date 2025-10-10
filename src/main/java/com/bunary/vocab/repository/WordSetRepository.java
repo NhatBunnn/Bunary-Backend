@@ -1,5 +1,6 @@
 package com.bunary.vocab.repository;
 
+import java.beans.Visibility;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.model.WordSet;
+import com.bunary.vocab.model.enums.VisibilityEnum;
 
 public interface WordSetRepository extends JpaRepository<WordSet, Long> {
     WordSet save(WordSet wordSet);
@@ -46,6 +48,9 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long> {
     Optional<WordSet> findByIdWithWords(Long id);
 
     Page<WordSet> findByCollections_Id(Long collectionId, Pageable pageable);
+
+    @Query("SELECT w FROM WordSet w WHERE w.visibility = :visibilityEnum")
+    Page<WordSet> findAllByVisibilityWithUser(VisibilityEnum visibilityEnum, Pageable pageable);
 
     @Query("""
             SELECT COUNT(w.id)

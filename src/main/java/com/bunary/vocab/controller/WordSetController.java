@@ -65,13 +65,28 @@ public class WordSetController {
 
     @GetMapping("/wordsets")
     public ResponseEntity<?> getAllWordSet(
+            @RequestParam(required = false) String visibility,
+            @RequestParam(required = false) String include,
+
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
 
         Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
-        Page<WordSetReponseDTO> result = this.wordSetService.findAllWithAuthor(pageable);
+        boolean includeUser = include != null && include.contains("user");
+        boolean exitsVisibility = visibility != null && visibility.isEmpty();
+
+        Page<WordSetReponseDTO> result = null;
+        if (!exitsVisibility && includeUser) {
+            if (visibility.equalsIgnoreCase("PUBLIC")) {
+                result = this.wordSetService.findAllByVisibilityWithUser(visibility, pageable);
+            } else if (visibility.equalsIgnoreCase("PRIVATE")) {
+                result = this.wordSetService.findAllByVisibilityWithUser(visibility, pageable);
+            }
+        } else {
+            result = this.wordSetService.findAllWithAuthor(pageable);
+        }
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()

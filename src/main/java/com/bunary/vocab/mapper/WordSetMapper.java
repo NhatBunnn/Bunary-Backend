@@ -32,6 +32,7 @@ public class WordSetMapper {
         wordSetRep.setTitle(wordSet.getTitle());
         wordSetRep.setDescription(wordSet.getDescription());
         wordSetRep.setThumbnail(wordSet.getThumbnail());
+        wordSetRep.setVisibility(wordSet.getVisibility());
 
         // if (Hibernate.isInitialized(wordSet.getUser()) && wordSet.getUser() != null)
         // {
@@ -70,17 +71,12 @@ public class WordSetMapper {
     }
 
     public WordSet convertToWordSet(WordSetRequestDTO wordSetReq) {
-
         WordSet wordSet = new WordSet();
 
-        if (wordSetReq.getTitle() != null)
-            wordSet.setTitle(wordSetReq.getTitle());
-
-        if (wordSetReq.getDescription() != null)
-            wordSet.setDescription(wordSetReq.getDescription());
-
-        if (wordSetReq.getThumbnail() != null)
-            wordSet.setThumbnail(wordSetReq.getThumbnail());
+        wordSet.setTitle(wordSetReq.getTitle());
+        wordSet.setDescription(wordSetReq.getDescription());
+        wordSet.setThumbnail(wordSetReq.getThumbnail());
+        wordSet.setVisibility(wordSetReq.getVisibility());
 
         return wordSet;
     }

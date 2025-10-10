@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.bunary.vocab.model.enums.VisibilityEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +27,8 @@ public class WordSetReponseDTO {
     private String description;
 
     private String thumbnail;
+
+    private VisibilityEnum visibility;
 
     private UUID authorId;
 

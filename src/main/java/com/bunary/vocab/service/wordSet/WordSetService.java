@@ -24,6 +24,7 @@ import com.bunary.vocab.mapper.WordSetMapper;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
+import com.bunary.vocab.model.enums.VisibilityEnum;
 import com.bunary.vocab.repository.WordRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.security.SecurityUtil;
@@ -37,7 +38,6 @@ import lombok.AllArgsConstructor;
 @Service
 public class WordSetService implements IWordSetService {
     private final WordSetRepository wordSetRepository;
-    private final IWordService wordService;
     private final WordSetMapper wordSetMapper;
     private final WordMapper wordMapper;
     private final UserMapper userMapper;
@@ -86,6 +86,10 @@ public class WordSetService implements IWordSetService {
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
         wordSet.setTitle(wordSetDTO.getTitle());
         wordSet.setDescription(wordSetDTO.getDescription());
+        if (wordSetDTO.getVisibility() == null) {
+            wordSet.setVisibility(VisibilityEnum.PRIVATE);
+        }
+        wordSet.setVisibility(wordSetDTO.getVisibility());
 
         try {
             if (file != null) {
@@ -101,7 +105,7 @@ public class WordSetService implements IWordSetService {
             wordSet.getWords().removeAll(words);
         }
 
-        if (!wordSet.getWords().isEmpty()) {
+        if (wordSetDTO.getWord() != null && !wordSetDTO.getWord().isEmpty()) {
             List<Long> wordsId = wordSetDTO.getWord()
                     .stream()
                     .filter(w -> w.getId() != null)
@@ -146,6 +150,7 @@ public class WordSetService implements IWordSetService {
              */
 
             // wordSet.setWords(words);
+            wordSet.getWords().addAll(words);
         }
 
         WordSet currentWordSet = this.save(wordSet);
@@ -158,6 +163,9 @@ public class WordSetService implements IWordSetService {
     public WordSetReponseDTO createWordSet(WordSetRequestDTO wordSetDTO, MultipartFile file) throws Exception {
         // Wordset
         WordSet wordSet = this.wordSetMapper.convertToWordSet(wordSetDTO);
+        if (wordSetDTO.getVisibility() == null) {
+            wordSet.setVisibility(VisibilityEnum.PRIVATE);
+        }
 
         Optional<User> user = Optional.of(new User());
         user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
@@ -224,6 +232,24 @@ public class WordSetService implements IWordSetService {
         wordSetDTO.getWords().addAll(this.wordMapper.convertToWordReponseDTO(wordSet.getWords()));
 
         return wordSetDTO;
+    }
+
+    @Override
+    public Page<WordSetReponseDTO> findAllByVisibilityWithUser(String visibility, Pageable pageable) {
+        VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibility.toUpperCase());
+        Page<WordSet> page = this.wordSetRepository.findAllByVisibilityWithUser(visibilityEnum, pageable);
+
+        List<WordSetReponseDTO> dtoList = page.stream().map(ws -> {
+            WordSetReponseDTO dto = wordSetMapper.convertToWordSetReponseDTO(ws);
+
+            if (ws.getUser() != null) {
+                dto.setAuthor(this.userMapper.convertToUserResponseDTO(ws.getUser()));
+            }
+
+            return dto;
+        }).toList();
+
+        return new PageImpl<>(dtoList, pageable, page.getTotalElements());
     }
 
 }

@@ -4,9 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
+import com.bunary.vocab.model.enums.VisibilityEnum;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,6 +40,9 @@ public class WordSet {
     private String title;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private VisibilityEnum visibility = VisibilityEnum.PRIVATE;
 
     @Column(length = 1000)
     private String thumbnail;

@@ -3,6 +3,7 @@ package com.bunary.vocab.dto.request;
 import java.util.List;
 
 import com.bunary.vocab.model.Word;
+import com.bunary.vocab.model.enums.VisibilityEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,8 @@ public class WordSetRequestDTO {
     private String description;
 
     private String thumbnail;
+
+    private VisibilityEnum visibility;
 
     private String author;
 
