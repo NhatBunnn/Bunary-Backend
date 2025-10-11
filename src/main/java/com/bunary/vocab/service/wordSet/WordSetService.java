@@ -252,4 +252,29 @@ public class WordSetService implements IWordSetService {
         return new PageImpl<>(dtoList, pageable, page.getTotalElements());
     }
 
+    @Override
+    public Page<WordSetReponseDTO> findAllByCurrentUser(Pageable pageable) {
+        Page<WordSet> page = this.wordSetRepository
+                .findAllByUserId(UUID.fromString(this.securityUtil.getCurrentUser().get()), pageable);
+
+        List<WordSetReponseDTO> list = page.stream().map(ws -> {
+            WordSetReponseDTO wordSetReponseDTO = this.wordSetMapper.convertToWordSetReponseDTO(ws);
+            return wordSetReponseDTO;
+        }).toList();
+        return new PageImpl<>(list, pageable, page.getTotalElements());
+    }
+
+    @Override
+    public void removeWordSet(Long wordsetId) {
+        WordSet wordSet = this.wordSetRepository.findById(wordsetId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+
+        if (wordSet.getCollections() != null)
+            wordSet.getCollections().clear();
+        if (wordSet.getWords() != null)
+            wordSet.getWords().clear();
+
+        this.wordSetRepository.delete(wordSet);
+    }
+
 }

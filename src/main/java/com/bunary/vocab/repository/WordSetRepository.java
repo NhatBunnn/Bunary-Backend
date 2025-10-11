@@ -3,6 +3,7 @@ package com.bunary.vocab.repository;
 import java.beans.Visibility;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.model.User;
 
 public interface WordSetRepository extends JpaRepository<WordSet, Long> {
     WordSet save(WordSet wordSet);
@@ -36,6 +38,8 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long> {
     @EntityGraph(attributePaths = { "user" })
     @Query("SELECT w FROM WordSet w")
     Page<WordSet> findAllWithAuthor(Pageable pageable);
+
+    Page<WordSet> findAllByUserId(UUID userId, Pageable pageable);
 
     Optional<WordSet> findById(Long id);
 

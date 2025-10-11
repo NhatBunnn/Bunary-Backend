@@ -15,11 +15,15 @@ public interface IWordSetService {
 
     WordSetReponseDTO update(WordSetRequestDTO wordSet, Long wordSetId, MultipartFile file) throws Exception;
 
+    void removeWordSet(Long wordsetId);
+
     WordSetReponseDTO createWordSet(WordSetRequestDTO wordSet, MultipartFile file) throws Exception;
 
     Page<WordSetReponseDTO> findAll(Pageable pageable);
 
-    public Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
+    Page<WordSetReponseDTO> findAllByCurrentUser(Pageable pageable);
+
+    Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
 
     WordSetReponseDTO findById(Long id);
 

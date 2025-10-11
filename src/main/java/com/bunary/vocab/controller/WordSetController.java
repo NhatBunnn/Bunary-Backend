@@ -3,6 +3,7 @@ package com.bunary.vocab.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,7 +66,6 @@ public class WordSetController {
 
     @GetMapping("/wordsets")
     public ResponseEntity<?> getAllWordSet(
-            @RequestParam(required = false) String visibility,
             @RequestParam(required = false) String include,
 
             @RequestParam(defaultValue = "0") int page,
@@ -75,18 +75,28 @@ public class WordSetController {
         Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
         boolean includeUser = include != null && include.contains("user");
-        boolean exitsVisibility = visibility != null && visibility.isEmpty();
 
         Page<WordSetReponseDTO> result = null;
-        if (!exitsVisibility && includeUser) {
-            if (visibility.equalsIgnoreCase("PUBLIC")) {
-                result = this.wordSetService.findAllByVisibilityWithUser(visibility, pageable);
-            } else if (visibility.equalsIgnoreCase("PRIVATE")) {
-                result = this.wordSetService.findAllByVisibilityWithUser(visibility, pageable);
-            }
-        } else {
-            result = this.wordSetService.findAllWithAuthor(pageable);
+        if (includeUser) {
+            result = this.wordSetService.findAllByVisibilityWithUser("PUBLIC", pageable);
         }
+
+        return ResponseEntity.ok()
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(201)
+                        .message("WordSets retrieved successfully")
+                        .data(result.getContent())
+                        .pagination(new PageResponseDTO(result))
+                        .build());
+    }
+
+    @GetMapping("/wordsets/me")
+    public ResponseEntity<?> findAllByCurrentUser(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") String[] sort) {
+        Pageable pageable = PageableUtil.createPageable(page, size, sort);
+
+        Page<WordSetReponseDTO> result = this.wordSetService.findAllByCurrentUser(pageable);
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()
@@ -123,4 +133,14 @@ public class WordSetController {
                         .build());
     }
 
+    @DeleteMapping("/wordsets/{wordSetId}")
+    public ResponseEntity<?> removeCollection(@PathVariable Long wordSetId) {
+        this.wordSetService.removeWordSet(wordSetId);
+
+        return ResponseEntity.ok()
+                .body(SuccessReponseDTO.builder()
+                        .statusCode(201)
+                        .message("Wordset deleted successfully")
+                        .build());
+    }
 }
