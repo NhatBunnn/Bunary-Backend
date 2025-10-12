@@ -20,11 +20,13 @@ import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.RefreshToken;
+import com.bunary.vocab.model.Role;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.security.JwtTokenProvider;
 import com.bunary.vocab.security.JwtUtil;
 import com.bunary.vocab.service.VerifyCode.IVerifyCodeService;
 import com.bunary.vocab.service.refreshToken.IRefreshTokenService;
+import com.bunary.vocab.service.role.IRoleService;
 import com.bunary.vocab.service.user.IUserService;
 
 import lombok.AllArgsConstructor;
@@ -40,6 +42,7 @@ public class AuthService implements IAuthService {
     private final UserMapper userMapper;
     private final IRefreshTokenService refreshTokenService;
     private final IVerifyCodeService verifyCodeService;
+    private final IRoleService roleService;
 
     @Override
     public boolean verifyCode(VerifyCodeReponseDTO verifyCode) {
@@ -67,6 +70,9 @@ public class AuthService implements IAuthService {
 
         User currentUser = new User();
         currentUser = this.userMapper.convertToUser(user);
+
+        Role role = roleService.findByName("ROLE_USER");
+        currentUser.getRoles().add(role);
 
         this.userService.save(currentUser);
 

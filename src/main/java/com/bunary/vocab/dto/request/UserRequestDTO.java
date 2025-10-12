@@ -1,5 +1,6 @@
 package com.bunary.vocab.dto.request;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import com.bunary.vocab.model.enums.GenderEnum;
@@ -23,7 +24,7 @@ public class UserRequestDTO {
     private String password;
     private String avatar;
     private String address;
-    private LocalDate dateOfBirth;
+    private Instant dateOfBirth;
     private GenderEnum gender;
 
     public void updateFullName() {

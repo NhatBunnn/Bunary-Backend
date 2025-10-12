@@ -1,8 +1,7 @@
 package com.bunary.vocab.exception;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,6 +24,18 @@ public class GlobalExceptionHandler {
         response.setErrorCode(errorCode);
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<FailureResponseDTO> handleAccessDenied(AccessDeniedException ex) {
+        FailureResponseDTO response = new FailureResponseDTO();
+        response.setStatusCode(403);
+        response.setErrorCode("ACCESS_DENIED");
+        response.setMessage("You do not have permission to access this resource.");
+
+        ex.printStackTrace();
+
+        return ResponseEntity.status(403).body(response);
     }
 
     @ExceptionHandler(ApiException.class)

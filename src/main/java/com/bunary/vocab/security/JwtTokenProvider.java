@@ -3,9 +3,12 @@ package com.bunary.vocab.security;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -29,10 +32,15 @@ public class JwtTokenProvider {
                 Instant now = Instant.now();
                 Instant expiry = now.plus(this.jwtUtil.getAccessTokenExpiration(), ChronoUnit.SECONDS);
 
-                // Temp
-                List<String> listAuthority = new ArrayList<>();
-                listAuthority.add("ROLE_USER_CREATE");
-                listAuthority.add("ROLE_USER_UPDATE");
+                Set<String> roles = new HashSet<>();
+                Set<String> permissions = new HashSet<>();
+
+                user.getRoles().forEach(role -> {
+                        roles.add(role.getName());
+                        role.getPermissions().forEach(p -> {
+                                permissions.add(p.getName());
+                        });
+                });
 
                 JwsHeader header = JwsHeader.with(this.jwtUtil.getMacAlgorithm()).build();
 
@@ -44,7 +52,8 @@ public class JwtTokenProvider {
                                                 "email", user.getEmail(),
                                                 "firstName", user.getFirstName(),
                                                 "lastName", user.getLastName()))
-                                .claim("permission", listAuthority)
+                                .claim("roles", roles)
+                                .claim("scope", String.join(" ", permissions))
                                 .build();
 
                 String token = this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();

@@ -1,5 +1,6 @@
 package com.bunary.vocab.dto.reponse;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class UserResponseDTO {
     private String lastName;
     private String avatar;
     private String address;
-    private LocalDate dateOfBirth;
+    private Instant dateOfBirth;
     private GenderEnum gender;
 
     public UserResponseDTO(String fullName, String avatar) {

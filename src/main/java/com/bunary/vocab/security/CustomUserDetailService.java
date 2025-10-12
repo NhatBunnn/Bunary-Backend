@@ -1,7 +1,11 @@
 package com.bunary.vocab.security;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +33,7 @@ public class CustomUserDetailService implements UserDetailsService {
         if (user.isEmailVerified() == false)
             throw new ApiException(ErrorCode.USER_NOT_VERIFIED);
 
-        return new User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        return new User(user.getEmail(), user.getPassword(), new ArrayList());
     }
 
 }
