@@ -3,6 +3,7 @@ package com.bunary.vocab.service.user;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
+import com.bunary.vocab.mapper.RoleMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.model.User;
@@ -28,6 +30,7 @@ public class UserService implements IUserService {
     private final UserMapper userMapper;
     private final CloudinaryService cloudinaryService;
     private final SecurityUtil securityUtil;
+    private final RoleMapper roleMapper;
 
     @Override
     public User save(User user) {
@@ -40,8 +43,23 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<User> findById(UUID userId) {
-        return this.userRepository.findById(userId);
+    public User findById(UUID userId) {
+        return this.userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+    }
+
+    @Override
+    public UserResponseDTO findByIdWithRoles(UUID userId) {
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+
+        UserResponseDTO userDTO = this.userMapper.convertToUserResponseDTO(user);
+        userDTO.getRoles().addAll(
+                user.getRoles().stream()
+                        .map(r -> r.getName())
+                        .collect(Collectors.toSet()));
+
+        return userDTO;
     }
 
     @Override
@@ -69,8 +87,7 @@ public class UserService implements IUserService {
     @Override
     public UserResponseDTO updateUser(String userId, UserRequestDTO userDTO, MultipartFile avatarFile) {
 
-        User user = this.findById(UUID.fromString(userId)).orElseThrow(
-                () -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        User user = this.findById(UUID.fromString(userId));
 
         if (userDTO.getFirstName() != null) {
             user.setFirstName(userDTO.getFirstName());

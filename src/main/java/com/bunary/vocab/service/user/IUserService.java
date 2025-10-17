@@ -21,7 +21,9 @@ public interface IUserService {
 
     Page<UserResponseDTO> findAllVerifiedUsers(Pageable pageable);
 
-    Optional<User> findById(UUID userId);
+    User findById(UUID userId);
+
+    UserResponseDTO findByIdWithRoles(UUID userId);
 
     boolean existsByEmail(String email);
 

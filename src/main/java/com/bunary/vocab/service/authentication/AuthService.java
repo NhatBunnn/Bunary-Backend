@@ -21,13 +21,17 @@ import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.RefreshToken;
 import com.bunary.vocab.model.Role;
+import com.bunary.vocab.model.Setting;
 import com.bunary.vocab.model.User;
+import com.bunary.vocab.repository.SettingRepo;
 import com.bunary.vocab.security.JwtTokenProvider;
 import com.bunary.vocab.security.JwtUtil;
 import com.bunary.vocab.service.VerifyCode.IVerifyCodeService;
 import com.bunary.vocab.service.refreshToken.IRefreshTokenService;
 import com.bunary.vocab.service.role.IRoleService;
+import com.bunary.vocab.service.setting.ISettingService;
 import com.bunary.vocab.service.user.IUserService;
+import com.bunary.vocab.util.setting.LearningSettingsFactory;
 
 import lombok.AllArgsConstructor;
 
@@ -43,6 +47,7 @@ public class AuthService implements IAuthService {
     private final IRefreshTokenService refreshTokenService;
     private final IVerifyCodeService verifyCodeService;
     private final IRoleService roleService;
+    private final SettingRepo settingRepo;
 
     @Override
     public boolean verifyCode(VerifyCodeReponseDTO verifyCode) {
@@ -77,6 +82,11 @@ public class AuthService implements IAuthService {
         this.userService.save(currentUser);
 
         this.verifyCodeService.sendCode(currentUser);
+
+        Setting setting = LearningSettingsFactory.defaultFlashCard();
+        setting.setUser(currentUser);
+
+        this.settingRepo.save(setting);
 
         return true;
     }
@@ -122,12 +132,12 @@ public class AuthService implements IAuthService {
         Jwt decodedJwt = this.jwtUtil.decodeToken(refreshToken);
         UUID userId = UUID.fromString(decodedJwt.getSubject());
 
-        Optional<User> currentUser = this.userService.findById(userId);
+        User currentUser = this.userService.findById(userId);
 
         RefreshToken currentRefreshToken = this.refreshTokenService.findByRefreshTokenAndUser(refreshToken,
-                currentUser.get());
+                currentUser);
 
-        if (currentUser.get() == null || currentRefreshToken == null ||
+        if (currentUser == null || currentRefreshToken == null ||
                 currentRefreshToken.isRevoked() == true
                 || Instant.now().isAfter(currentRefreshToken.getExpiryDate()))
             throw new ApiException(ErrorCode.AUTH_SESSION_EXPIRED);
@@ -135,8 +145,8 @@ public class AuthService implements IAuthService {
         currentRefreshToken.setRevoked(true);
         this.refreshTokenService.update(currentRefreshToken);
 
-        String accessToken = this.jwtTokenProvider.generateAccessToken(currentUser.get());
-        String newRefreshToken = this.jwtTokenProvider.generateRefreshToken(currentUser.get());
+        String accessToken = this.jwtTokenProvider.generateAccessToken(currentUser);
+        String newRefreshToken = this.jwtTokenProvider.generateRefreshToken(currentUser);
 
         ResponseCookie responseCookie = ResponseCookie
                 .from("refresh_token", newRefreshToken)
@@ -148,7 +158,7 @@ public class AuthService implements IAuthService {
                 .build();
 
         AuthResponseDTO authDTO = new AuthResponseDTO();
-        authDTO = userMapper.convertToAuthResponseDTO(currentUser.get(), accessToken, newRefreshToken, responseCookie);
+        authDTO = userMapper.convertToAuthResponseDTO(currentUser, accessToken, newRefreshToken, responseCookie);
         return authDTO;
     }
 
@@ -160,12 +170,12 @@ public class AuthService implements IAuthService {
         Jwt decodedJwt = this.jwtUtil.decodeToken(refreshToken);
         UUID userId = UUID.fromString(decodedJwt.getSubject());
 
-        Optional<User> currentUser = this.userService.findById(userId);
+        User currentUser = this.userService.findById(userId);
 
         RefreshToken currentRefreshToken = this.refreshTokenService.findByRefreshTokenAndUser(refreshToken,
-                currentUser.get());
+                currentUser);
 
-        if (currentUser.get() == null || currentRefreshToken == null ||
+        if (currentUser == null || currentRefreshToken == null ||
                 currentRefreshToken.isRevoked() == true
                 || Instant.now().isAfter(currentRefreshToken.getExpiryDate()))
             throw new ApiException(ErrorCode.AUTH_SESSION_EXPIRED);
@@ -183,7 +193,7 @@ public class AuthService implements IAuthService {
                 .build();
 
         AuthResponseDTO authDTO = new AuthResponseDTO();
-        authDTO = userMapper.convertToAuthResponseDTO(currentUser.get(), null, null, responseCookie);
+        authDTO = userMapper.convertToAuthResponseDTO(currentUser, null, null, responseCookie);
 
         return authDTO;
     }

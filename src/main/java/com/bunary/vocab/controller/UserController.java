@@ -20,15 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
-import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.scheduler.AccountCleanupTask;
+import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.PageableUtil;
 
@@ -43,6 +42,7 @@ public class UserController {
         private final IUserService userService;
         private final AccountCleanupTask accountCleanupTask;
         private final UserMapper userMapper;
+        private final SecurityUtil securityUtil;
 
         @GetMapping("/removeaccount")
         public String removeAccount() {
@@ -52,10 +52,8 @@ public class UserController {
         }
 
         @GetMapping("/users/{id}")
-        public ResponseEntity<?> getUserByEmail(@PathVariable String id) throws Exception {
-                User currentUser = this.userService.findById(UUID.fromString(id)).orElseThrow(
-                                () -> new ApiException(ErrorCode.USER_NOT_FOUND));
-                UserResponseDTO result = this.userMapper.convertToUserResponseDTO(currentUser);
+        public ResponseEntity<?> findByIdWithRoles(@PathVariable String id) throws Exception {
+                UserResponseDTO result = this.userService.findByIdWithRoles(UUID.fromString(id));
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -97,6 +95,21 @@ public class UserController {
                                                 .message("Users retrieved successfully")
                                                 .data(result.getContent())
                                                 .pagination(new PageResponseDTO(result))
+                                                .build());
+        }
+
+        @GetMapping("/users/me")
+        public ResponseEntity<?> findByMe() {
+
+                User user = this.userService
+                                .findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
+                UserResponseDTO userDto = this.userMapper.convertToUserResponseDTO(user);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("WordSets retrieved successfully")
+                                                .data(userDto)
                                                 .build());
         }
 }

@@ -43,9 +43,7 @@ public class CollectionService implements ICollectionService {
     @Override
     public CollectionResDTO create(CollectionReqDTO collectionReqDTO) {
 
-        User user = new User();
-        // nào rảnh sửa lại chỉ truyền nguyên id vào thôi đớ 1 query
-        user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get())).orElseThrow();
+        User user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
 
         Collection collection = this.collectionMapper.convertToCollection(collectionReqDTO);
         collection.setUser(user);

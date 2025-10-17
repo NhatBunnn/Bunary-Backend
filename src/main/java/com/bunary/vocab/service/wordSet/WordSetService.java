@@ -167,10 +167,9 @@ public class WordSetService implements IWordSetService {
             wordSet.setVisibility(VisibilityEnum.PRIVATE);
         }
 
-        Optional<User> user = Optional.of(new User());
-        user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
+        User user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
 
-        wordSet.setUser(user.get());
+        wordSet.setUser(user);
 
         try {
             if (file != null) {

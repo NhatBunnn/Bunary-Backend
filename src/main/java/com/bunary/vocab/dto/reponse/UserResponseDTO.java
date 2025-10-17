@@ -2,8 +2,11 @@ package com.bunary.vocab.dto.reponse;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+import com.bunary.vocab.model.Role;
 import com.bunary.vocab.model.enums.GenderEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -29,6 +32,9 @@ public class UserResponseDTO {
     private String address;
     private Instant dateOfBirth;
     private GenderEnum gender;
+
+    private Set<String> roles = new HashSet<>();
+    private Set<String> permissions = new HashSet<>();
 
     public UserResponseDTO(String fullName, String avatar) {
         this.fullName = fullName;

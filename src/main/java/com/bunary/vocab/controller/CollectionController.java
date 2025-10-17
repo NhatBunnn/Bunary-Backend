@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.CollectionResDTO;
@@ -47,25 +46,33 @@ public class CollectionController {
         }
 
         @GetMapping("/collections")
-        public ResponseEntity<?> findAllWithUser(@RequestParam(defaultValue = "0") int page,
+        public ResponseEntity<?> findAllWithUser(
+                        @RequestParam(required = false) String include,
+
+                        @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size,
                         @RequestParam(defaultValue = "id,asc") String[] sort) {
 
                 Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
-                Page<CollectionResDTO> result = this.collectionService.findAllWithUser(pageable);
+                boolean includeUser = include != null && include.contains("user");
+
+                Page<CollectionResDTO> result = null;
+                if (includeUser) {
+                        result = this.collectionService.findAllWithUser(pageable);
+                }
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(200)
                                                 .message("Fetched all collections successfully")
-                                                .data(result)
+                                                .data(result.getContent())
                                                 .pagination(new PageResponseDTO(result))
                                                 .build());
         }
 
         @GetMapping("/collections/me")
-        public ResponseEntity<?> findAllByCurrentUser(@RequestParam(defaultValue = "0") int page,
+        public ResponseEntity<?> findAllByMe(@RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size,
                         @RequestParam(defaultValue = "id,asc") String[] sort) {
 
@@ -77,7 +84,7 @@ public class CollectionController {
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(200)
                                                 .message("Fetched all collections successfully")
-                                                .data(result)
+                                                .data(result.getContent())
                                                 .pagination(new PageResponseDTO(result))
                                                 .build());
         }

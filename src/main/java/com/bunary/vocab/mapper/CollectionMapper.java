@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Service
 public class CollectionMapper {
-    private final UserMapper userMapper;
 
     public CollectionResDTO convertToCollectionResDTO(Collection collection) {
         CollectionResDTO collectionResDTO = new CollectionResDTO();
