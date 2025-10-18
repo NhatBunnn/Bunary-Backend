@@ -24,27 +24,47 @@ public class SettingService implements ISettingService {
     private final SettingRepo settingRepo;
 
     @Override
-    public SettingResDTO findLearningSettingByModeAndCurrentUser(String mode) {
+    public SettingResDTO findByTypeAndCurrentUser(String type) {
         UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
 
-        Setting learningSetting = this.settingRepo.findByUserIdAndTypeAndMode(userId, "learning", mode)
-                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
-        ;
-        return this.settingMapper.convertToResDTO(learningSetting);
+        Setting setting = this.settingRepo.findByUserIdAndType(userId, type);
+
+        return this.settingMapper.convertToResDTO(setting);
     }
 
     @Override
     public SettingResDTO save(SettingReqDTO LReqDTO) {
-        Setting learningSetting = this.settingMapper.convertToEntity(LReqDTO);
+        Setting setting = this.settingMapper.convertToEntity(LReqDTO);
 
         User user = new User();
         user.setId(UUID.fromString(this.securityUtil.getCurrentUser().get()));
 
-        learningSetting.setUser(user);
+        setting.setUser(user);
 
-        this.settingRepo.save(learningSetting);
+        this.settingRepo.save(setting);
 
-        return this.settingMapper.convertToResDTO(learningSetting);
+        return this.settingMapper.convertToResDTO(setting);
+    }
+
+    @Override
+    public SettingResDTO update(SettingReqDTO settingReqDTO) {
+        UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
+        Setting setting = this.settingRepo.findByUserIdAndType(userId, settingReqDTO.getType());
+
+        if (setting == null)
+            throw new ApiException(ErrorCode.NOT_FOUND);
+
+        Setting newSetting = this.settingMapper.convertToEntity(settingReqDTO);
+        newSetting.setId(setting.getId());
+
+        User user = new User();
+        user.setId(userId);
+        newSetting.setUser(user);
+
+        this.settingRepo.save(newSetting);
+
+        return this.settingMapper.convertToResDTO(newSetting);
+
     }
 
 }

@@ -1,8 +1,10 @@
 package com.bunary.vocab.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +21,12 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/v1")
 public class SettingController {
-        private final ISettingService learningSettingService;
+        private final ISettingService settingService;
 
-        @PostMapping("/settings/learning")
-        public ResponseEntity<?> create(@Valid @RequestBody SettingReqDTO lSettingReqDTO) throws Exception {
+        // @PostMapping("/settings")
+        public ResponseEntity<?> create(@Valid @RequestBody SettingReqDTO settingReqDTO) throws Exception {
 
-                SettingResDTO result = this.learningSettingService.save(lSettingReqDTO);
+                SettingResDTO result = this.settingService.save(settingReqDTO);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -34,11 +36,24 @@ public class SettingController {
                                                 .build());
         }
 
-        @PostMapping("/settings/learning/{mode}")
-        public ResponseEntity<?> findByModeForCurrentUser(@PathVariable String mode)
+        @PutMapping("/settings")
+        public ResponseEntity<?> update(@Valid @RequestBody SettingReqDTO settingReqDTO) throws Exception {
+
+                SettingResDTO result = this.settingService.update(settingReqDTO);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("Learningsetting created successfully")
+                                                .data(result)
+                                                .build());
+        }
+
+        @GetMapping("/settings/{type}")
+        public ResponseEntity<?> findByTypeAndCurrentUser(@PathVariable String type)
                         throws Exception {
 
-                SettingResDTO result = this.learningSettingService.findLearningSettingByModeAndCurrentUser(mode);
+                SettingResDTO result = this.settingService.findByTypeAndCurrentUser(type);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
