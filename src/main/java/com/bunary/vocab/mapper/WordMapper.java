@@ -3,6 +3,8 @@ package com.bunary.vocab.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.dto.reponse.WordReponseDTO;
@@ -62,5 +64,20 @@ public class WordMapper {
         }
 
         return words;
+    }
+
+    public Page<WordReponseDTO> convertToWordReponseDTO(Page<Word> word) {
+        List<WordReponseDTO> wList = word.stream().map((w) -> {
+            WordReponseDTO wordReponseDTO = new WordReponseDTO();
+            wordReponseDTO.setId(w.getId());
+            wordReponseDTO.setIpa(w.getIpa());
+            wordReponseDTO.setMeaning(w.getMeaning());
+            wordReponseDTO.setPartOfSpeech(w.getPartOfSpeech());
+            wordReponseDTO.setThumbnail(w.getThumbnail());
+
+            return wordReponseDTO;
+        }).toList();
+
+        return new PageImpl<>(wList, word.getPageable(), word.getTotalElements());
     }
 }

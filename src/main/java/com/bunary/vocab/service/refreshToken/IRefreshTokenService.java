@@ -1,7 +1,5 @@
 package com.bunary.vocab.service.refreshToken;
 
-import java.util.UUID;
-
 import com.bunary.vocab.model.RefreshToken;
 import com.bunary.vocab.model.User;
 

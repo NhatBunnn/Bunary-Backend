@@ -1,5 +1,7 @@
 package com.bunary.vocab.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
+import com.bunary.vocab.dto.reponse.WordReponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
+import com.bunary.vocab.service.word.IWordService;
 import com.bunary.vocab.service.wordSet.IWordSetService;
 import com.bunary.vocab.util.PageableUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +33,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/v1")
 public class WordSetController {
         private final IWordSetService wordSetService;
+        private final IWordService wordService;
 
         @PostMapping("/wordsets")
         public ResponseEntity<?> createWordSet(@RequestPart("wordSet") String wordSetString,
@@ -141,6 +146,25 @@ public class WordSetController {
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(201)
                                                 .message("Wordset deleted successfully")
+                                                .build());
+        }
+
+        @GetMapping("/wordsets/{wordSetId}/words")
+        public ResponseEntity<?> findWordsByWordSetId(@PathVariable Long wordSetId,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+
+                Pageable pageable = PageableUtil.createPageable(page, size, sort);
+
+                Page<WordReponseDTO> result = this.wordService.findByWordSetId(wordSetId, pageable);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("Words retrieved successfully")
+                                                .data(result.getContent())
+                                                .pagination(new PageResponseDTO(result))
                                                 .build());
         }
 }

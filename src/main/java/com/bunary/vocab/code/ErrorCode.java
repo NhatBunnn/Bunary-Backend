@@ -10,6 +10,7 @@ public enum ErrorCode {
     ID_NOT_FOUND(404, "ID_NOT_FOUND", "not found with id"),
     NOT_FOUND(404, "NOT_FOUND", "not found"),
     ALREADY_EXISTS(409, "ALREADY_EXISTS", "already exists"),
+    FORBIDDEN(403, "FORBIDDEN", "access denied"),
 
     // User
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "User not found"),
@@ -25,6 +26,10 @@ public enum ErrorCode {
     COLLECTION_NAME_NOT_BLANK(400, "COLLECTION__NAME_NOT_BLANK", "Tên bộ sưu tập không được để trống"),
     COLLECTION_NAME_TOO_LONG(400, "COLLECTION_NAME_TOO_LONG", "Tên bộ sưu tập không được vượt quá 100 ký tự"),
     COLLECTION_NOT_FOUND(404, "COLLECTION_NOT_FOUND", "Collection not found"),
+
+    // Rating
+    RATING_NOT_FOUND(404, "RATING_NOT_FOUND", "Rating not found"),
+    RATING_ALREADY_EXISTS(409, "RATING_ALREADY_EXISTS", "User has already rated this wordset"),
 
     // Email
     EMAIL_EXISTS(409, "EMAIL_EXISTS", "Email already exists"),

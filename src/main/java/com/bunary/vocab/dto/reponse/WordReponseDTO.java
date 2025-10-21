@@ -26,6 +26,6 @@ public class WordReponseDTO {
 
     private String meaning;
 
-    private WordSet wordSet;
+    private WordSetReponseDTO wordSet;
 
 }

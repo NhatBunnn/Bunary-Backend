@@ -2,7 +2,6 @@ package com.bunary.vocab.model;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 import com.bunary.vocab.model.enums.VisibilityEnum;
 
@@ -16,12 +15,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +29,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "WordSets")
 @Entity
 public class WordSet {
@@ -62,4 +62,7 @@ public class WordSet {
 
     @ManyToMany(mappedBy = "wordSets", fetch = FetchType.LAZY)
     private List<Collection> collections;
+
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WordSetRating> wordSetRatings;
 }

@@ -3,6 +3,8 @@ package com.bunary.vocab.service.word;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.dto.reponse.WordReponseDTO;
@@ -25,8 +27,10 @@ public class WordService implements IWordService {
     }
 
     @Override
-    public List<WordReponseDTO> findByWordSetId(Long wordSet) {
-        return this.wordMapper.convertToWordReponseDTO(this.wordRepository.findByWordSetId(wordSet));
+    public Page<WordReponseDTO> findByWordSetId(Long wordSet, Pageable pageable) {
+        Page<Word> page = this.wordRepository.findByWordSetId(wordSet, pageable);
+
+        return this.wordMapper.convertToWordReponseDTO(page);
     }
 
 }

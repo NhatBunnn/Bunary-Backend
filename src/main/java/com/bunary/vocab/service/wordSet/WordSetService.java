@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,7 @@ import com.bunary.vocab.repository.WordRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
+import com.bunary.vocab.service.specification.WordSetSpec;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.service.word.IWordService;
 
@@ -212,8 +214,18 @@ public class WordSetService implements IWordSetService {
 
     @Override
     public WordSetReponseDTO findByIdWithUserAndCollection(Long id) {
-        WordSet wordSet = this.wordSetRepository.findByIdWithUserAndCollection(id)
+
+        WordSet wordSet = this.wordSetRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+
+        UUID userId = UUID.fromString(securityUtil.getCurrentUser().get());
+
+        // if the wordset is private, allow access only to the owner and author Ôkê
+        if (wordSet.getVisibility().equals(VisibilityEnum.PRIVATE)) {
+            if (!wordSet.getUser().getId().equals(userId)) {
+                throw new ApiException(ErrorCode.FORBIDDEN);
+            }
+        }
 
         WordSetReponseDTO wordSetDTO = this.wordSetMapper.convertToWordSetReponseDTO(wordSet);
         wordSetDTO.setAuthor(this.userMapper.convertToUserResponseDTO(wordSet.getUser()));
@@ -235,15 +247,18 @@ public class WordSetService implements IWordSetService {
 
     @Override
     public Page<WordSetReponseDTO> findAllByVisibilityWithUser(String visibility, Pageable pageable) {
-        VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibility.toUpperCase());
+        VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibility);
+
+        // Specification<WordSet> spec = Specification
+        // .where(WordSetSpec.hasVisibility(visibilityEnum))
+        // .and(WordSetSpec.fetchUser());
+
         Page<WordSet> page = this.wordSetRepository.findAllByVisibilityWithUser(visibilityEnum, pageable);
 
         List<WordSetReponseDTO> dtoList = page.stream().map(ws -> {
             WordSetReponseDTO dto = wordSetMapper.convertToWordSetReponseDTO(ws);
 
-            if (ws.getUser() != null) {
-                dto.setAuthor(this.userMapper.convertToUserResponseDTO(ws.getUser()));
-            }
+            dto.setAuthor(this.userMapper.convertToUserResponseDTO(ws.getUser()));
 
             return dto;
         }).toList();

@@ -21,17 +21,18 @@ import lombok.AllArgsConstructor;
 public class WordController {
     private final IWordService wordService;
 
-    @GetMapping("/words/{wordSetId}")
-    public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId) throws Exception {
+    // @GetMapping("/words/{wordSetId}")
+    // public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId) throws
+    // Exception {
 
-        List<WordReponseDTO> result = this.wordService.findByWordSetId(wordSetId);
+    // List<WordReponseDTO> result = this.wordService.findByWordSetId(wordSetId);
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("Words retrieved successfully")
-                        .data(result)
-                        .build());
-    }
+    // return ResponseEntity.ok()
+    // .body(SuccessReponseDTO.builder()
+    // .statusCode(200)
+    // .message("Words retrieved successfully")
+    // .data(result)
+    // .build());
+    // }
 
 }

@@ -1,7 +1,5 @@
 package com.bunary.vocab.dto.request;
 
-import com.bunary.vocab.code.ErrorCode;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

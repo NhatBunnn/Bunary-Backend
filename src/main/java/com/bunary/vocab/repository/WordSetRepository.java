@@ -7,60 +7,52 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.enums.VisibilityEnum;
-import com.bunary.vocab.model.User;
 
-public interface WordSetRepository extends JpaRepository<WordSet, Long> {
-    WordSet save(WordSet wordSet);
+public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpecificationExecutor<WordSet> {
+        WordSet save(WordSet wordSet);
 
-    Page<WordSet> findAll(Pageable pageable);
+        boolean existsByIdAndUserId(Long id, UUID userId);
 
-    // Làm thử nào rảnh sửa -> construcotor đang bị set cứng ko linh hoạt
-    // @Query("""
-    // SELECT new com.bunary.vocab.dto.reponse.WordSetReponseDTO(
-    // w.id, w.title, w.description, w.thumbnail, u.id,
-    // new com.bunary.vocab.dto.reponse.UserResponseDTO(
-    // u.fullName, u.avatar
-    // )
-    // )
-    // FROM WordSet w
-    // JOIN w.user u
-    // """)
-    // Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
+        Page<WordSet> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = { "user" })
-    @Query("SELECT w FROM WordSet w")
-    Page<WordSet> findAllWithAuthor(Pageable pageable);
+        @EntityGraph(attributePaths = { "user" })
+        @Query("SELECT w FROM WordSet w")
+        Page<WordSet> findAllWithAuthor(Pageable pageable);
 
-    Page<WordSet> findAllByUserId(UUID userId, Pageable pageable);
+        Page<WordSet> findAllByUserId(UUID userId, Pageable pageable);
 
-    Optional<WordSet> findById(Long id);
+        Optional<WordSet> findById(Long id);
 
-    @EntityGraph(attributePaths = { "user", "collections" })
-    @Query("SELECT w FROM WordSet w WHERE w.id = :id")
-    Optional<WordSet> findByIdWithUserAndCollection(Long id);
+        @EntityGraph(attributePaths = { "user", "collections" })
+        @Query("SELECT w FROM WordSet w WHERE w.id = :id")
+        Optional<WordSet> findByIdWithUserAndCollection(@Param("id") Long id);
 
-    @EntityGraph(attributePaths = { "Words" })
-    @Query("SELECT w FROM WordSet w WHERE w.id = :id")
-    Optional<WordSet> findByIdWithWords(Long id);
+        @EntityGraph(attributePaths = { "Words" })
+        @Query("SELECT w FROM WordSet w WHERE w.id = :id")
+        Optional<WordSet> findByIdWithWords(Long id);
 
-    Page<WordSet> findByCollections_Id(Long collectionId, Pageable pageable);
+        Page<WordSet> findByCollections_Id(Long collectionId, Pageable pageable);
 
-    @Query("SELECT w FROM WordSet w WHERE w.visibility = :visibilityEnum")
-    Page<WordSet> findAllByVisibilityWithUser(VisibilityEnum visibilityEnum, Pageable pageable);
+        @EntityGraph(attributePaths = { "user" })
+        @Query("SELECT w FROM WordSet w WHERE w.visibility = :visibilityEnum")
+        Page<WordSet> findAllByVisibilityWithUser(VisibilityEnum visibilityEnum, Pageable pageable);
 
-    @Query("""
-            SELECT COUNT(w.id)
-            FROM Word w
-            WHERE w.id IN :wordIds AND w.wordSet.id = :wordSetId
-            """)
-    long countWordsInWordSet(@Param("wordSetId") Long wordSetId, @Param("wordIds") List<Long> wordIds);
+        Page<WordSet> findAll(Specification<WordSet> specification, Pageable pageable);
+
+        @Query("""
+                        SELECT COUNT(w.id)
+                        FROM Word w
+                        WHERE w.id IN :wordIds AND w.wordSet.id = :wordSetId
+                        """)
+        long countWordsInWordSet(@Param("wordSetId") Long wordSetId, @Param("wordIds") List<Long> wordIds);
 
 }

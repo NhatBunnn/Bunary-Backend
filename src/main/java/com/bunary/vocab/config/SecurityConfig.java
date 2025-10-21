@@ -35,7 +35,7 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 @Configuration
 @EnableAsync
-@EnableMethodSecurity(securedEnabled = true) // Liên quan đến phân quyền
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
     private JwtUtil jwtUtil;
 
