@@ -10,7 +10,7 @@ import lombok.Setter;
 public class WordSetStudyResDTO {
     private Long id;
 
-    private int study_count;
+    private int studyCount;
 
     private Instant createdAt;
 

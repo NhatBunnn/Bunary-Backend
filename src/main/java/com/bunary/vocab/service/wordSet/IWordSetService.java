@@ -34,4 +34,6 @@ public interface IWordSetService {
     WordSetReponseDTO findByIdWithUserAndCollection(Long id);
 
     WordSetReponseDTO findByIdWithWords(Long id);
+
+    void recalculateAllPopularityScores();
 }

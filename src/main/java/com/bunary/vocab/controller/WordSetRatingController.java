@@ -25,24 +25,10 @@ public class WordSetRatingController {
         private final IWordSetRatingService ratingService;
 
         @PostMapping("{wordSetId}/ratings")
-        public ResponseEntity<?> create(@Valid @RequestBody WordSetRatingReqDTO ratingReqDTO,
+        public ResponseEntity<?> createOrUpdateRating(@Valid @RequestBody WordSetRatingReqDTO ratingReqDTO,
                         @PathVariable long wordSetId) {
 
-                WordSetRatingResDTO result = this.ratingService.create(ratingReqDTO, wordSetId);
-
-                return ResponseEntity.ok()
-                                .body(SuccessReponseDTO.builder()
-                                                .statusCode(200)
-                                                .message("Rating created successfully")
-                                                .data(result)
-                                                .build());
-        }
-
-        @PutMapping("/ratings/{ratingId}")
-        public ResponseEntity<?> update(@Valid @RequestBody WordSetRatingReqDTO ratingReqDTO,
-                        @PathVariable Long ratingId, @PathVariable Long wordSetId) {
-
-                WordSetRatingResDTO result = this.ratingService.update(ratingReqDTO, ratingId);
+                WordSetRatingResDTO result = this.ratingService.createOrUpdateRating(ratingReqDTO, wordSetId);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()

@@ -22,7 +22,7 @@ public class WordSetStudyMapper implements IMapper<WordSetStudy, WordSetStudyReq
     public WordSetStudyResDTO convertToResDTO(WordSetStudy entity) {
         WordSetStudyResDTO wDto = new WordSetStudyResDTO();
         wDto.setId(entity.getId());
-        wDto.setStudy_count(entity.getStudy_count());
+        wDto.setStudyCount(entity.getStudyCount());
         wDto.setUpdatedAt(entity.getUpdatedAt());
         wDto.setCreatedAt(entity.getCreatedAt());
 

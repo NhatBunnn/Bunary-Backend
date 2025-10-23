@@ -34,17 +34,6 @@ public class WordSetMapper {
         wordSetRep.setThumbnail(wordSet.getThumbnail());
         wordSetRep.setVisibility(wordSet.getVisibility());
 
-        // if (Hibernate.isInitialized(wordSet.getUser()) && wordSet.getUser() != null)
-        // {
-        // wordSetRep.setAuthor(this.userMapper.convertToUserResponseDTO(wordSet.getUser()));
-        // }
-
-        // if (Hibernate.isInitialized(wordSet.getCollections()) &&
-        // wordSet.getCollections() != null) {
-        // wordSetRep.getCollections()
-        // .addAll(this.collectionMapper.convertToCollectionResDTO(wordSet.getCollections()));
-        // }
-
         return wordSetRep;
     }
 

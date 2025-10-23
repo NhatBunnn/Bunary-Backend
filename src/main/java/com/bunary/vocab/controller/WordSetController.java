@@ -1,7 +1,5 @@
 package com.bunary.vocab.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +19,7 @@ import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.WordReponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
+import com.bunary.vocab.repository.WordSetStatRepo;
 import com.bunary.vocab.service.word.IWordService;
 import com.bunary.vocab.service.wordSet.IWordSetService;
 import com.bunary.vocab.util.PageableUtil;
@@ -102,6 +101,7 @@ public class WordSetController {
                 Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
                 Page<WordSetReponseDTO> result = this.wordSetService.findAllByCurrentUser(pageable);
+                this.wordSetService.findAllByCurrentUser(pageable);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -167,4 +167,5 @@ public class WordSetController {
                                                 .pagination(new PageResponseDTO(result))
                                                 .build());
         }
+
 }

@@ -8,10 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.dto.reponse.WordReponseDTO;
-import com.bunary.vocab.dto.request.WordRequestDTO;
 import com.bunary.vocab.mapper.WordMapper;
 import com.bunary.vocab.model.Word;
-import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.repository.WordRepository;
 
 import lombok.AllArgsConstructor;

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,4 +67,8 @@ public class WordSet {
 
     @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WordSetRating> wordSetRatings;
+
+    @OneToOne(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private WordSetStat wordSetStat;
 }

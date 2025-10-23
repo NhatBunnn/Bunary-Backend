@@ -1,5 +1,6 @@
 package com.bunary.vocab.service.wordSet;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +26,18 @@ import com.bunary.vocab.mapper.WordSetMapper;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
+import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 import com.bunary.vocab.repository.WordRepository;
 import com.bunary.vocab.repository.WordSetRepository;
+import com.bunary.vocab.repository.WordSetStatRepo;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
 import com.bunary.vocab.service.specification.WordSetSpec;
 import com.bunary.vocab.service.user.IUserService;
-import com.bunary.vocab.service.word.IWordService;
+import com.bunary.vocab.util.wordSet.WordSetStatCalculator;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -48,6 +52,7 @@ public class WordSetService implements IWordSetService {
     private final IUserService userService;
     private final SecurityUtil securityUtil;
     private final WordRepository wordRepository;
+    private final WordSetStatRepo wordSetStatRepo;
 
     @Override
     public WordSet save(WordSet wordSet) {
@@ -193,9 +198,11 @@ public class WordSetService implements IWordSetService {
 
         wordSet.setWords(words);
 
-        this.save(wordSet);
+        WordSet curWordSet = this.save(wordSet);
 
-        return this.wordSetMapper.convertToWordSetReponseDTO(wordSet);
+        this.createDefaultStat(curWordSet);
+
+        return this.wordSetMapper.convertToWordSetReponseDTO(curWordSet);
     }
 
     @Override
@@ -253,6 +260,7 @@ public class WordSetService implements IWordSetService {
         // .where(WordSetSpec.hasVisibility(visibilityEnum))
         // .and(WordSetSpec.fetchUser());
 
+        // Page<WordSet> page = this.wordSetRepository.findAll(spec, pageable);
         Page<WordSet> page = this.wordSetRepository.findAllByVisibilityWithUser(visibilityEnum, pageable);
 
         List<WordSetReponseDTO> dtoList = page.stream().map(ws -> {
@@ -291,4 +299,25 @@ public class WordSetService implements IWordSetService {
         this.wordSetRepository.delete(wordSet);
     }
 
+    @Transactional
+    public void recalculateAllPopularityScores() {
+        List<WordSetStat> allStats = wordSetStatRepo.findAll();
+
+        for (WordSetStat stat : allStats) {
+            double popularity = WordSetStatCalculator.calculatePopularityScore(stat);
+            stat.setPopularityScore(popularity);
+        }
+
+        wordSetStatRepo.saveAll(allStats);
+    }
+
+    public WordSetStat createDefaultStat(WordSet wordSet) {
+        WordSetStat stat = new WordSetStat();
+        stat.setViewCount((long) 0);
+        stat.setStudyCount(0);
+        stat.setRatingAvg(0);
+        stat.setPopularityScore(0);
+        stat.setWordSet(wordSet);
+        return this.wordSetStatRepo.save(stat);
+    }
 }

@@ -16,6 +16,7 @@ import com.bunary.vocab.repository.WordSetRatingRepo;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.security.SecurityUtil;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -26,42 +27,28 @@ public class WordSetRatingService implements IWordSetRatingService {
     private final SecurityUtil securityUtil;
     private final WordSetRepository wordSetRepository;
 
+    @Transactional
     @Override
-    public WordSetRatingResDTO create(WordSetRatingReqDTO ratingReqDTO, long wordSetId) {
+    public WordSetRatingResDTO createOrUpdateRating(WordSetRatingReqDTO ratingReqDTO, long wordSetId) {
         if (ratingReqDTO.getValue() > 5 || ratingReqDTO.getValue() < 0) {
             throw new ApiException(ErrorCode.RATING_NOT_FOUND);
         }
 
         UUID userId = (UUID.fromString(this.securityUtil.getCurrentUser().get()));
 
-        if (this.wordSetRepository.existsByIdAndUserId(wordSetId, userId)) {
+        if (!this.wordSetRepository.existsById(wordSetId)) {
             throw new ApiException(ErrorCode.ID_NOT_FOUND);
         }
 
-        if (this.ratingRepo.existsByWordSetIdAndUserId(wordSetId, userId)) {
-            throw new ApiException(ErrorCode.RATING_ALREADY_EXISTS);
+        WordSetRating rating = this.ratingRepo.findByWordSetIdAndUserId(wordSetId, userId);
+        if (rating == null) {
+            rating = new WordSetRating();
+            rating.setValue(ratingReqDTO.getValue());
+            rating.setWordSet(WordSet.builder().id(wordSetId).build());
+            rating.setUser(User.builder().id(userId).build());
+        } else {
+            rating.setValue(ratingReqDTO.getValue());
         }
-
-        WordSetRating rating = new WordSetRating();
-        rating.setValue(ratingReqDTO.getValue());
-        rating.setWordSet(WordSet.builder().id(wordSetId).build());
-        rating.setUser(User.builder().id(userId).build());
-
-        return this.ratingMapper.convertToResDTO(
-                this.ratingRepo.save(rating));
-    }
-
-    @Override
-    public WordSetRatingResDTO update(WordSetRatingReqDTO ratingReqDTO, Long ratingId) {
-
-        if (ratingReqDTO.getValue() > 5 || ratingReqDTO.getValue() < 0) {
-            throw new ApiException(ErrorCode.RATING_NOT_FOUND);
-        }
-
-        WordSetRating rating = this.ratingRepo.findById(ratingId)
-                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
-
-        rating.setValue(ratingReqDTO.getValue());
 
         return this.ratingMapper.convertToResDTO(
                 this.ratingRepo.save(rating));

@@ -19,11 +19,11 @@ public class WordSetStudyController {
     final private IWordSetStudyService wordSetStudyService;
 
     @PostMapping("{wordSetId}/study")
-    public ResponseEntity<?> recordStudy(
+    public ResponseEntity<?> createOrUpdate(
             @PathVariable Long wordSetId,
             @PathVariable Long studyId) {
 
-        WordSetStudyResDTO result = this.wordSetStudyService.recordStudy(wordSetId);
+        WordSetStudyResDTO result = this.wordSetStudyService.createOrUpdate(wordSetId);
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()

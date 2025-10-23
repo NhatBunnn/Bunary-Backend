@@ -18,11 +18,21 @@ public class WordSetSpec {
 
     public static Specification<WordSet> fetchUser() {
         return (root, query, cb) -> {
-            // Tránh duplicate khi count query (Pageable)
-            if (WordSet.class.equals(query.getResultType())) {
+            // Tránh lỗi count query (Spring Data Page)
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
                 root.fetch("user", JoinType.LEFT);
             }
-            return null; // không thêm điều kiện, chỉ fetch join
+            return null;
         };
     }
+
+    // public static Specification<WordSet> fetchUser() {
+    // return (root, query, cb) -> {
+    // // Tránh duplicate khi count query (Pageable)
+    // if (WordSet.class.equals(query.getResultType())) {
+    // root.fetch("user", JoinType.LEFT);
+    // }
+    // return null; // không thêm điều kiện, chỉ fetch join
+    // };
+    // }
 }

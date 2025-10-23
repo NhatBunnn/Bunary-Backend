@@ -38,7 +38,7 @@ public class WordSetStudy {
     @JoinColumn(name = "wordset_id")
     private WordSet wordSet;
 
-    private int study_count = 0;
+    private int studyCount = 0;
 
     private Instant createdAt;
 

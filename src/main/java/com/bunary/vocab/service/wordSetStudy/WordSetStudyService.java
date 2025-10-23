@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.WordSetStudyResDTO;
-import com.bunary.vocab.dto.request.WordSetStudyReqDTO;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.WordSetStudyMapper;
 import com.bunary.vocab.model.User;
@@ -29,23 +28,23 @@ public class WordSetStudyService implements IWordSetStudyService {
 
     @Transactional
     @Override
-    public WordSetStudyResDTO recordStudy(Long wordSetId) {
-        UUID currentUserId = UUID.fromString(securityUtil.getCurrentUser().get());
-
-        if (!this.wordSetRepository.existsByIdAndUserId(wordSetId, currentUserId)) {
+    public WordSetStudyResDTO createOrUpdate(Long wordSetId) {
+        if (!this.wordSetRepository.existsById(wordSetId)) {
             throw new ApiException(ErrorCode.ID_NOT_FOUND);
         }
+
+        UUID currentUserId = UUID.fromString(securityUtil.getCurrentUser().get());
 
         WordSetStudy wordSetStudy = this.wordSetStudyRepo.findByWordSetIdAndUserId(wordSetId,
                 currentUserId);
 
         if (wordSetStudy == null) {
             wordSetStudy = new WordSetStudy();
-            wordSetStudy.setStudy_count(1);
+            wordSetStudy.setStudyCount(1);
             wordSetStudy.setUser(User.builder().id(currentUserId).build());
             wordSetStudy.setWordSet(WordSet.builder().id(wordSetId).build());
         } else {
-            wordSetStudy.setStudy_count(wordSetStudy.getStudy_count() + 1);
+            wordSetStudy.setStudyCount(wordSetStudy.getStudyCount() + 1);
         }
 
         return this.wordSetStudyMapper.convertToResDTO(
