@@ -1,6 +1,7 @@
 package com.bunary.vocab.service.user;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,4 +32,6 @@ public interface IUserService {
 
     UserResponseDTO updateUser(String userId, UserRequestDTO userDTO, MultipartFile file);
 
+    Page<UserResponseDTO> searchUsers(Map<String, String> parameters, int page, int size,
+            Pageable pageable);
 }

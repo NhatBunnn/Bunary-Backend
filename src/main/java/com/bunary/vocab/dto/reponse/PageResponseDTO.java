@@ -21,4 +21,10 @@ public class PageResponseDTO {
         this.totalItems = page.getTotalElements();
     }
 
+    public PageResponseDTO(int currentPage, int totalPages, long totalItems) {
+        this.currentPage = currentPage;
+        this.totalPages = totalPages;
+        this.totalItems = totalItems;
+    }
+
 }

@@ -1,12 +1,17 @@
 package com.bunary.vocab.service.user;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +21,13 @@ import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.mapper.RoleMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.exception.ApiException;
+import com.bunary.vocab.helpers.FilterFieldConfig;
+import com.bunary.vocab.helpers.FilterParameter;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
+import com.bunary.vocab.service.specification.UserSpec;
 
 import lombok.AllArgsConstructor;
 
@@ -121,6 +129,31 @@ public class UserService implements IUserService {
         this.save(user);
 
         return this.userMapper.convertToUserResponseDTO(user);
+    }
+
+    public Page<UserResponseDTO> searchUsers(Map<String, String> parameters, int page, int size, Pageable pageable) {
+
+        String keyword = parameters.get("keyword");
+        String email = parameters.get("email");
+        String role = parameters.get("role");
+
+        // Tạo Specification
+        Specification<User> spec = Specification.where(null);
+        spec = spec.and(UserSpec.keyword(keyword));
+        spec = spec.and(UserSpec.equalTo("email", email));
+        spec = spec.and(UserSpec.hasRoles(role));
+        spec = spec.and(UserSpec.createdAtFilter(parameters));
+
+        Page<User> usersPage = userRepository.findAll(spec, pageable);
+
+        List<UserResponseDTO> dtoList = usersPage.getContent().stream()
+                .map(user -> this.userMapper.convertToUserResponseDTO(user))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(
+                dtoList,
+                pageable,
+                usersPage.getTotalElements());
     }
 
 }

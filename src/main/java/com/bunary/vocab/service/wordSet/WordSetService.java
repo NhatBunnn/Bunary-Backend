@@ -227,7 +227,6 @@ public class WordSetService implements IWordSetService {
 
         UUID userId = UUID.fromString(securityUtil.getCurrentUser().get());
 
-        // if the wordset is private, allow access only to the owner and author Ôkê
         if (wordSet.getVisibility().equals(VisibilityEnum.PRIVATE)) {
             if (!wordSet.getUser().getId().equals(userId)) {
                 throw new ApiException(ErrorCode.FORBIDDEN);

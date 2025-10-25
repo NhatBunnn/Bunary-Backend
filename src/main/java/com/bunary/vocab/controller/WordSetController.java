@@ -19,7 +19,6 @@ import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.WordReponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
-import com.bunary.vocab.repository.WordSetStatRepo;
 import com.bunary.vocab.service.word.IWordService;
 import com.bunary.vocab.service.wordSet.IWordSetService;
 import com.bunary.vocab.util.PageableUtil;

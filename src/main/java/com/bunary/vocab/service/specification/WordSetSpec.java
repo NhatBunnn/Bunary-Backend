@@ -26,13 +26,4 @@ public class WordSetSpec {
         };
     }
 
-    // public static Specification<WordSet> fetchUser() {
-    // return (root, query, cb) -> {
-    // // Tránh duplicate khi count query (Pageable)
-    // if (WordSet.class.equals(query.getResultType())) {
-    // root.fetch("user", JoinType.LEFT);
-    // }
-    // return null; // không thêm điều kiện, chỉ fetch join
-    // };
-    // }
 }

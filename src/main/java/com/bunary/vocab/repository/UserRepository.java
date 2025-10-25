@@ -6,14 +6,16 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.bunary.vocab.model.User;
 
 // Interface Segregation Principle (OK) 
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
     User save(User user);
 
     User findByEmail(String email);
@@ -28,4 +30,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
 
     long deleteByIsEmailVerified(boolean isVerifed);
+
+    Page<User> findAll(Specification specification, Pageable pageable);
 }

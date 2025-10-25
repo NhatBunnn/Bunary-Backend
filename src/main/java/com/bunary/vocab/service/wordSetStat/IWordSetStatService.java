@@ -1,11 +1,13 @@
 package com.bunary.vocab.service.wordSetStat;
 
-import org.springframework.data.domain.Page;
+import java.util.Map;
 
-import com.bunary.vocab.dto.reponse.WordSetStatResDTO;
-import com.bunary.vocab.dto.request.WordSetStatReqDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 
 public interface IWordSetStatService {
 
-    Page<WordSetStatResDTO> findAllWithUser(WordSetStatReqDTO wordSetStatReqDTO);
+    Page<WordSetReponseDTO> findAll(Map<String, String> params, Pageable pageable);
 }
