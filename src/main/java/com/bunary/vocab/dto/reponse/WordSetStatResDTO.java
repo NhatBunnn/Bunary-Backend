@@ -19,6 +19,8 @@ public class WordSetStatResDTO {
 
     private int studyCount;
 
+    private Long wordCount;
+
     private double ratingAvg;
 
     private double popularityScore;

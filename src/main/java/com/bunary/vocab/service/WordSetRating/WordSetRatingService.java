@@ -10,10 +10,12 @@ import com.bunary.vocab.dto.request.WordSetRatingReqDTO;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.WordSetRatingMapper;
 import com.bunary.vocab.model.WordSetRating;
+import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.repository.WordSetRatingRepo;
 import com.bunary.vocab.repository.WordSetRepository;
+import com.bunary.vocab.repository.WordSetStatRepo;
 import com.bunary.vocab.security.SecurityUtil;
 
 import jakarta.transaction.Transactional;
@@ -26,6 +28,7 @@ public class WordSetRatingService implements IWordSetRatingService {
     private final WordSetRatingRepo ratingRepo;
     private final SecurityUtil securityUtil;
     private final WordSetRepository wordSetRepository;
+    private final WordSetStatRepo wordSetStatRepo;
 
     @Transactional
     @Override
@@ -50,8 +53,17 @@ public class WordSetRatingService implements IWordSetRatingService {
             rating.setValue(ratingReqDTO.getValue());
         }
 
-        return this.ratingMapper.convertToResDTO(
-                this.ratingRepo.save(rating));
+        WordSetRating curRating = this.ratingRepo.save(rating);
+
+        Double avgRating = ratingRepo.findAvgRatingByWordSet(wordSetId);
+
+        WordSetStat stat = this.wordSetStatRepo.findByWordSetId(wordSetId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+        stat.setRatingAvg(avgRating);
+
+        this.wordSetStatRepo.save(stat);
+
+        return this.ratingMapper.convertToResDTO(curRating);
     }
 
     @Override

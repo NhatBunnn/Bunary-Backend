@@ -16,13 +16,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.code.ErrorCode;
+import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
+import com.bunary.vocab.dto.reponse.WordSetStatResDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.CollectionMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.mapper.WordMapper;
 import com.bunary.vocab.mapper.WordSetMapper;
+import com.bunary.vocab.mapper.WordSetStatMapper;
+import com.bunary.vocab.model.QUser;
+import com.bunary.vocab.model.QWordSet;
+import com.bunary.vocab.model.QWordSetStat;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
@@ -36,6 +42,9 @@ import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
 import com.bunary.vocab.service.specification.WordSetSpec;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.wordSet.WordSetStatCalculator;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -53,6 +62,9 @@ public class WordSetService implements IWordSetService {
     private final SecurityUtil securityUtil;
     private final WordRepository wordRepository;
     private final WordSetStatRepo wordSetStatRepo;
+    private final WordSetStatMapper wordSetStatMapper;
+
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public WordSet save(WordSet wordSet) {
@@ -64,10 +76,11 @@ public class WordSetService implements IWordSetService {
         return this.wordSetRepository.findAll(pageable);
     }
 
-    @Override
-    public Page<WordSetReponseDTO> findAll(Pageable pageable) {
-        return this.wordSetMapper.convertToWordSetReponseDTO(this.findAllEntities(pageable));
-    }
+    // @Override
+    // public Page<WordSetReponseDTO> findAll(Pageable pageable) {
+    // return
+    // this.wordSetMapper.convertToWordSetReponseDTO(this.findAllEntities(pageable));
+    // }
 
     @Override
     public Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable) {
@@ -162,6 +175,12 @@ public class WordSetService implements IWordSetService {
 
         WordSet currentWordSet = this.save(wordSet);
 
+        // update words count tin
+        WordSetStat stat = this.wordSetStatRepo.findByWordSetId(wordSetId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
+        stat.setWordCount((long) wordSetDTO.getWord().size());
+        this.wordSetStatRepo.save(stat);
+
         return this.wordSetMapper.convertToWordSetReponseDTO(currentWordSet);
 
     }
@@ -200,16 +219,18 @@ public class WordSetService implements IWordSetService {
 
         WordSet curWordSet = this.save(wordSet);
 
-        this.createDefaultStat(curWordSet);
+        // update words count tin
+        WordSetStat stat = new WordSetStat();
+        stat.setViewCount((long) 0);
+        stat.setStudyCount(0);
+        stat.setRatingAvg(0);
+        stat.setPopularityScore(0);
+        stat.setWordCount((long) wordSetDTO.getWord().size());
+        stat.setWordSet(curWordSet);
+
+        this.wordSetStatRepo.save(stat);
 
         return this.wordSetMapper.convertToWordSetReponseDTO(curWordSet);
-    }
-
-    @Override
-    public WordSetReponseDTO findById(Long id) {
-        Optional<WordSet> wordSet = this.wordSetRepository.findById(id);
-
-        return this.wordSetMapper.convertToWordSetReponseDTO(wordSet.get());
     }
 
     @Override
@@ -220,7 +241,7 @@ public class WordSetService implements IWordSetService {
     }
 
     @Override
-    public WordSetReponseDTO findByIdWithUserAndCollection(Long id) {
+    public WordSetReponseDTO findById(Long id) {
 
         WordSet wordSet = this.wordSetRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
@@ -235,6 +256,7 @@ public class WordSetService implements IWordSetService {
 
         WordSetReponseDTO wordSetDTO = this.wordSetMapper.convertToWordSetReponseDTO(wordSet);
         wordSetDTO.setAuthor(this.userMapper.convertToUserResponseDTO(wordSet.getUser()));
+        wordSetDTO.setStat(this.wordSetStatMapper.convertToResDTO(wordSet.getWordSetStat()));
         wordSetDTO.getCollections().addAll(this.collectionMapper.convertToCollectionResDTO(wordSet.getCollections()));
 
         return wordSetDTO;
@@ -318,5 +340,86 @@ public class WordSetService implements IWordSetService {
         stat.setPopularityScore(0);
         stat.setWordSet(wordSet);
         return this.wordSetStatRepo.save(stat);
+    }
+
+    @Override
+    public Page<WordSetReponseDTO> findAll(Map<String, String> params, Pageable pageable) {
+
+        QWordSet ws = QWordSet.wordSet;
+        QUser u = QUser.user;
+        QWordSetStat s = QWordSetStat.wordSetStat;
+
+        JPAQuery<WordSetReponseDTO> query = queryFactory
+                .select(Projections.bean(WordSetReponseDTO.class,
+                        ws.id, ws.title, ws.description, ws.thumbnail, ws.visibility,
+                        Projections.bean(UserResponseDTO.class,
+                                u.fullName, u.avatar).as("author"),
+                        Projections.bean(WordSetStatResDTO.class,
+                                s.popularityScore, s.ratingAvg, s.viewCount, s.wordCount).as("stat")))
+                .from(ws)
+                .leftJoin(ws.wordSetStat, s)
+                .leftJoin(ws.user, u);
+
+        // filter keyword
+        String keyword = params.get("keyword");
+        if (keyword != null && !keyword.isEmpty()) {
+            query.where(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
+        }
+
+        // filter visibility
+        String visibilityStr = params.get("visibility");
+        if (visibilityStr != null && !visibilityStr.isEmpty()) {
+            try {
+                VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibilityStr.toUpperCase());
+                query.where(ws.visibility.eq(visibilityEnum));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // sort dynamic
+        String sort = params.get("sort");
+        if (sort != null && !sort.isEmpty()) {
+            String[] parts = sort.split(",");
+            String field = parts[0];
+            String dir = parts[1];
+
+            if (field.equalsIgnoreCase("popularityScore")) {
+                query.orderBy(dir.equalsIgnoreCase("desc") ? s.popularityScore.desc() : s.popularityScore.asc());
+            } else if (field.equalsIgnoreCase("createdAt")) {
+                query.orderBy(dir.equalsIgnoreCase("desc") ? ws.createdAt.desc() : ws.createdAt.asc());
+            } else if (field.equalsIgnoreCase("studyCount")) {
+                query.orderBy(dir.equalsIgnoreCase("desc") ? s.studyCount.desc() : s.studyCount.asc());
+            } else if (field.equalsIgnoreCase("viewCount")) {
+                query.orderBy(dir.equalsIgnoreCase("desc") ? s.viewCount.desc() : s.viewCount.asc());
+            }
+        }
+
+        // count totalItems
+        JPAQuery<Long> countQuery = queryFactory
+                .select(ws.count())
+                .from(ws)
+                .leftJoin(ws.user, u)
+                .leftJoin(ws.wordSetStat, s);
+
+        if (keyword != null && !keyword.isEmpty()) {
+            countQuery.where(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
+        }
+        if (visibilityStr != null && !visibilityStr.isEmpty()) {
+            try {
+                VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibilityStr.toUpperCase());
+                countQuery.where(ws.visibility.eq(visibilityEnum));
+            } catch (IllegalArgumentException e) {
+            }
+        }
+
+        long total = countQuery.fetchOne();
+
+        List<WordSetReponseDTO> list = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(list, pageable, total);
     }
 }

@@ -1,5 +1,7 @@
 package com.bunary.vocab.service.wordSet;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,19 +21,19 @@ public interface IWordSetService {
 
     WordSetReponseDTO createWordSet(WordSetRequestDTO wordSet, MultipartFile file) throws Exception;
 
-    Page<WordSetReponseDTO> findAll(Pageable pageable);
+    Page<WordSetReponseDTO> findAll(Map<String, String> params, Pageable pageable);
 
     Page<WordSetReponseDTO> findAllByCurrentUser(Pageable pageable);
 
     Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
 
-    WordSetReponseDTO findById(Long id);
+    // WordSetReponseDTO findById(Long id);
 
     Page<WordSetReponseDTO> findAllByCollectionId(Long collectionId, Pageable pageable);
 
     Page<WordSetReponseDTO> findAllByVisibilityWithUser(String visibility, Pageable pageable);
 
-    WordSetReponseDTO findByIdWithUserAndCollection(Long id);
+    WordSetReponseDTO findById(Long id);
 
     WordSetReponseDTO findByIdWithWords(Long id);
 

@@ -48,4 +48,6 @@ public class WordSetReponseDTO {
         this.author = author;
     }
 
+    public WordSetStatResDTO stat;
+
 }

@@ -33,13 +33,15 @@ public class WordSetStat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wordset_id")
     private WordSet wordSet;
 
     private Long viewCount;
 
     private int studyCount;
+
+    private Long wordCount;
 
     private double ratingAvg;
 

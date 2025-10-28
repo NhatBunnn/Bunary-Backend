@@ -21,8 +21,6 @@ import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.mapper.RoleMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.exception.ApiException;
-import com.bunary.vocab.helpers.FilterFieldConfig;
-import com.bunary.vocab.helpers.FilterParameter;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.security.SecurityUtil;

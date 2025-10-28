@@ -30,6 +30,7 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpec
 
         Page<WordSet> findAllByUserId(UUID userId, Pageable pageable);
 
+        @EntityGraph(attributePaths = { "user", "collections", "wordSetStat" })
         Optional<WordSet> findById(Long id);
 
         @EntityGraph(attributePaths = { "user", "collections" })
@@ -53,6 +54,13 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpec
                         FROM Word w
                         WHERE w.id IN :wordIds AND w.wordSet.id = :wordSetId
                         """)
-        long countWordsInWordSet(@Param("wordSetId") Long wordSetId, @Param("wordIds") List<Long> wordIds);
+        Long countWordsInWordSet(@Param("wordSetId") Long wordSetId, @Param("wordIds") List<Long> wordIds);
+
+        @Query("""
+                        SELECT COUNT(w.id)
+                        FROM Word w
+                        WHERE w.wordSet.id = :wordSetId
+                        """)
+        Long countWords(@Param("wordSetId") Long wordSetId);
 
 }

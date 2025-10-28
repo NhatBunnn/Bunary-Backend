@@ -1,6 +1,9 @@
 package com.bunary.vocab.controller;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -68,21 +71,13 @@ public class WordSetController {
         }
 
         @GetMapping("/wordsets")
-        public ResponseEntity<?> getAllWordSet(
-                        @RequestParam(required = false) String include,
+        public ResponseEntity<?> findAllWordSets(
+                        @RequestParam(required = false) Map<String, String> params,
 
                         @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "20") int size,
-                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+                        @RequestParam(defaultValue = "20") int size) throws Exception {
 
-                Pageable pageable = PageableUtil.createPageable(page, size, sort);
-
-                boolean includeUser = include != null && include.contains("user");
-
-                Page<WordSetReponseDTO> result = null;
-                if (includeUser) {
-                        result = this.wordSetService.findAllByVisibilityWithUser("PUBLIC", pageable);
-                }
+                Page<WordSetReponseDTO> result = this.wordSetService.findAll(params, PageRequest.of(page, size));
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -112,22 +107,9 @@ public class WordSetController {
         }
 
         @GetMapping("/wordsets/{wordSetId}")
-        public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId,
-                        @RequestParam(value = "include", required = false) String include) throws Exception {
+        public ResponseEntity<?> findByWordSetId(@PathVariable Long wordSetId) throws Exception {
 
-                boolean includeUser = include != null && include.contains("user");
-                boolean includeCollection = include != null && include.contains("collection");
-                boolean includeWord = include != null && include.contains("word");
-
-                WordSetReponseDTO result = new WordSetReponseDTO();
-
-                if (includeUser && includeCollection) {
-                        result = this.wordSetService.findByIdWithUserAndCollection(wordSetId);
-                } else if (includeWord) {
-                        result = this.wordSetService.findByIdWithWords(wordSetId);
-                } else {
-                        result = this.wordSetService.findById(wordSetId);
-                }
+                WordSetReponseDTO result = this.wordSetService.findById(wordSetId);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -145,25 +127,6 @@ public class WordSetController {
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(201)
                                                 .message("Wordset deleted successfully")
-                                                .build());
-        }
-
-        @GetMapping("/wordsets/{wordSetId}/words")
-        public ResponseEntity<?> findWordsByWordSetId(@PathVariable Long wordSetId,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "20") int size,
-                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
-
-                Pageable pageable = PageableUtil.createPageable(page, size, sort);
-
-                Page<WordReponseDTO> result = this.wordService.findByWordSetId(wordSetId, pageable);
-
-                return ResponseEntity.ok()
-                                .body(SuccessReponseDTO.builder()
-                                                .statusCode(200)
-                                                .message("Words retrieved successfully")
-                                                .data(result.getContent())
-                                                .pagination(new PageResponseDTO(result))
                                                 .build());
         }
 
