@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,8 +18,6 @@ import com.bunary.vocab.model.User;
 // Interface Segregation Principle (OK) 
 public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
     User save(User user);
-
-    User findByEmail(String email);
 
     Page<User> findAll(Pageable pageable);
 
@@ -32,4 +31,14 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     long deleteByIsEmailVerified(boolean isVerifed);
 
     Page<User> findAll(Specification specification, Pageable pageable);
+
+    User findByEmail(String email);
+
+    @EntityGraph(attributePaths = { "roles", "roles.permissions" })
+    @Query("SELECT u FROM User u WHERE u.email = :email ")
+    Optional<User> findByEmailJoinRolesAndPers(@Param("email") String email);
+
+    @EntityGraph(attributePaths = { "roles", "roles.permissions" })
+    @Query("SELECT u FROM User u WHERE u.id = :id ")
+    Optional<User> findByIdJoinRolesAndPers(@Param("id") UUID userId);
 }

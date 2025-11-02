@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
+import com.bunary.vocab.dto.reponse.UserWordsetHistoryResDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetStatResDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
@@ -27,9 +28,11 @@ import com.bunary.vocab.mapper.WordMapper;
 import com.bunary.vocab.mapper.WordSetMapper;
 import com.bunary.vocab.mapper.WordSetStatMapper;
 import com.bunary.vocab.model.QUser;
+import com.bunary.vocab.model.QUserWordsetHistory;
 import com.bunary.vocab.model.QWordSet;
 import com.bunary.vocab.model.QWordSetStat;
 import com.bunary.vocab.model.User;
+import com.bunary.vocab.model.UserWordsetHistory;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.WordSetStat;
@@ -192,7 +195,6 @@ public class WordSetService implements IWordSetService {
         if (wordSetDTO.getVisibility() == null) {
             wordSet.setVisibility(VisibilityEnum.PRIVATE);
         }
-
         User user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
 
         wordSet.setUser(user);
@@ -342,6 +344,7 @@ public class WordSetService implements IWordSetService {
         return this.wordSetStatRepo.save(stat);
     }
 
+    @Transactional
     @Override
     public Page<WordSetReponseDTO> findAll(Map<String, String> params, Pageable pageable) {
 
@@ -422,4 +425,41 @@ public class WordSetService implements IWordSetService {
 
         return new PageImpl<>(list, pageable, total);
     }
+
+    @Transactional
+    public Page<WordSetReponseDTO> findAllMyRecentWordSets(Map<String, String> params, Pageable pageable) {
+
+        UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
+
+        QWordSet ws = QWordSet.wordSet;
+        QUser u = QUser.user;
+        QUserWordsetHistory uwh = QUserWordsetHistory.userWordsetHistory;
+
+        List<WordSetReponseDTO> list = queryFactory
+                .select(Projections.bean(
+                        WordSetReponseDTO.class,
+                        ws.id,
+                        ws.title,
+                        ws.description,
+                        ws.thumbnail,
+                        ws.visibility,
+                        Projections.bean(UserWordsetHistoryResDTO.class,
+                                uwh.lastLearnedAt).as("userLearnHistory")))
+                .from(ws)
+                .leftJoin(ws.userWordsetHistories, uwh)
+                .leftJoin(uwh.user, u)
+                .where(uwh.user.id.eq(userId))
+                .orderBy(uwh.lastLearnedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(ws.count())
+                .from(ws)
+                .fetchOne();
+
+        return new PageImpl<>(list, pageable, total);
+    }
+
 }

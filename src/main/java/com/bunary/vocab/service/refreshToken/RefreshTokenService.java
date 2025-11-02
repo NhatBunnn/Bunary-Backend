@@ -1,7 +1,5 @@
 package com.bunary.vocab.service.refreshToken;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.model.RefreshToken;

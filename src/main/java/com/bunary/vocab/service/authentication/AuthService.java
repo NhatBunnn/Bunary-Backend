@@ -1,7 +1,6 @@
 package com.bunary.vocab.service.authentication;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.ResponseCookie;
@@ -24,12 +23,13 @@ import com.bunary.vocab.model.Role;
 import com.bunary.vocab.model.Setting;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.SettingRepo;
+import com.bunary.vocab.repository.UserRepository;
+import com.bunary.vocab.security.CustomUserDetails;
 import com.bunary.vocab.security.JwtTokenProvider;
 import com.bunary.vocab.security.JwtUtil;
 import com.bunary.vocab.service.VerifyCode.IVerifyCodeService;
 import com.bunary.vocab.service.refreshToken.IRefreshTokenService;
 import com.bunary.vocab.service.role.IRoleService;
-import com.bunary.vocab.service.setting.ISettingService;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.setting.LearningSettingsFactory;
 
@@ -48,6 +48,7 @@ public class AuthService implements IAuthService {
     private final IVerifyCodeService verifyCodeService;
     private final IRoleService roleService;
     private final SettingRepo settingRepo;
+    private final UserRepository userRepository;
 
     @Override
     public boolean verifyCode(VerifyCodeReponseDTO verifyCode) {
@@ -94,34 +95,33 @@ public class AuthService implements IAuthService {
     @Override
     public AuthResponseDTO Login(UserRequestDTO user) throws Exception {
         try {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(), user.getPassword());
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.getEmail(),
+                    user.getPassword());
             Authentication authentication = authenticationManagerBuilder.getObject()
-                    .authenticate(usernamePasswordAuthenticationToken);
+                    .authenticate(authToken);
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User currentUser = userDetails.getUser();
+
+            String accessToken = jwtTokenProvider.generateAccessToken(currentUser);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(currentUser);
+
+            ResponseCookie responseCookie = ResponseCookie
+                    .from("refresh_token", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(jwtUtil.getRefreshTokenExpiration())
+                    .sameSite("None")
+                    .build();
+
+            return userMapper.convertToAuthResponseDTO(currentUser, accessToken, refreshToken, responseCookie);
 
         } catch (Exception e) {
             throw new ApiException(ErrorCode.AUTH_INVALID);
         }
-
-        User currentUser = this.userService.findByEmail(user.getEmail());
-
-        String accessToken = this.jwtTokenProvider.generateAccessToken(currentUser);
-        String refreshToken = this.jwtTokenProvider.generateRefreshToken(currentUser);
-
-        ResponseCookie responseCookie = ResponseCookie
-                .from("refresh_token", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(jwtUtil.getRefreshTokenExpiration())
-                .sameSite("None")
-                .build();
-
-        AuthResponseDTO authDTO = new AuthResponseDTO();
-        authDTO = userMapper.convertToAuthResponseDTO(currentUser, accessToken, refreshToken, responseCookie);
-
-        return authDTO;
     }
 
     @Override
@@ -132,7 +132,8 @@ public class AuthService implements IAuthService {
         Jwt decodedJwt = this.jwtUtil.decodeToken(refreshToken);
         UUID userId = UUID.fromString(decodedJwt.getSubject());
 
-        User currentUser = this.userService.findById(userId);
+        User currentUser = this.userRepository.findByIdJoinRolesAndPers(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         RefreshToken currentRefreshToken = this.refreshTokenService.findByRefreshTokenAndUser(refreshToken,
                 currentUser);

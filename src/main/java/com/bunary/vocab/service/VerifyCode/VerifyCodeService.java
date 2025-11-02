@@ -33,15 +33,6 @@ public class VerifyCodeService implements IVerifyCodeService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
 
-    private void unlinkVerifyCode(User user, VerifyCode code) {
-        if (user != null) {
-            user.setVerifyCode(null);
-        }
-        if (code != null) {
-            code.setUser(null);
-        }
-    }
-
     public String generate6Digits() {
         int n = secureRandom.nextInt(1_000_000);
         return String.format("%06d", n);
@@ -57,11 +48,11 @@ public class VerifyCodeService implements IVerifyCodeService {
         if (user == null)
             return false;
 
-        VerifyCode verifyCode = this.verifyCodeRepository.findByUser(user);
+        VerifyCode verifyCode = this.verifyCodeRepository.findByUserId(user.getId());
 
         if (verifyCode == null) {
             verifyCode = new VerifyCode();
-            verifyCode.setUser(user);
+            verifyCode.setUserId(user.getId());
         } else {
             if (verifyCode.getRetryAvailableAt().isAfter(Instant.now()))
                 throw new ApiException(ErrorCode.EMAIL_CODE_ATTEMPTS_EXCEEDED);
@@ -73,7 +64,7 @@ public class VerifyCodeService implements IVerifyCodeService {
 
         this.verifyCodeRepository.save(verifyCode);
 
-        this.emailService.sendVerificationCode(verifyCode.getUser().getEmail(), verifyCode.getCode());
+        this.emailService.sendVerificationCode(user.getEmail(), verifyCode.getCode());
 
         return true;
     }
@@ -81,7 +72,7 @@ public class VerifyCodeService implements IVerifyCodeService {
     @Override
     public AuthResponseDTO verifyCode(VerifyCodeReponseDTO verifyCode) {
         User user = this.userService.findByEmail(verifyCode.getEmail());
-        VerifyCode currentVerifyCode = this.verifyCodeRepository.findByUser(user);
+        VerifyCode currentVerifyCode = this.verifyCodeRepository.findByUserId(user.getId());
 
         if (user.isEmailVerified())
             throw new ApiException(ErrorCode.USER_NOT_VERIFIED);
@@ -118,7 +109,6 @@ public class VerifyCodeService implements IVerifyCodeService {
         user.setEmailVerified(true);
         this.userService.save(user);
 
-        unlinkVerifyCode(user, currentVerifyCode);
         delete(currentVerifyCode);
 
         String accessToken = this.jwtTokenProvider.generateAccessToken(user);

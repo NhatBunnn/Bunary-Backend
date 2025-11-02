@@ -71,6 +71,7 @@ public class WordMapper {
             WordReponseDTO wordReponseDTO = new WordReponseDTO();
             wordReponseDTO.setId(w.getId());
             wordReponseDTO.setIpa(w.getIpa());
+            wordReponseDTO.setTerm(w.getTerm());
             wordReponseDTO.setMeaning(w.getMeaning());
             wordReponseDTO.setPartOfSpeech(w.getPartOfSpeech());
             wordReponseDTO.setThumbnail(w.getThumbnail());

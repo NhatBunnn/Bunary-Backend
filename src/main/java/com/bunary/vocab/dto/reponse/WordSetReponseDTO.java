@@ -38,16 +38,8 @@ public class WordSetReponseDTO {
 
     private List<CollectionResDTO> collections = new ArrayList<>();
 
-    public WordSetReponseDTO(Long id, String title, String description, String thumbnail, UUID authorId,
-            UserResponseDTO author) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.thumbnail = thumbnail;
-        this.authorId = authorId;
-        this.author = author;
-    }
-
     public WordSetStatResDTO stat;
+
+    public UserWordsetHistoryResDTO userLearnHistory;
 
 }

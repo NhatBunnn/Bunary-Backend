@@ -28,7 +28,7 @@ public class WordSetStudyService implements IWordSetStudyService {
 
     @Transactional
     @Override
-    public WordSetStudyResDTO createOrUpdate(Long wordSetId) {
+    public WordSetStudyResDTO incrementStudyCount(Long wordSetId) {
         if (!this.wordSetRepository.existsById(wordSetId)) {
             throw new ApiException(ErrorCode.ID_NOT_FOUND);
         }

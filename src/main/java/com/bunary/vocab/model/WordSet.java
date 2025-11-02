@@ -74,6 +74,9 @@ public class WordSet {
     @JsonIgnore
     private WordSetStat wordSetStat;
 
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserWordsetHistory> userWordsetHistories;
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

@@ -8,9 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,7 +91,8 @@ public class UserService implements IUserService {
     @Override
     public UserResponseDTO updateUser(String userId, UserRequestDTO userDTO, MultipartFile avatarFile) {
 
-        User user = this.findById(UUID.fromString(userId));
+        User user = this.userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         if (userDTO.getFirstName() != null) {
             user.setFirstName(userDTO.getFirstName());

@@ -111,6 +111,7 @@ public class UserController {
 
                 User user = this.userService
                                 .findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
+
                 UserResponseDTO userDto = this.userMapper.convertToUserResponseDTO(user);
 
                 return ResponseEntity.ok()

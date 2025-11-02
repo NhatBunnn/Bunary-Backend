@@ -1,6 +1,7 @@
 package com.bunary.vocab.model;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,7 +37,9 @@ public class VerifyCode {
 
     private Instant retryAvailableAt = Instant.now();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id")
+    // private User user;
+
+    private UUID userId;
 }

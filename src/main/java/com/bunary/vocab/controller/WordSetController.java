@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
-import com.bunary.vocab.dto.reponse.WordReponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.service.word.IWordService;
@@ -78,6 +77,25 @@ public class WordSetController {
                         @RequestParam(defaultValue = "20") int size) throws Exception {
 
                 Page<WordSetReponseDTO> result = this.wordSetService.findAll(params, PageRequest.of(page, size));
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("WordSets retrieved successfully")
+                                                .data(result.getContent())
+                                                .pagination(new PageResponseDTO(result))
+                                                .build());
+        }
+
+        @GetMapping("/wordsets/history/me")
+        public ResponseEntity<?> findAllMyRecentWordSets(
+                        @RequestParam(required = false) Map<String, String> params,
+
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size) throws Exception {
+
+                Page<WordSetReponseDTO> result = this.wordSetService.findAllMyRecentWordSets(params,
+                                PageRequest.of(page, size));
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()

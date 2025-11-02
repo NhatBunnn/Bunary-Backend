@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -65,22 +64,17 @@ public class JwtTokenProvider {
                 Instant now = Instant.now();
                 Instant expiry = now.plus(jwtUtil.getRefreshTokenExpiration(), ChronoUnit.SECONDS);
 
-                // Temp
-                List<String> listAuthority = new ArrayList<>();
-                listAuthority.add("ROLE_USER_CREATE");
-                listAuthority.add("ROLE_USER_UPDATE");
-
                 JwsHeader header = JwsHeader.with(this.jwtUtil.getMacAlgorithm()).build();
 
                 JwtClaimsSet payload = JwtClaimsSet.builder()
                                 .issuedAt(now)
                                 .expiresAt(expiry)
                                 .subject(user.getId() + "")
+                                // Ko cần thiết lằm, nào rảnh thì bỏ
                                 .claim("user", Map.of(
                                                 "email", user.getEmail(),
                                                 "firstName", user.getFirstName(),
                                                 "lastName", user.getLastName()))
-                                .claim("permission", listAuthority)
                                 .build();
 
                 String token = this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();

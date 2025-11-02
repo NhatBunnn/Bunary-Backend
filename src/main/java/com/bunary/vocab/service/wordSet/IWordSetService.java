@@ -38,4 +38,6 @@ public interface IWordSetService {
     WordSetReponseDTO findByIdWithWords(Long id);
 
     void recalculateAllPopularityScores();
+
+    Page<WordSetReponseDTO> findAllMyRecentWordSets(Map<String, String> params, Pageable pageable);
 }
