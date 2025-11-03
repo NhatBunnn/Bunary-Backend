@@ -24,7 +24,7 @@ public class UserWordsetHistory {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wordSet_id", nullable = false)
+    @JoinColumn(name = "wordset_id", nullable = false)
     private WordSet wordSet;
 
 }

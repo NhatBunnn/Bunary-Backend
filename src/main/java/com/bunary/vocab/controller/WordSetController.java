@@ -21,7 +21,6 @@ import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
-import com.bunary.vocab.service.word.IWordService;
 import com.bunary.vocab.service.wordSet.IWordSetService;
 import com.bunary.vocab.util.PageableUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +32,6 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/v1")
 public class WordSetController {
         private final IWordSetService wordSetService;
-        private final IWordService wordService;
 
         @PostMapping("/wordsets")
         public ResponseEntity<?> createWordSet(@RequestPart("wordSet") String wordSetString,
@@ -72,7 +70,6 @@ public class WordSetController {
         @GetMapping("/wordsets")
         public ResponseEntity<?> findAllWordSets(
                         @RequestParam(required = false) Map<String, String> params,
-
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size) throws Exception {
 
@@ -87,7 +84,7 @@ public class WordSetController {
                                                 .build());
         }
 
-        @GetMapping("/wordsets/history/me")
+        @GetMapping("/wordsets/history/recent/me")
         public ResponseEntity<?> findAllMyRecentWordSets(
                         @RequestParam(required = false) Map<String, String> params,
 

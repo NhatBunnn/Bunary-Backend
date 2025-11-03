@@ -1,17 +1,14 @@
 package com.bunary.vocab.service.wordSet;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +29,6 @@ import com.bunary.vocab.model.QUserWordsetHistory;
 import com.bunary.vocab.model.QWordSet;
 import com.bunary.vocab.model.QWordSetStat;
 import com.bunary.vocab.model.User;
-import com.bunary.vocab.model.UserWordsetHistory;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.WordSetStat;
@@ -42,7 +38,6 @@ import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.repository.WordSetStatRepo;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
-import com.bunary.vocab.service.specification.WordSetSpec;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.wordSet.WordSetStatCalculator;
 import com.querydsl.core.types.Projections;

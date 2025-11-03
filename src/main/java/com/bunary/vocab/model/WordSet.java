@@ -77,6 +77,9 @@ public class WordSet {
     @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserWordsetHistory> userWordsetHistories;
 
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WordSetComment> wordSetComments;
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
