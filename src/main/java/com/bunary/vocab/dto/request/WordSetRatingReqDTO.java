@@ -8,5 +8,7 @@ import lombok.Setter;
 public class WordSetRatingReqDTO {
     private int value;
 
+    private String comment;
+
     private long wordSetId;
 }

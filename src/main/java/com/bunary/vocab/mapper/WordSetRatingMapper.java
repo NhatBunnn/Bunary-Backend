@@ -14,6 +14,7 @@ public class WordSetRatingMapper implements IMapper<WordSetRating, WordSetRating
     @Override
     public WordSetRating convertToEntity(WordSetRatingReqDTO dto) {
         WordSetRating rating = new WordSetRating();
+        rating.setComment(dto.getComment());
         rating.setValue(dto.getValue());
 
         return rating;
@@ -23,6 +24,7 @@ public class WordSetRatingMapper implements IMapper<WordSetRating, WordSetRating
     public WordSetRatingResDTO convertToResDTO(WordSetRating entity) {
         WordSetRatingResDTO ratingResDTO = new WordSetRatingResDTO();
         ratingResDTO.setId(entity.getId());
+        ratingResDTO.setComment(entity.getComment());
         ratingResDTO.setValue(entity.getValue());
         ratingResDTO.setCreatedAt(entity.getCreatedAt());
         ratingResDTO.setUpdatedAt(entity.getUpdatedAt());

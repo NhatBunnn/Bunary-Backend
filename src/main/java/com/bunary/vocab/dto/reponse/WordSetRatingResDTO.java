@@ -12,6 +12,10 @@ public class WordSetRatingResDTO {
 
     private int value;
 
+    private String comment;
+
+    private UserResponseDTO user;
+
     private Instant createdAt;
 
     private Instant updatedAt;

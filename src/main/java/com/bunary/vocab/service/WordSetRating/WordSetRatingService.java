@@ -1,13 +1,20 @@
 package com.bunary.vocab.service.WordSetRating;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.WordSetRatingResDTO;
 import com.bunary.vocab.dto.request.WordSetRatingReqDTO;
 import com.bunary.vocab.exception.ApiException;
+import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.mapper.WordSetRatingMapper;
 import com.bunary.vocab.model.WordSetRating;
 import com.bunary.vocab.model.WordSetStat;
@@ -24,11 +31,25 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Service("wordSetRatingService")
 public class WordSetRatingService implements IWordSetRatingService {
-    private final WordSetRatingMapper ratingMapper;
+    private final WordSetRatingMapper wordSetRatingMapper;
     private final WordSetRatingRepo ratingRepo;
     private final SecurityUtil securityUtil;
     private final WordSetRepository wordSetRepository;
     private final WordSetStatRepo wordSetStatRepo;
+    private final UserMapper userMapper;
+
+    @Override
+    public Page<WordSetRatingResDTO> findAllByWordSetId(long wordSetId, Pageable pageable) {
+        Page<WordSetRating> pages = this.ratingRepo.findAllByWordSet_Id(wordSetId, pageable);
+
+        List<WordSetRatingResDTO> dtos = pages.stream().map((e) -> {
+            WordSetRatingResDTO wDto = this.wordSetRatingMapper.convertToResDTO(e);
+            wDto.setUser(this.userMapper.convertToUserResponseDTO(e.getUser()));
+            return wDto;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(dtos, pageable, pages.getTotalElements());
+    }
 
     @Transactional
     @Override
@@ -47,10 +68,12 @@ public class WordSetRatingService implements IWordSetRatingService {
         if (rating == null) {
             rating = new WordSetRating();
             rating.setValue(ratingReqDTO.getValue());
+            rating.setComment(ratingReqDTO.getComment());
             rating.setWordSet(WordSet.builder().id(wordSetId).build());
             rating.setUser(User.builder().id(userId).build());
         } else {
             rating.setValue(ratingReqDTO.getValue());
+            rating.setComment(ratingReqDTO.getComment());
         }
 
         WordSetRating curRating = this.ratingRepo.save(rating);
@@ -63,7 +86,7 @@ public class WordSetRatingService implements IWordSetRatingService {
 
         this.wordSetStatRepo.save(stat);
 
-        return this.ratingMapper.convertToResDTO(curRating);
+        return this.wordSetRatingMapper.convertToResDTO(curRating);
     }
 
     @Override

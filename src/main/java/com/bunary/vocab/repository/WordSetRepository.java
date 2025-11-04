@@ -1,6 +1,5 @@
 package com.bunary.vocab.repository;
 
-import java.beans.Visibility;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.bunary.vocab.model.WordSet;
+import com.bunary.vocab.model.WordSetRating;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 
 public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpecificationExecutor<WordSet> {

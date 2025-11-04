@@ -1,11 +1,6 @@
 package com.bunary.vocab.model;
 
 import java.time.Instant;
-import java.util.UUID;
-
-import org.hibernate.annotations.UuidGenerator;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -44,6 +39,8 @@ public class WordSetRating {
     private WordSet wordSet;
 
     private int value;
+
+    private String comment;
 
     private Instant createdAt;
 
