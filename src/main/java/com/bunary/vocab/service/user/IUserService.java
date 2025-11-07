@@ -32,6 +32,5 @@ public interface IUserService {
 
     UserResponseDTO updateUser(String userId, UserRequestDTO userDTO, MultipartFile file);
 
-    Page<UserResponseDTO> searchUsers(Map<String, String> parameters, int page, int size,
-            Pageable pageable);
+    Page<UserResponseDTO> searchUsers(String keyword, Pageable pageable);
 }

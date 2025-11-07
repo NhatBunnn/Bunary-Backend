@@ -27,8 +27,6 @@ public interface IWordSetService {
 
     Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable);
 
-    // WordSetReponseDTO findById(Long id);
-
     Page<WordSetReponseDTO> findAllByCollectionId(Long collectionId, Pageable pageable);
 
     Page<WordSetReponseDTO> findAllByVisibilityWithUser(String visibility, Pageable pageable);
@@ -40,4 +38,6 @@ public interface IWordSetService {
     void recalculateAllPopularityScores();
 
     Page<WordSetReponseDTO> findAllMyRecentWordSets(Map<String, String> params, Pageable pageable);
+
+    Page<WordSetReponseDTO> searchWordSets(String keyword, Pageable pageable);
 }

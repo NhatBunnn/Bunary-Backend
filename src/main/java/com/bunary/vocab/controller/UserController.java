@@ -40,18 +40,6 @@ public class UserController {
         private final UserMapper userMapper;
         private final SecurityUtil securityUtil;
 
-        @GetMapping("/search")
-        public Page<UserResponseDTO> searchUsers(
-                        @RequestParam Map<String, String> parameters,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size,
-                        @RequestParam(defaultValue = "id,asc") String[] sort) {
-
-                Pageable pageable = PageableUtil.createPageable(page, size, sort);
-
-                return userService.searchUsers(parameters, page, size, pageable);
-        }
-
         @GetMapping("/removeaccount")
         public String removeAccount() {
                 long result = this.accountCleanupTask.removeAccount();

@@ -128,27 +128,16 @@ public class UserService implements IUserService {
         return this.userMapper.convertToUserResponseDTO(user);
     }
 
-    public Page<UserResponseDTO> searchUsers(Map<String, String> parameters, int page, int size, Pageable pageable) {
+    @Override
+    public Page<UserResponseDTO> searchUsers(String keyword, Pageable pageable) {
+        Page<User> usersPage = this.userRepository.search(keyword, pageable);
 
-        String keyword = parameters.get("keyword");
-        String email = parameters.get("email");
-        String role = parameters.get("role");
-
-        // Tạo Specification
-        Specification<User> spec = Specification.where(null);
-        spec = spec.and(UserSpec.keyword(keyword));
-        spec = spec.and(UserSpec.equalTo("email", email));
-        spec = spec.and(UserSpec.hasRoles(role));
-        spec = spec.and(UserSpec.createdAtFilter(parameters));
-
-        Page<User> usersPage = userRepository.findAll(spec, pageable);
-
-        List<UserResponseDTO> dtoList = usersPage.getContent().stream()
-                .map(user -> this.userMapper.convertToUserResponseDTO(user))
+        List<UserResponseDTO> users = usersPage.stream()
+                .map(u -> this.userMapper.convertToUserResponseDTO(u))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(
-                dtoList,
+                users,
                 pageable,
                 usersPage.getTotalElements());
     }

@@ -13,8 +13,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
-import com.bunary.vocab.model.WordSetRating;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 
 public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpecificationExecutor<WordSet> {
@@ -62,5 +62,13 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpec
                         WHERE w.wordSet.id = :wordSetId
                         """)
         Long countWords(@Param("wordSetId") Long wordSetId);
+
+        @Query("SELECT w FROM WordSet w " +
+                        "WHERE w.title LIKE CONCAT('%', :keyword, '%') " +
+                        "AND w.visibility = :visibility")
+        Page<WordSet> searchWithVisibility(
+                        @Param("keyword") String keyword,
+                        @Param("visibility") VisibilityEnum visibility,
+                        Pageable pageable);
 
 }

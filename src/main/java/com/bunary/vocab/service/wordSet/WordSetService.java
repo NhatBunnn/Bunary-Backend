@@ -457,4 +457,19 @@ public class WordSetService implements IWordSetService {
         return new PageImpl<>(list, pageable, total);
     }
 
+    @Override
+    public Page<WordSetReponseDTO> searchWordSets(String keyword, Pageable pageable) {
+        Page<WordSet> wordsetsPage = this.wordSetRepository.searchWithVisibility(keyword, VisibilityEnum.PUBLIC,
+                pageable);
+
+        List<WordSetReponseDTO> wordsets = wordsetsPage.stream()
+                .map(ws -> this.wordSetMapper.convertToWordSetReponseDTO(ws))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(
+                wordsets,
+                pageable,
+                wordsetsPage.getTotalElements());
+    }
+
 }

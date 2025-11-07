@@ -24,6 +24,9 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @Query("SELECT u FROM User u WHERE u.isEmailVerified = true")
     Page<User> findAllVerifiedUsers(Pageable pageable, @Param("myId") UUID myId);
 
+    @Query("SELECT u FROM User u WHERE u.fullName LIKE CONCAT('%', :keyword, '%')")
+    Page<User> search(@Param("keyword") String keyword, Pageable pageable);
+
     Optional<User> findById(UUID id);
 
     boolean existsByEmail(String email);
