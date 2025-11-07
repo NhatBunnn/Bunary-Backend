@@ -1,41 +1,55 @@
+// File: ChatMessageController.java → CHỈ DÀNH CHO REST API
 package com.bunary.vocab.controller;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.bunary.vocab.dto.SuccessReponseDTO;
+import com.bunary.vocab.dto.reponse.ChatMessageResDTO;
 import com.bunary.vocab.dto.reponse.ChatMessageResponseDTO;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.ChatMessage.IChatMessageService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
 public class ChatMessageController {
-    private final IChatMessageService chatMessageService;
-    private final SecurityUtil securityUtil;
+        private final SimpMessagingTemplate messagingTemplate;
+        private final IChatMessageService chatMessageService;
+        private final SecurityUtil securityUtil;
 
-    @GetMapping("/chatmessages/{receiverId}")
-    public ResponseEntity<?> getChatMessageByReceiverId(@PathVariable String receiverId) throws Exception {
-        List<ChatMessageResponseDTO> result = this.chatMessageService.findBySenderIdAndReceiverId(
-                UUID.fromString(this.securityUtil.getCurrentUser().get()),
-                UUID.fromString(receiverId));
+        @MessageMapping("/chat.send")
+        public void sendMessage(
+                        @Payload ChatMessageResDTO message,
+                        Principal principal) {
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("Fetched messages successfully")
-                        .data(result)
-                        .build());
-    }
+                message.setSenderId(principal.getName());
+
+                messagingTemplate.convertAndSendToUser(
+                                message.getReceiverId(),
+                                "/queue/messages",
+                                message);
+
+        }
+
+        @GetMapping("/chatmessages/{receiverId}")
+        public ResponseEntity<?> getChatMessageByReceiverId(@PathVariable String receiverId) {
+                List<ChatMessageResponseDTO> result = chatMessageService.findBySenderIdAndReceiverId(
+                                UUID.fromString(securityUtil.getCurrentUser().get()),
+                                UUID.fromString(receiverId));
+
+                return ResponseEntity.ok(SuccessReponseDTO.builder()
+                                .statusCode(200)
+                                .message("Fetched messages successfully")
+                                .data(result)
+                                .build());
+        }
 }

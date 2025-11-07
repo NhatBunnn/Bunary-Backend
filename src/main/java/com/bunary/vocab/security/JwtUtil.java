@@ -41,6 +41,18 @@ public class JwtUtil {
                 .build();
     }
 
+    public String getUserIdFromToken(String token) {
+        try {
+            Jwt jwt = decodeToken(token);
+
+            Object userIdClaim = jwt.getSubject();
+            return userIdClaim != null ? userIdClaim.toString() : null;
+        } catch (Exception e) {
+
+            return null;
+        }
+    }
+
     public SecretKey getSecretKey() {
         return secretKey;
     }
