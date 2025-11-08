@@ -1,12 +1,10 @@
 package com.bunary.vocab.dto.reponse;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.bunary.vocab.model.Role;
 import com.bunary.vocab.model.enums.GenderEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -16,12 +14,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDTO {
     private UUID id;
     private String email;
@@ -33,8 +31,7 @@ public class UserResponseDTO {
     private Instant dateOfBirth;
     private GenderEnum gender;
 
-    private Set<String> roles = new HashSet<>();
-    private Set<String> permissions = new HashSet<>();
+    private Set<RoleResDTO> roles = new HashSet<>();
 
     public UserResponseDTO(String fullName, String avatar) {
         this.fullName = fullName;

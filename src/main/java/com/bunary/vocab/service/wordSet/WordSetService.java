@@ -33,6 +33,7 @@ import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.repository.WordRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.repository.WordSetStatRepo;
@@ -40,8 +41,9 @@ import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.wordSet.WordSetStatCalculator;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.transaction.Transactional;
@@ -61,6 +63,7 @@ public class WordSetService implements IWordSetService {
     private final WordRepository wordRepository;
     private final WordSetStatRepo wordSetStatRepo;
     private final WordSetStatMapper wordSetStatMapper;
+    private final UserRepository userRepository;
 
     private final JPAQueryFactory queryFactory;
 
@@ -190,7 +193,8 @@ public class WordSetService implements IWordSetService {
         if (wordSetDTO.getVisibility() == null) {
             wordSet.setVisibility(VisibilityEnum.PRIVATE);
         }
-        User user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
+        User user = this.userRepository.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()))
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         wordSet.setUser(user);
 
@@ -347,21 +351,13 @@ public class WordSetService implements IWordSetService {
         QUser u = QUser.user;
         QWordSetStat s = QWordSetStat.wordSetStat;
 
-        JPAQuery<WordSetReponseDTO> query = queryFactory
-                .select(Projections.bean(WordSetReponseDTO.class,
-                        ws.id, ws.title, ws.description, ws.thumbnail, ws.visibility,
-                        Projections.bean(UserResponseDTO.class,
-                                u.fullName, u.avatar).as("author"),
-                        Projections.bean(WordSetStatResDTO.class,
-                                s.popularityScore, s.ratingAvg, s.viewCount, s.wordCount).as("stat")))
-                .from(ws)
-                .leftJoin(ws.wordSetStat, s)
-                .leftJoin(ws.user, u);
+        // --- build dynamic filter ---
+        BooleanBuilder builder = new BooleanBuilder();
 
         // filter keyword
         String keyword = params.get("keyword");
         if (keyword != null && !keyword.isEmpty()) {
-            query.where(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
+            builder.and(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
         }
 
         // filter visibility
@@ -369,54 +365,60 @@ public class WordSetService implements IWordSetService {
         if (visibilityStr != null && !visibilityStr.isEmpty()) {
             try {
                 VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibilityStr.toUpperCase());
-                query.where(ws.visibility.eq(visibilityEnum));
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                builder.and(ws.visibility.eq(visibilityEnum));
+            } catch (IllegalArgumentException ignored) {
             }
         }
 
-        // sort dynamic
+        // --- build dynamic sort ---
+        OrderSpecifier<?> order = ws.createdAt.desc(); // default sort
         String sort = params.get("sort");
         if (sort != null && !sort.isEmpty()) {
             String[] parts = sort.split(",");
             String field = parts[0];
-            String dir = parts[1];
+            String dir = parts.length > 1 ? parts[1] : "desc";
 
-            if (field.equalsIgnoreCase("popularityScore")) {
-                query.orderBy(dir.equalsIgnoreCase("desc") ? s.popularityScore.desc() : s.popularityScore.asc());
-            } else if (field.equalsIgnoreCase("createdAt")) {
-                query.orderBy(dir.equalsIgnoreCase("desc") ? ws.createdAt.desc() : ws.createdAt.asc());
-            } else if (field.equalsIgnoreCase("studyCount")) {
-                query.orderBy(dir.equalsIgnoreCase("desc") ? s.studyCount.desc() : s.studyCount.asc());
-            } else if (field.equalsIgnoreCase("viewCount")) {
-                query.orderBy(dir.equalsIgnoreCase("desc") ? s.viewCount.desc() : s.viewCount.asc());
+            switch (field.toLowerCase()) {
+                case "popularityscore":
+                    order = dir.equalsIgnoreCase("desc") ? s.popularityScore.desc() : s.popularityScore.asc();
+                    break;
+                case "createdat":
+                    order = dir.equalsIgnoreCase("desc") ? ws.createdAt.desc() : ws.createdAt.asc();
+                    break;
+                case "studycount":
+                    order = dir.equalsIgnoreCase("desc") ? s.studyCount.desc() : s.studyCount.asc();
+                    break;
+                case "viewcount":
+                    order = dir.equalsIgnoreCase("desc") ? s.viewCount.desc() : s.viewCount.asc();
+                    break;
             }
         }
 
-        // count totalItems
-        JPAQuery<Long> countQuery = queryFactory
-                .select(ws.count())
+        // --- query list ---
+        List<WordSetReponseDTO> list = queryFactory
+                .select(Projections.bean(
+                        WordSetReponseDTO.class,
+                        ws.id, ws.title, ws.description, ws.thumbnail, ws.visibility,
+                        Projections.bean(UserResponseDTO.class, u.fullName, u.avatar).as("author"),
+                        Projections.bean(WordSetStatResDTO.class,
+                                s.popularityScore, s.ratingAvg, s.viewCount, s.wordCount).as("stat")))
                 .from(ws)
+                .leftJoin(ws.wordSetStat, s)
                 .leftJoin(ws.user, u)
-                .leftJoin(ws.wordSetStat, s);
-
-        if (keyword != null && !keyword.isEmpty()) {
-            countQuery.where(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
-        }
-        if (visibilityStr != null && !visibilityStr.isEmpty()) {
-            try {
-                VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibilityStr.toUpperCase());
-                countQuery.where(ws.visibility.eq(visibilityEnum));
-            } catch (IllegalArgumentException e) {
-            }
-        }
-
-        long total = countQuery.fetchOne();
-
-        List<WordSetReponseDTO> list = query
+                .where(builder)
+                .orderBy(order)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        // --- query total ---
+        long total = queryFactory
+                .select(ws.count())
+                .from(ws)
+                .leftJoin(ws.wordSetStat, s)
+                .leftJoin(ws.user, u)
+                .where(builder)
+                .fetchOne();
 
         return new PageImpl<>(list, pageable, total);
     }

@@ -171,7 +171,8 @@ public class AuthService implements IAuthService {
         Jwt decodedJwt = this.jwtUtil.decodeToken(refreshToken);
         UUID userId = UUID.fromString(decodedJwt.getSubject());
 
-        User currentUser = this.userService.findById(userId);
+        User currentUser = this.userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         RefreshToken currentRefreshToken = this.refreshTokenService.findByRefreshTokenAndUser(refreshToken,
                 currentUser);

@@ -23,5 +23,5 @@ public class RoleResDTO {
 
     private String name;
 
-    Set<Permission> permissions = new HashSet<>();
+    // Set<Permission> permissions = new HashSet<>();
 }

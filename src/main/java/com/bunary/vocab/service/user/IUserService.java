@@ -20,11 +20,11 @@ public interface IUserService {
 
     Page<UserResponseDTO> getAllUsers(Pageable pageable);
 
-    Page<UserResponseDTO> findAllVerifiedUsers(Pageable pageable);
+    Page<UserResponseDTO> findAll(Map<String, String> params, Pageable pageable);
 
-    User findById(UUID userId);
+    UserResponseDTO findById(UUID userId);
 
-    UserResponseDTO findByIdWithRoles(UUID userId);
+    // UserResponseDTO findByIdWithRoles(UUID userId);
 
     boolean existsByEmail(String email);
 

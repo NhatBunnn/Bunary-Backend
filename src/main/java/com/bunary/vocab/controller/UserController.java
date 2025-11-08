@@ -49,7 +49,7 @@ public class UserController {
 
         @GetMapping("/users/{id}")
         public ResponseEntity<?> findByIdWithRoles(@PathVariable String id) throws Exception {
-                UserResponseDTO result = this.userService.findByIdWithRoles(UUID.fromString(id));
+                UserResponseDTO result = this.userService.findById(UUID.fromString(id));
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -76,13 +76,14 @@ public class UserController {
 
         @GetMapping("/users")
         public ResponseEntity<?> getAllUsers(
+                        @RequestParam(required = false) Map<String, String> params,
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size,
                         @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
 
                 Pageable pageable = PageableUtil.createPageable(page, size, sort);
 
-                Page<UserResponseDTO> result = this.userService.findAllVerifiedUsers(pageable);
+                Page<UserResponseDTO> result = this.userService.findAll(params, pageable);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
@@ -97,16 +98,14 @@ public class UserController {
         @GetMapping("/users/me")
         public ResponseEntity<?> findByMe() {
 
-                User user = this.userService
+                UserResponseDTO result = this.userService
                                 .findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
-
-                UserResponseDTO userDto = this.userMapper.convertToUserResponseDTO(user);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(201)
                                                 .message("WordSets retrieved successfully")
-                                                .data(userDto)
+                                                .data(result)
                                                 .build());
         }
 }

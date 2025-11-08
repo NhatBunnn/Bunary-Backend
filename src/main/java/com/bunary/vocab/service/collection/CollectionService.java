@@ -18,6 +18,7 @@ import com.bunary.vocab.model.Collection;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.repository.CollectionRepository;
+import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
@@ -32,8 +33,8 @@ public class CollectionService implements ICollectionService {
     private final CollectionMapper collectionMapper;
     private final UserMapper userMapper;
     private final WordSetRepository wordSetRepository;
-    private final IUserService userService;
     private final SecurityUtil securityUtil;
+    private final UserRepository userRepository;
 
     @Override
     public Collection save(Collection collection) {
@@ -43,7 +44,8 @@ public class CollectionService implements ICollectionService {
     @Override
     public CollectionResDTO create(CollectionReqDTO collectionReqDTO) {
 
-        User user = this.userService.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()));
+        User user = this.userRepository.findById(UUID.fromString(this.securityUtil.getCurrentUser().get()))
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         Collection collection = this.collectionMapper.convertToCollection(collectionReqDTO);
         collection.setUser(user);
