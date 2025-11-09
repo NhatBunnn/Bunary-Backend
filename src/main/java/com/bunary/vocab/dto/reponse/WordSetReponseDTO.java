@@ -40,6 +40,6 @@ public class WordSetReponseDTO {
 
     public WordSetStatResDTO stat;
 
-    public UserWordsetHistoryResDTO userLearnHistory;
+    public List<UserWordsetHistoryResDTO> userLearnHistory;
 
 }

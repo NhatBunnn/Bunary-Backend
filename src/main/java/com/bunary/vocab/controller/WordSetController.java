@@ -85,13 +85,13 @@ public class WordSetController {
         }
 
         @GetMapping("/wordsets/history/recent/me")
-        public ResponseEntity<?> findAllMyRecentWordSets(
+        public ResponseEntity<?> findAllRecentWordSetsByCurrentUser(
                         @RequestParam(required = false) Map<String, String> params,
 
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size) throws Exception {
 
-                Page<WordSetReponseDTO> result = this.wordSetService.findAllMyRecentWordSets(params,
+                Page<WordSetReponseDTO> result = this.wordSetService.findAllRecentWordSetsByCurrentUser(params,
                                 PageRequest.of(page, size));
 
                 return ResponseEntity.ok()

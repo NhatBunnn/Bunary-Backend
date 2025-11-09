@@ -37,7 +37,7 @@ public interface IWordSetService {
 
     void recalculateAllPopularityScores();
 
-    Page<WordSetReponseDTO> findAllMyRecentWordSets(Map<String, String> params, Pageable pageable);
+    Page<WordSetReponseDTO> findAllRecentWordSetsByCurrentUser(Map<String, String> params, Pageable pageable);
 
     Page<WordSetReponseDTO> searchWordSets(String keyword, Pageable pageable);
 }

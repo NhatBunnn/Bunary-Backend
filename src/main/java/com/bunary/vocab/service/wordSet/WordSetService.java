@@ -21,6 +21,7 @@ import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.CollectionMapper;
 import com.bunary.vocab.mapper.UserMapper;
+import com.bunary.vocab.mapper.UserWordsetHistoryMapper;
 import com.bunary.vocab.mapper.WordMapper;
 import com.bunary.vocab.mapper.WordSetMapper;
 import com.bunary.vocab.mapper.WordSetStatMapper;
@@ -64,6 +65,7 @@ public class WordSetService implements IWordSetService {
     private final WordSetStatRepo wordSetStatRepo;
     private final WordSetStatMapper wordSetStatMapper;
     private final UserRepository userRepository;
+    private final UserWordsetHistoryMapper userWordsetHistoryMapper;
 
     private final JPAQueryFactory queryFactory;
 
@@ -424,7 +426,7 @@ public class WordSetService implements IWordSetService {
     }
 
     @Transactional
-    public Page<WordSetReponseDTO> findAllMyRecentWordSets(Map<String, String> params, Pageable pageable) {
+    public Page<WordSetReponseDTO> findAllRecentWordSetsByCurrentUser(Map<String, String> params, Pageable pageable) {
 
         UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
 
@@ -432,21 +434,35 @@ public class WordSetService implements IWordSetService {
         QUser u = QUser.user;
         QUserWordsetHistory uwh = QUserWordsetHistory.userWordsetHistory;
 
-        List<WordSetReponseDTO> list = queryFactory
-                .select(Projections.bean(
-                        WordSetReponseDTO.class,
-                        ws.id,
-                        ws.title,
-                        ws.description,
-                        ws.thumbnail,
-                        ws.visibility,
-                        Projections.bean(UserWordsetHistoryResDTO.class,
-                                uwh.lastLearnedAt).as("userLearnHistory")))
-                .from(ws)
+        // build filter
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // filter
+        String keyword = params.get("keyword");
+        if (keyword != null && !keyword.isEmpty()) {
+            builder.and(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
+        }
+
+        // sort
+        OrderSpecifier<?> order = uwh.lastLearnedAt.desc();
+        String sort = params.get("sort");
+        if (sort != null && !sort.isEmpty()) {
+            String[] parts = sort.split(",");
+            String field = parts[0];
+            String dir = parts.length > 1 ? parts[1] : "desc";
+
+            boolean asc = dir.equalsIgnoreCase("asc");
+            switch (field.toLowerCase()) {
+                case "lastLearnedat" -> order = asc ? uwh.lastLearnedAt.asc() : uwh.lastLearnedAt.desc();
+            }
+        }
+
+        List<WordSet> wordSets = queryFactory
+                .selectFrom(ws)
                 .leftJoin(ws.userWordsetHistories, uwh)
                 .leftJoin(uwh.user, u)
-                .where(uwh.user.id.eq(userId))
-                .orderBy(uwh.lastLearnedAt.desc())
+                .where(builder.and(u.id.eq(userId)))
+                .orderBy(order)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -454,9 +470,19 @@ public class WordSetService implements IWordSetService {
         long total = queryFactory
                 .select(ws.count())
                 .from(ws)
+                .leftJoin(ws.userWordsetHistories, uwh)
+                .leftJoin(uwh.user, u)
+                .where(builder.and(u.id.eq(userId)))
                 .fetchOne();
 
-        return new PageImpl<>(list, pageable, total);
+        List<WordSetReponseDTO> dtos = wordSets.stream().map((wsItem) -> {
+            WordSetReponseDTO wordSetReponseDTO = this.wordSetMapper.convertToWordSetReponseDTO(wsItem);
+            wordSetReponseDTO.setUserLearnHistory(
+                    this.userWordsetHistoryMapper.convertToResDTO(wsItem.getUser().getUserWordsetHistories()));
+            return wordSetReponseDTO;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(dtos, pageable, total);
     }
 
     @Override
