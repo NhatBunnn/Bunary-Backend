@@ -20,7 +20,6 @@ import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.model.QUser;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.UserRepository;
-import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;

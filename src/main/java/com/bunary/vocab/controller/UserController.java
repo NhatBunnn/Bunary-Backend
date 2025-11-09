@@ -21,7 +21,6 @@ import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.mapper.UserMapper;
-import com.bunary.vocab.model.User;
 import com.bunary.vocab.scheduler.AccountCleanupTask;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
