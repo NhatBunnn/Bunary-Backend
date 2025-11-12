@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users", "/api/v1/auth/login", "/api/v1/auth/verify-email",
                                 "/api/v1/auth/send-code", "/removeaccount", "/api/v1/auth/refresh-Token",
-                                "/ws/**")
+                                "/ws/**", "/resources/**", "/images/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2

@@ -5,20 +5,20 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "term_media")
+@Table(name = "WordResourceImgs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TermMedia {
+public class WordResourceImg {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "term_id", nullable = false)
-    private Term term;
+    @JoinColumn(name = "WordResource_id", nullable = false)
+    private WordResource wordResource;
 
     @Column(nullable = false)
     private String mediaType;

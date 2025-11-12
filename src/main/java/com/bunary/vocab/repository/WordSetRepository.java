@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 

@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "terms")
+@Table(name = "WordResources")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Term {
+public class WordResource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,6 @@ public class Term {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "term", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TermMedia> medias;
+    @OneToMany(mappedBy = "wordResource", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WordResourceImg> wordResourceImgs;
 }

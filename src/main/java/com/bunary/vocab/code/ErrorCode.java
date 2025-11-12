@@ -11,6 +11,7 @@ public enum ErrorCode {
     NOT_FOUND(404, "NOT_FOUND", "not found"),
     ALREADY_EXISTS(409, "ALREADY_EXISTS", "already exists"),
     FORBIDDEN(403, "FORBIDDEN", "access denied"),
+    BAD_REQUEST(400, "BAD_REQUEST", "invalid request data"),
 
     // User
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "User not found"),

@@ -9,10 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class TermResDTO {
+public class WordResourceResDTO {
     private Long id;
 
     private String word;
 
-    private List<TermMediaResDTO> termMedias;
+    private List<WordResourceImgResDTO> images;
 }

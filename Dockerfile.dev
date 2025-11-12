@@ -1,0 +1,6 @@
+# Dev mode: Maven + Java 21 (phải dùng tag tồn tại)
+FROM maven:3.8.8-eclipse-temurin-21-alpine
+
+WORKDIR /app
+
+CMD ["mvn", "spring-boot:run"]

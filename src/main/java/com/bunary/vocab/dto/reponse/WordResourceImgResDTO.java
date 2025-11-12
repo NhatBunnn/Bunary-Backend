@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class TermMediaResDTO {
+public class WordResourceImgResDTO {
+    private Long id;
     private String url;
 }
