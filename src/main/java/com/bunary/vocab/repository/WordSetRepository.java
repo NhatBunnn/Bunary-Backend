@@ -70,4 +70,7 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpec
                         @Param("visibility") VisibilityEnum visibility,
                         Pageable pageable);
 
+        @EntityGraph(attributePaths = { "user" })
+        @Query("SELECT ws FROM WordSet ws WHERE ws.id = :wordSetId")
+        Optional<WordSet> findByIdWithUser(@Param("wordSetId") Long wordSetId);
 }

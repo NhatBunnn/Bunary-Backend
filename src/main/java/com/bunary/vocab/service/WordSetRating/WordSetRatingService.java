@@ -1,5 +1,6 @@
 package com.bunary.vocab.service.WordSetRating;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -7,10 +8,12 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.method.P;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.code.ErrorCode;
+import com.bunary.vocab.dto.reponse.NotificationResDTO;
+import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetRatingResDTO;
 import com.bunary.vocab.dto.request.WordSetRatingReqDTO;
 import com.bunary.vocab.exception.ApiException;
@@ -20,6 +23,7 @@ import com.bunary.vocab.model.WordSetRating;
 import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.WordSet;
+import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.repository.WordSetRatingRepo;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.repository.WordSetStatRepo;
@@ -37,6 +41,8 @@ public class WordSetRatingService implements IWordSetRatingService {
     private final WordSetRepository wordSetRepository;
     private final WordSetStatRepo wordSetStatRepo;
     private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Page<WordSetRatingResDTO> findAllByWordSetId(long wordSetId, Pageable pageable) {
@@ -59,8 +65,10 @@ public class WordSetRatingService implements IWordSetRatingService {
         }
 
         UUID userId = (UUID.fromString(this.securityUtil.getCurrentUser().get()));
+        WordSet wordset = this.wordSetRepository.findByIdWithUser(wordSetId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
-        if (!this.wordSetRepository.existsById(wordSetId)) {
+        if (wordset == null) {
             throw new ApiException(ErrorCode.ID_NOT_FOUND);
         }
 
@@ -85,6 +93,23 @@ public class WordSetRatingService implements IWordSetRatingService {
         stat.setRatingAvg(avgRating);
 
         this.wordSetStatRepo.save(stat);
+
+        // notification
+        User user = this.userRepository.findById(userId).orElseThrow();
+
+        NotificationResDTO notification = NotificationResDTO.builder()
+                .type("rate")
+                .message("đã đánh giá bộ từ vựng <strong>" + wordset.getTitle() + "</strong> của bạn")
+                .targetType("wordset")
+                .targetId(Long.toString(wordSetId))
+                .timestamp(Instant.now())
+                .fromUser(this.userMapper.convertToUserResponseDTO(user))
+                .build();
+
+        messagingTemplate.convertAndSendToUser(
+                wordset.getUser().getId().toString(),
+                "/queue/notifications",
+                notification);
 
         return this.wordSetRatingMapper.convertToResDTO(curRating);
     }

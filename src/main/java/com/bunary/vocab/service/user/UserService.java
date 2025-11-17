@@ -172,7 +172,7 @@ public class UserService implements IUserService {
         // Main query
         List<UserResponseDTO> userList = queryFactory
                 .select(Projections.bean(UserResponseDTO.class,
-                        user.avatar, user.email, user.fullName))
+                        user.id, user.avatar, user.email, user.fullName))
                 .from(user)
                 .where(builder)
                 .orderBy(order)
