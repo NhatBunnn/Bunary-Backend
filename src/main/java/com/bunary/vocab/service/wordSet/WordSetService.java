@@ -59,7 +59,6 @@ public class WordSetService implements IWordSetService {
     private final UserMapper userMapper;
     private final CollectionMapper collectionMapper;
     private final CloudinaryService cloudinaryService;
-    private final IUserService userService;
     private final SecurityUtil securityUtil;
     private final WordRepository wordRepository;
     private final WordSetStatRepo wordSetStatRepo;
@@ -280,11 +279,6 @@ public class WordSetService implements IWordSetService {
     public Page<WordSetReponseDTO> findAllByVisibilityWithUser(String visibility, Pageable pageable) {
         VisibilityEnum visibilityEnum = VisibilityEnum.valueOf(visibility);
 
-        // Specification<WordSet> spec = Specification
-        // .where(WordSetSpec.hasVisibility(visibilityEnum))
-        // .and(WordSetSpec.fetchUser());
-
-        // Page<WordSet> page = this.wordSetRepository.findAll(spec, pageable);
         Page<WordSet> page = this.wordSetRepository.findAllByVisibilityWithUser(visibilityEnum, pageable);
 
         List<WordSetReponseDTO> dtoList = page.stream().map(ws -> {

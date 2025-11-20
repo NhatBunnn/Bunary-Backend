@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/bunary?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  data:
+    mongodb:
+      uri: mongodb://root:123456@localhost:27017/Bunary-mongodb?authSource=admin
+      database: Bunary-mongodb
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bunbohue2725@gmail.com
+    password: eypm ahbr vyzs ituf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: ChGA5PzovOmGEsDeuHHtevoIdkFeq3BhKMIHjw/HDCd8gDaY43zY1PA1kre98pmxHwC10jLUEESobhxmyA2L5w==
+  access-token-validity: 900000000000
+  refresh-token-validity: 2592000
+
+cloudinary:
+  cloud-name: dlzp33vgj
+  api-key: 479655896743984
+  api-secret: wLhuwHyqLjYSm0wAGNE8HcauvwE

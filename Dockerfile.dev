@@ -1,6 +1,25 @@
-# Dev mode: Maven + Java 21 (phải dùng tag tồn tại)
-FROM maven:3.8.8-eclipse-temurin-21-alpine
+# base image
+FROM eclipse-temurin:21-jdk-jammy
 
+# cài maven
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+
+# thư mục làm việc
 WORKDIR /app
 
-CMD ["mvn", "spring-boot:run"]
+# copy pom + maven wrapper trước để cache dependency
+COPY pom.xml ./ 
+COPY mvnw ./ 
+COPY .mvn/ .mvn/
+
+# tải dependency offline (build lần đầu)
+RUN ./mvnw dependency:go-offline
+
+# copy toàn bộ source
+COPY src/ ./src/
+
+# expose port
+EXPOSE 8080
+
+# chạy spring boot dev mode
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=dev"]

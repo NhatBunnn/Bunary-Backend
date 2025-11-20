@@ -21,7 +21,6 @@ import com.bunary.vocab.repository.CollectionRepository;
 import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.security.SecurityUtil;
-import com.bunary.vocab.service.user.IUserService;
 
 import lombok.AllArgsConstructor;
 
