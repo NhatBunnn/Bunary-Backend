@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Success</title>
+</head>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const accessToken = params.get("accessToken");
+
+  // gửi accessToken về main window React 
+  // nào sửa cái targetOrigin
+  window.opener.postMessage({ success: true, accessToken }, "*");
+
+  // tự đóng popup
+  window.close();
+</script>
+</body>
+</html>

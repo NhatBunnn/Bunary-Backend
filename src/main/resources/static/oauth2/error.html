@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Error</title>
+</head>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const errorCode = params.get("code") || "UNKNOWN_ERROR";
+
+  // gửi lỗi về main window React
+  window.opener.postMessage({ success: false, errorCode }, "*"); 
+
+
+
+  // tự đóng popup
+  window.close();
+</script>
+</body>
+</html>

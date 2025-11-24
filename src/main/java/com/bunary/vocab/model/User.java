@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -69,6 +70,11 @@ public class User {
     private int status;
 
     private boolean isEmailVerified = false;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProviderEnum provider;
+
+    private String providerId;
 
     private Instant createdAt;
 

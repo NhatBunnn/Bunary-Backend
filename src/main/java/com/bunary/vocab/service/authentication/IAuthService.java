@@ -13,6 +13,8 @@ public interface IAuthService {
 
     AuthResponseDTO Login(UserRequestDTO user) throws Exception;
 
+    AuthResponseDTO authenticateWithGoogle(String code);
+
     AuthResponseDTO RefreshAccessToken(String refreshToken) throws Exception;
 
     AuthResponseDTO Logout(String refreshToken) throws Exception;

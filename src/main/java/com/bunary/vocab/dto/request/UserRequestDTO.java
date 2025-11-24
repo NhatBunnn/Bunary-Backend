@@ -1,7 +1,6 @@
 package com.bunary.vocab.dto.request;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 import com.bunary.vocab.model.enums.GenderEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;

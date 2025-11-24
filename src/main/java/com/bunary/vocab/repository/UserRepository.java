@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.bunary.vocab.model.User;
+import com.bunary.vocab.model.enums.AuthProviderEnum;
 
 // Interface Segregation Principle (OK) 
 public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
@@ -44,4 +45,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @EntityGraph(attributePaths = { "roles", "roles.permissions" })
     @Query("SELECT u FROM User u WHERE u.id = :id ")
     Optional<User> findByIdJoinRolesAndPers(@Param("id") UUID userId);
+
+    Optional<User> findByProviderAndProviderId(AuthProviderEnum provider, String providerId);
+
 }

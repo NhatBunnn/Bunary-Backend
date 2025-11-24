@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -67,9 +68,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Chỉ dùng với MVC, còn Restful thì tắt do có thể cấu hình token thủ công
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/users", "/api/v1/auth/login", "/api/v1/auth/verify-email",
-                                "/api/v1/auth/send-code", "/removeaccount", "/api/v1/auth/refresh-Token",
-                                "/ws/**", "/resources/**", "/images/**")
+                        .requestMatchers(
+                                "/api/v1/users",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/oauth2/google",
+                                "/api/v1/auth/oauth2/google/callback",
+                                "/oauth2/success.html",
+                                "/oauth2/error.html",
+                                "/api/v1/auth/verify-email",
+                                "/api/v1/auth/send-code",
+                                "/removeaccount",
+                                "/api/v1/auth/refresh-Token",
+                                "/ws/**",
+                                "/resources/**",
+                                "/images/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
