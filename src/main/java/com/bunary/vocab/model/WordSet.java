@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.model.enums.WordSetLevelEnum;
+import com.bunary.vocab.model.relation.WordSetTag;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -51,6 +53,9 @@ public class WordSet {
     @Column(length = 1000)
     private String thumbnail;
 
+    @Enumerated(EnumType.STRING)
+    private WordSetLevelEnum level;
+
     private Instant createdAt;
 
     private Instant updatedAt;
@@ -61,20 +66,23 @@ public class WordSet {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Word> Words;
+
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<WordSetTag> wordSetTags;
 
     @ManyToMany(mappedBy = "wordSets", fetch = FetchType.LAZY)
     private List<Collection> collections;
 
-    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<WordSetRating> wordSetRatings;
 
     @OneToOne(mappedBy = "wordSet", fetch = FetchType.LAZY)
     @JsonIgnore
     private WordSetStat wordSetStat;
 
-    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserWordsetHistory> userWordsetHistories;
 
     @PrePersist

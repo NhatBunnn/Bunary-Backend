@@ -14,12 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
-import com.bunary.vocab.dto.reponse.UserWordsetHistoryResDTO;
 import com.bunary.vocab.dto.reponse.WordSetReponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetStatResDTO;
+import com.bunary.vocab.dto.request.TagReqDTO;
 import com.bunary.vocab.dto.request.WordSetRequestDTO;
 import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.CollectionMapper;
+import com.bunary.vocab.mapper.TagMapper;
 import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.mapper.UserWordsetHistoryMapper;
 import com.bunary.vocab.mapper.WordMapper;
@@ -29,18 +30,21 @@ import com.bunary.vocab.model.QUser;
 import com.bunary.vocab.model.QUserWordsetHistory;
 import com.bunary.vocab.model.QWordSet;
 import com.bunary.vocab.model.QWordSetStat;
+import com.bunary.vocab.model.Tag;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.model.relation.WordSetTag;
+import com.bunary.vocab.repository.TagRepository;
 import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.repository.WordRepository;
 import com.bunary.vocab.repository.WordSetRepository;
 import com.bunary.vocab.repository.WordSetStatRepo;
+import com.bunary.vocab.repository.WordSetTagRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
-import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.wordSet.WordSetStatCalculator;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -63,8 +67,11 @@ public class WordSetService implements IWordSetService {
     private final WordRepository wordRepository;
     private final WordSetStatRepo wordSetStatRepo;
     private final WordSetStatMapper wordSetStatMapper;
+    private final TagMapper tagMapper;
     private final UserRepository userRepository;
     private final UserWordsetHistoryMapper userWordsetHistoryMapper;
+    private final TagRepository tagRepository;
+    private final WordSetTagRepository wordSetTagRepository;
 
     private final JPAQueryFactory queryFactory;
 
@@ -77,12 +84,6 @@ public class WordSetService implements IWordSetService {
     public Page<WordSet> findAllEntities(Pageable pageable) {
         return this.wordSetRepository.findAll(pageable);
     }
-
-    // @Override
-    // public Page<WordSetReponseDTO> findAll(Pageable pageable) {
-    // return
-    // this.wordSetMapper.convertToWordSetReponseDTO(this.findAllEntities(pageable));
-    // }
 
     @Override
     public Page<WordSetReponseDTO> findAllWithAuthor(Pageable pageable) {
@@ -102,6 +103,7 @@ public class WordSetService implements IWordSetService {
     }
 
     @Override
+    @Transactional
     public WordSetReponseDTO update(WordSetRequestDTO wordSetDTO, Long wordSetId, MultipartFile file) throws Exception {
 
         WordSet wordSet = this.wordSetRepository.findByIdWithWords(wordSetId)
@@ -121,6 +123,34 @@ public class WordSetService implements IWordSetService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Tags
+        // Lấy tất cả tags từ DB
+        List<Tag> dbTags = this.tagRepository.findAll();
+
+        // Tạo danh sách tags từ DTO
+        List<Tag> tags = new ArrayList<>();
+        if (wordSetDTO.getTags() != null) {
+            for (TagReqDTO t : wordSetDTO.getTags()) {
+                Tag dbTag = dbTags.stream()
+                        .filter(tag -> tag.getName().equalsIgnoreCase(t.getName()))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Tag not found: " + t.getName()));
+
+                tags.add(dbTag);
+            }
+        }
+        // gán tags cho wordset
+        List<WordSetTag> wordSetTags = new ArrayList<>();
+        for (Tag tag : tags) {
+            WordSetTag wordSetTag = new WordSetTag();
+            wordSetTag.setWordSet(wordSet);
+            wordSetTag.setTag(tag);
+            wordSetTags.add(wordSetTag);
+        }
+        wordSet.setWordSetTags(wordSetTags);
+
+        this.wordSetTagRepository.saveAll(wordSetTags);
 
         if (wordSetDTO.getRemovedWordIds() != null && !wordSetDTO.getRemovedWordIds().isEmpty()) {
             List<Word> words = this.wordRepository.findAllById(wordSetDTO.getRemovedWordIds());
@@ -180,14 +210,19 @@ public class WordSetService implements IWordSetService {
         // update words count tin
         WordSetStat stat = this.wordSetStatRepo.findByWordSetId(wordSetId)
                 .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
-        stat.setWordCount((long) wordSetDTO.getWord().size());
+        stat.setWordCount(wordSetDTO.getWord() != null ? (long) wordSetDTO.getWord().size() : 0L);
         this.wordSetStatRepo.save(stat);
 
-        return this.wordSetMapper.convertToWordSetReponseDTO(currentWordSet);
+        // end
+        WordSetReponseDTO result = this.wordSetMapper.convertToWordSetReponseDTO(currentWordSet);
+        result.setTags(this.tagMapper.convertToResDTO(tags));
+
+        return result;
 
     }
 
     @Override
+    @Transactional
     public WordSetReponseDTO createWordSet(WordSetRequestDTO wordSetDTO, MultipartFile file) throws Exception {
         // Wordset
         WordSet wordSet = this.wordSetMapper.convertToWordSet(wordSetDTO);
@@ -208,6 +243,36 @@ public class WordSetService implements IWordSetService {
             e.printStackTrace();
         }
 
+        // Tags
+        // Lấy tất cả tags từ DB
+        List<Tag> dbTags = this.tagRepository.findAll();
+
+        // Tạo danh sách tags từ DTO
+        List<Tag> tags = new ArrayList<>();
+        if (wordSetDTO.getTags() != null) {
+            for (TagReqDTO t : wordSetDTO.getTags()) {
+                // tìm tag trong DB theo name (bỏ qua chữ hoa thường)
+                Tag dbTag = dbTags.stream()
+                        .filter(tag -> tag.getName().equalsIgnoreCase(t.getName()))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Tag not found: " + t.getName()));
+
+                tags.add(dbTag);
+            }
+        }
+        // gán tags cho wordset
+        List<WordSetTag> wordSetTags = new ArrayList<>();
+        for (Tag tag : tags) {
+            WordSetTag wordSetTag = new WordSetTag();
+            wordSetTag.setWordSet(wordSet);
+            wordSetTag.setTag(tag);
+            wordSetTags.add(wordSetTag);
+        }
+        wordSet.setWordSetTags(wordSetTags);
+
+        this.wordSetTagRepository.saveAll(wordSetTags);
+
+        // Words
         List<Word> words = new ArrayList<>();
         if (wordSetDTO.getWord() != null) {
             words = wordSetDTO.getWord().stream().map((w) -> {
@@ -227,12 +292,16 @@ public class WordSetService implements IWordSetService {
         stat.setStudyCount(0);
         stat.setRatingAvg(0);
         stat.setPopularityScore(0);
-        stat.setWordCount((long) wordSetDTO.getWord().size());
+        stat.setWordCount(wordSetDTO.getWord() != null ? (long) wordSetDTO.getWord().size() : 0L);
         stat.setWordSet(curWordSet);
 
         this.wordSetStatRepo.save(stat);
 
-        return this.wordSetMapper.convertToWordSetReponseDTO(curWordSet);
+        // end
+        WordSetReponseDTO result = this.wordSetMapper.convertToWordSetReponseDTO(curWordSet);
+        result.setTags(this.tagMapper.convertToResDTO(tags));
+
+        return result;
     }
 
     @Override

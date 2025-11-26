@@ -2,8 +2,8 @@ package com.bunary.vocab.dto.request;
 
 import java.util.List;
 
-import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.model.enums.WordSetLevelEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +25,10 @@ public class WordSetRequestDTO {
     private VisibilityEnum visibility;
 
     private String author;
+
+    private WordSetLevelEnum level;
+
+    private List<TagReqDTO> tags;
 
     private List<WordRequestDTO> word;
 

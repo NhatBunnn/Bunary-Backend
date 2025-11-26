@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.bunary.vocab.dto.request.WordRequestDTO;
+
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.model.enums.WordSetLevelEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -30,9 +33,15 @@ public class WordSetReponseDTO {
 
     private VisibilityEnum visibility;
 
+    private WordSetLevelEnum level;
+
     private UUID authorId;
 
     private UserResponseDTO author;
+
+    private List<TagResDTO> tags = new ArrayList<>();
+
+    private List<WordRequestDTO> word = new ArrayList<>();
 
     private List<WordReponseDTO> words = new ArrayList<>();
 
