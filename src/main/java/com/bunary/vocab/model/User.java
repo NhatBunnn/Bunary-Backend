@@ -104,11 +104,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RefreshToken> refreshToken;
 
-    // @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch =
-    // FetchType.LAZY)
-    // @JsonIgnore
-    // private VerifyCode verifyCode;
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<WordSet> wordSet;
 

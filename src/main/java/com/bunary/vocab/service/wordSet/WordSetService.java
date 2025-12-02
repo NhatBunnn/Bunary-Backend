@@ -36,6 +36,7 @@ import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.enums.VisibilityEnum;
+import com.bunary.vocab.model.enums.WordSetLevelEnum;
 import com.bunary.vocab.model.relation.WordSetTag;
 import com.bunary.vocab.repository.TagRepository;
 import com.bunary.vocab.repository.UserRepository;
@@ -114,6 +115,7 @@ public class WordSetService implements IWordSetService {
             wordSet.setVisibility(VisibilityEnum.PRIVATE);
         }
         wordSet.setVisibility(wordSetDTO.getVisibility());
+        wordSet.setLevel(wordSetDTO.getLevel());
 
         try {
             if (file != null) {
@@ -463,7 +465,7 @@ public class WordSetService implements IWordSetService {
         List<WordSetReponseDTO> list = queryFactory
                 .select(Projections.bean(
                         WordSetReponseDTO.class,
-                        ws.id, ws.title, ws.description, ws.thumbnail, ws.visibility,
+                        ws.id, ws.level, ws.title, ws.description, ws.thumbnail, ws.visibility,
                         Projections.bean(UserResponseDTO.class, u.fullName, u.avatar).as("author"),
                         Projections.bean(WordSetStatResDTO.class,
                                 s.popularityScore, s.ratingAvg, s.viewCount, s.wordCount).as("stat")))

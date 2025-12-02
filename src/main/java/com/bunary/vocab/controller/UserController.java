@@ -20,7 +20,6 @@ import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
-import com.bunary.vocab.mapper.UserMapper;
 import com.bunary.vocab.scheduler.AccountCleanupTask;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
@@ -36,7 +35,6 @@ import lombok.AllArgsConstructor;
 public class UserController {
         private final IUserService userService;
         private final AccountCleanupTask accountCleanupTask;
-        private final UserMapper userMapper;
         private final SecurityUtil securityUtil;
 
         @GetMapping("/removeaccount")

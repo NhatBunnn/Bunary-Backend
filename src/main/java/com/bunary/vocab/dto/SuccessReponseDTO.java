@@ -1,8 +1,6 @@
 package com.bunary.vocab.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 import com.bunary.vocab.dto.reponse.PageResponseDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;

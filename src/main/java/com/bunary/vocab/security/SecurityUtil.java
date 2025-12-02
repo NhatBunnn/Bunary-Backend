@@ -3,6 +3,7 @@ package com.bunary.vocab.security;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,10 @@ public class SecurityUtil {
 
     public SecurityUtil(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
+    }
+
+    public UUID getCurrentUserId() {
+        return UUID.fromString(getCurrentUser().get());
     }
 
     public Optional<String> getCurrentUser() {

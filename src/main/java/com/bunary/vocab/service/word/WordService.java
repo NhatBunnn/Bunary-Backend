@@ -1,6 +1,5 @@
 package com.bunary.vocab.service.word;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;

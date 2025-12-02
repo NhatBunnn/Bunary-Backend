@@ -1,0 +1,174 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.1.1">
+  <diagram name="Page-1" id="u3c5zhLIPOpgyAabndxp">
+    <mxGraphModel dx="1183" dy="1708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="q8qiklCeVRdyjentnka0-1" parent="1" style="swimlane;html=1;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;startSize=20;whiteSpace=wrap;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="User Stats Snapshot Lifecycle" vertex="1">
+          <mxGeometry height="1150" width="1070" x="190" y="-140" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-2" parent="q8qiklCeVRdyjentnka0-1" style="swimlane;html=1;startSize=20;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="User&amp;nbsp;" vertex="1">
+          <mxGeometry height="1130" width="150" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-3" parent="q8qiklCeVRdyjentnka0-2" style="ellipse;html=1;shape=startState;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-4" edge="1" parent="q8qiklCeVRdyjentnka0-2" source="q8qiklCeVRdyjentnka0-3" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=none;fontColor=default;strokeColor=#E07A5F;" target="q8qiklCeVRdyjentnka0-7" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-7" parent="q8qiklCeVRdyjentnka0-2" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="User finished cousre" vertex="1">
+          <mxGeometry height="40" width="120" x="15" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-6" edge="1" parent="q8qiklCeVRdyjentnka0-1" source="q8qiklCeVRdyjentnka0-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;fontColor=default;strokeColor=#E07A5F;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="q8qiklCeVRdyjentnka0-9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-8" parent="q8qiklCeVRdyjentnka0-1" style="swimlane;html=1;startSize=20;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="System" vertex="1">
+          <mxGeometry height="1130" width="920" x="150" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-25" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="q8qiklCeVRdyjentnka0-98" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-9" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="&lt;div&gt;call method:&lt;/div&gt;apply stats_snapshot" vertex="1">
+          <mxGeometry height="40" width="120" x="200" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-30" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="snapshop.createAt + 30 days &amp;lt;&amp;nbsp; now" vertex="1">
+          <mxGeometry height="50" width="230" x="490" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-34" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="snapshop.createAt + 90 days &amp;lt;&amp;nbsp; now" vertex="1">
+          <mxGeometry height="50" width="230" x="760" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-69" edge="1" parent="q8qiklCeVRdyjentnka0-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="190" y="923" as="sourcePoint" />
+            <mxPoint x="190" y="963" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-71" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-70" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-65" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="create new snapshot.30days" vertex="1">
+          <mxGeometry height="40" width="240" x="680" y="773" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-70" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="snapshot.period.30days += snapshot.period.7days&amp;nbsp;" vertex="1">
+          <mxGeometry height="40" width="205" x="697.5" y="843" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-74" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-72" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="190.07142857142844" y="883" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-77" connectable="0" parent="q8qiklCeVRdyjentnka0-74" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="TRUE" vertex="1">
+          <mxGeometry relative="1" x="-0.0841" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-76" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-72" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-75">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-78" connectable="0" parent="q8qiklCeVRdyjentnka0-76" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="FALSE" vertex="1">
+          <mxGeometry relative="1" x="-0.0586" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-72" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="snapshop.createAt + 30 days &amp;lt;&amp;nbsp; now" vertex="1">
+          <mxGeometry height="40" width="240" x="257.5" y="773" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-80" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-79">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-81" connectable="0" parent="q8qiklCeVRdyjentnka0-80" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="TRUE" vertex="1">
+          <mxGeometry relative="1" x="-0.1101" y="-3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-92" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="q8qiklCeVRdyjentnka0-87">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-94" connectable="0" parent="q8qiklCeVRdyjentnka0-92" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="FALSE" vertex="1">
+          <mxGeometry relative="1" x="-0.2272" y="4" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-75" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="fetch snapshot.period = 90days" vertex="1">
+          <mxGeometry height="40" width="205" x="442.5" y="883" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-96" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-79" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-95">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-97" connectable="0" parent="q8qiklCeVRdyjentnka0-96" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="FALSE" vertex="1">
+          <mxGeometry relative="1" x="-0.0553" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-79" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="snapshop.createAt + 90 days &amp;lt;&amp;nbsp; now" vertex="1">
+          <mxGeometry height="40" width="205" x="317.5" y="983" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-86" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-85" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-82" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="snapshot.period.90days &#39;s data+= snapshot.period.30days &#39;s data" vertex="1">
+          <mxGeometry height="40" width="205" x="212.5" y="1083" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-83" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-79" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.446;entryY=0.025;entryDx=0;entryDy=0;entryPerimeter=0;" target="q8qiklCeVRdyjentnka0-82">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-84" connectable="0" parent="q8qiklCeVRdyjentnka0-83" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="TRUE" vertex="1">
+          <mxGeometry relative="1" x="0.0218" y="-4" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-85" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="reset snapshot.30day &#39;s data&amp;nbsp;" vertex="1">
+          <mxGeometry height="40" width="205" x="212.5" y="1163" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-87" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="create new snapshot.90days" vertex="1">
+          <mxGeometry height="40" width="205" x="622.5" y="983" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-91" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.63;entryY=-0.015;entryDx=0;entryDy=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="216.6500000000001" y="882.4000000000001" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-95" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="delete snapshot.90day &#39;s data" vertex="1">
+          <mxGeometry height="40" width="205" x="475" y="1083" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-103" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-101" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-98" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="Find snapshot list order by create_At desc" vertex="1">
+          <mxGeometry height="40" width="230" x="145" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-105" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-104">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-106" connectable="0" parent="q8qiklCeVRdyjentnka0-105" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="FALSE" vertex="1">
+          <mxGeometry relative="1" x="-0.068" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-150" edge="1" parent="q8qiklCeVRdyjentnka0-8" source="q8qiklCeVRdyjentnka0-101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="q8qiklCeVRdyjentnka0-149">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-151" connectable="0" parent="q8qiklCeVRdyjentnka0-150" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="TRUE" vertex="1">
+          <mxGeometry relative="1" x="0.101" y="3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-101" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="check 7days snapshot expired?" vertex="1">
+          <mxGeometry height="40" width="230" x="145" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-104" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="continue" vertex="1">
+          <mxGeometry height="40" width="230" x="10" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="q8qiklCeVRdyjentnka0-149" parent="q8qiklCeVRdyjentnka0-8" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" value="copy data from 7 dáy snapshot" vertex="1">
+          <mxGeometry height="40" width="230" x="305" y="460" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

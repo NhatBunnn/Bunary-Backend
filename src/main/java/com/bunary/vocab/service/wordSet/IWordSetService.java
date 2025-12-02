@@ -13,7 +13,7 @@ import com.bunary.vocab.model.WordSet;
 public interface IWordSetService {
     WordSet save(WordSet wordSet);
 
-    public Page<WordSet> findAllEntities(Pageable pageable);
+    Page<WordSet> findAllEntities(Pageable pageable);
 
     WordSetReponseDTO update(WordSetRequestDTO wordSet, Long wordSetId, MultipartFile file) throws Exception;
 
