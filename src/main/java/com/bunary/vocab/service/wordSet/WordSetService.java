@@ -3,6 +3,7 @@ package com.bunary.vocab.service.wordSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -109,6 +110,10 @@ public class WordSetService implements IWordSetService {
 
         WordSet wordSet = this.wordSetRepository.findByIdWithWords(wordSetId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        // check access permission
+        this.checkAccess(wordSet);
+
         wordSet.setTitle(wordSetDTO.getTitle());
         wordSet.setDescription(wordSetDTO.getDescription());
         if (wordSetDTO.getVisibility() == null) {
@@ -563,6 +568,18 @@ public class WordSetService implements IWordSetService {
                 wordsets,
                 pageable,
                 wordsetsPage.getTotalElements());
+    }
+
+    public void checkAccess(WordSet wordSet) {
+        UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
+        Set<String> roles = this.securityUtil.getCurrentUserRoles();
+
+        boolean isOwner = wordSet.getUser().getId().equals(userId);
+        boolean isAdmin = roles.contains("ROLE_ADMIN");
+
+        if (!isOwner && !isAdmin) {
+            throw new ApiException(ErrorCode.FORBIDDEN);
+        }
     }
 
 }

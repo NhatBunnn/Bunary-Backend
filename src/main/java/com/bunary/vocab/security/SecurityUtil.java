@@ -48,7 +48,7 @@ public class SecurityUtil {
         return getCurrentUserRoles().contains(role);
     }
 
-    private Set<String> getCurrentUserRoles() {
+    public Set<String> getCurrentUserRoles() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getAuthorities() == null) {
             return Collections.emptySet();

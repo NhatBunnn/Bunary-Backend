@@ -11,14 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.Map;
-
-import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.AuthResponseDTO;
 import com.bunary.vocab.dto.reponse.VerifyCodeReponseDTO;
@@ -29,7 +23,7 @@ import com.bunary.vocab.service.authentication.IAuthService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 @RestController
 public class AuthController {
         @Autowired
@@ -47,44 +41,44 @@ public class AuthController {
         @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
         private String redirectUri;
 
-        @PostMapping("/users")
-        public ResponseEntity<?> register(@RequestBody UserRequestDTO user) throws Exception {
-                boolean result = this.authService.register(user);
-
-                return ResponseEntity.ok()
-                                .body(SuccessReponseDTO.builder()
+        @PostMapping("/register")
+        public ResponseEntity<SuccessReponseDTO<Boolean>> register(@RequestBody UserRequestDTO user) throws Exception {
+                boolean result = authService.register(user);
+                return ResponseEntity.ok(
+                                SuccessReponseDTO.<Boolean>builder()
                                                 .statusCode(200)
                                                 .message("Registered successfully")
                                                 .data(result)
                                                 .build());
         }
 
-        @PostMapping("/auth/verify-email")
-        public ResponseEntity<?> verifyCode(@RequestBody VerifyCodeReponseDTO verifyCode) {
+        @PostMapping("/verify-email")
+        public ResponseEntity<SuccessReponseDTO<AuthResponseDTO>> verifyCode(
+                        @RequestBody VerifyCodeReponseDTO verifyCode) {
                 AuthResponseDTO result = this.verifyCodeService.verifyCode(verifyCode);
 
                 return ResponseEntity.ok()
                                 .header("Set-Cookie", result.getResponseCookie().toString())
-                                .body(SuccessReponseDTO.builder()
+                                .body(SuccessReponseDTO.<AuthResponseDTO>builder()
                                                 .statusCode(200)
                                                 .message("Email verification successful")
                                                 .data(result)
                                                 .build());
         }
 
-        @PostMapping("/auth/send-code")
-        public ResponseEntity<?> resendCode(@RequestBody UserRequestDTO userReq) {
+        @PostMapping("/send-code")
+        public ResponseEntity<SuccessReponseDTO<Boolean>> resendCode(@RequestBody UserRequestDTO userReq) {
                 boolean result = this.authService.sendCode(userReq);
 
                 return ResponseEntity.ok()
-                                .body(SuccessReponseDTO.builder()
+                                .body(SuccessReponseDTO.<Boolean>builder()
                                                 .statusCode(200)
                                                 .message("Code sent successfully")
                                                 .data(result)
                                                 .build());
         }
 
-        @PostMapping("/auth/login")
+        @PostMapping("/login")
         public ResponseEntity<?> Login(@RequestBody UserRequestDTO user) throws Exception {
                 AuthResponseDTO result = this.authService.Login(user);
 
@@ -97,7 +91,7 @@ public class AuthController {
                                                 .build());
         }
 
-        @GetMapping("/auth/oauth2/google")
+        @GetMapping("/oauth2/google")
         public String redirectToGoogle() {
                 String url = "https://accounts.google.com/o/oauth2/v2/auth"
                                 + "?client_id=" + clientId
@@ -110,7 +104,7 @@ public class AuthController {
                 return url;
         }
 
-        @GetMapping("/auth/oauth2/google/callback")
+        @GetMapping("/oauth2/google/callback")
         public void authenticateWithGoogle(@RequestParam("code") String code, HttpServletResponse response)
                         throws IOException {
                 try {
@@ -124,7 +118,7 @@ public class AuthController {
 
         }
 
-        @GetMapping("/auth/refresh-Token")
+        @GetMapping("/refresh-Token")
         public ResponseEntity<?> RefreshAccessToken(@CookieValue(name = "refresh_token") String refreshToken)
                         throws Exception {
                 AuthResponseDTO result = this.authService.RefreshAccessToken(refreshToken);
@@ -138,7 +132,7 @@ public class AuthController {
                                                 .build());
         }
 
-        @GetMapping("/auth/logout")
+        @GetMapping("/logout")
         public ResponseEntity<?> Logout(@CookieValue(name = "refresh_token") String refreshToken)
                         throws Exception {
                 AuthResponseDTO result = this.authService.Logout(refreshToken);
