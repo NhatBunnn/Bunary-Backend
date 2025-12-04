@@ -6,6 +6,7 @@ import java.util.List;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 import com.bunary.vocab.model.enums.WordSetLevelEnum;
 import com.bunary.vocab.model.relation.WordSetTag;
+import com.bunary.vocab.user.model.UserWordSetProgress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -84,6 +85,9 @@ public class WordSet {
 
     @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserWordsetHistory> userWordsetHistories;
+
+    @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserWordSetProgress> userWordSetProgresses;
 
     @PrePersist
     protected void onCreate() {

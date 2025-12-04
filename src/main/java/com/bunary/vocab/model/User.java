@@ -10,6 +10,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
+import com.bunary.vocab.user.model.UserWordSetProgress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.CascadeType;
@@ -122,5 +123,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserWordsetHistory> userWordsetHistories;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserWordSetProgress> userWordSetProgresses;
 
 }

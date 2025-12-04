@@ -17,8 +17,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -37,6 +39,9 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
     private JwtUtil jwtUtil;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     @Value("${cloudinary.cloud-name}")
     private String cloudName;
@@ -93,7 +98,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*")); // Cho phép tất cả header
         configuration.setAllowCredentials(true);
@@ -146,7 +151,15 @@ public class SecurityConfig {
                 .macAlgorithm(jwtUtil.getMacAlgorithm()).build();
         return token -> {
             try {
-                return jwtDecoder.decode(token);
+                Jwt jwt = jwtDecoder.decode(token);
+
+                // kiểm tra loại token
+                String type = jwt.getClaimAsString("type");
+                if (!"access".equals(type)) {
+                    throw new JwtException("Invalid token type: only access tokens allowed");
+                }
+
+                return jwt;
             } catch (Exception e) {
                 System.out.println("JWT error: " + e.getMessage());
                 throw e;

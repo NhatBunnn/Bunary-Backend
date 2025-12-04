@@ -1,7 +1,6 @@
 package com.bunary.vocab.service.authentication;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,6 +37,8 @@ import com.bunary.vocab.service.refreshToken.IRefreshTokenService;
 import com.bunary.vocab.service.role.IRoleService;
 import com.bunary.vocab.service.user.IUserService;
 import com.bunary.vocab.util.setting.LearningSettingsFactory;
+
+import jakarta.transaction.Transactional;
 
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -85,6 +86,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponseDTO authenticateWithGoogle(String code) {
 
         String tokenUrl = "https://oauth2.googleapis.com/token";
@@ -153,8 +155,14 @@ public class AuthService implements IAuthService {
             user.setProvider(AuthProviderEnum.GOOGLE);
             user.setProviderId(providerId);
             user.getRoles().add(role);
+            user.setEmailVerified(true);
 
             user = this.userRepository.save(user);
+
+            Setting setting = LearningSettingsFactory.defaultFlashCard();
+            setting.setUser(user);
+
+            this.settingRepo.save(setting);
         }
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
@@ -180,6 +188,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponseDTO Login(UserRequestDTO user) throws Exception {
         try {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.getEmail(),
@@ -213,6 +222,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public boolean register(UserRequestDTO user) throws Exception {
         boolean isEmailExit = this.userService.existsByEmail(user.getEmail());
 
@@ -242,6 +252,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponseDTO RefreshAccessToken(String refreshToken) throws Exception {
         if (refreshToken.equals(""))
             throw new ApiException(ErrorCode.AUTH_SESSION_INVALID);
@@ -281,6 +292,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponseDTO Logout(String refreshToken) throws Exception {
         if (refreshToken.equals(""))
             throw new ApiException(ErrorCode.AUTH_SESSION_INVALID);

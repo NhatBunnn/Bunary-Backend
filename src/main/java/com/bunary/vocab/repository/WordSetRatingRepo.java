@@ -19,6 +19,8 @@ public interface WordSetRatingRepo extends JpaRepository<WordSetRating, Long> {
     @Query("SELECT AVG(r.value) FROM WordSetRating r WHERE r.wordSet.id = :wordSetId")
     Double findAvgRatingByWordSet(@Param("wordSetId") Long wordSetId);
 
+    Long countByWordSetId(Long wordSetId);
+
     @EntityGraph(attributePaths = { "user" })
     Page<WordSetRating> findAllByWordSet_Id(Long wordSetId, Pageable pageable);
 }

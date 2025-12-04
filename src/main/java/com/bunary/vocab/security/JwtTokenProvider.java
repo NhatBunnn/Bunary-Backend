@@ -53,6 +53,7 @@ public class JwtTokenProvider {
                                                 "lastName", user.getLastName()))
                                 .claim("roles", roles)
                                 .claim("scope", String.join(" ", permissions))
+                                .claim("type", "access")
                                 .build();
 
                 String token = this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();
@@ -70,11 +71,7 @@ public class JwtTokenProvider {
                                 .issuedAt(now)
                                 .expiresAt(expiry)
                                 .subject(user.getId() + "")
-                                // Ko cần thiết lằm, nào rảnh thì bỏ
-                                .claim("user", Map.of(
-                                                "email", user.getEmail(),
-                                                "firstName", user.getFirstName(),
-                                                "lastName", user.getLastName()))
+                                .claim("type", "refresh")
                                 .build();
 
                 String token = this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();

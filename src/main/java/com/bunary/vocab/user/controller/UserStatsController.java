@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserStatsController {
     private final IUserStatsSvc userStatsSvc;
 
-    @GetMapping("/userstats/{id}")
-    public ResponseEntity<?> findByUserId(@PathVariable String id) throws Exception {
-        UserStatsResDTO result = this.userStatsSvc.findByUserId(UUID.fromString(id));
+    @GetMapping("/users/{userid}/stats")
+    public ResponseEntity<?> findByUserId(@PathVariable String userid) throws Exception {
+        UserStatsResDTO result = this.userStatsSvc.findByUserId(UUID.fromString(userid));
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()

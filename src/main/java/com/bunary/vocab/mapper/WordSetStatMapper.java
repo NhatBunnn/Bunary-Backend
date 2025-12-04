@@ -24,6 +24,7 @@ public class WordSetStatMapper implements IMapper<WordSetStat, WordSetStatReqDTO
                 .viewCount(entity.getViewCount())
                 .studyCount(entity.getStudyCount())
                 .ratingAvg(entity.getRatingAvg())
+                .ratingCount(entity.getRatingCount())
                 .popularityScore(entity.getPopularityScore())
                 .build();
 

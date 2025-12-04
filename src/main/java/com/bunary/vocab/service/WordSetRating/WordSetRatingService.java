@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.NotificationResDTO;
-import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.bunary.vocab.dto.reponse.WordSetRatingResDTO;
 import com.bunary.vocab.dto.request.WordSetRatingReqDTO;
 import com.bunary.vocab.exception.ApiException;
@@ -85,13 +84,21 @@ public class WordSetRatingService implements IWordSetRatingService {
         }
 
         WordSetRating curRating = this.ratingRepo.save(rating);
-
-        Double avgRating = ratingRepo.findAvgRatingByWordSet(wordSetId);
-
         WordSetStat stat = this.wordSetStatRepo.findByWordSetId(wordSetId)
                 .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
-        stat.setRatingAvg(avgRating);
 
+        // update avg rating
+        Long countRating = ratingRepo.countByWordSetId(wordSetId);
+
+        if (countRating >= 2) {
+            // caculate avg rating
+            Double avgRating = ratingRepo.findAvgRatingByWordSet(wordSetId);
+            double roundedAvg = Math.round(avgRating * 10.0) / 10.0;
+
+            stat.setRatingAvg(roundedAvg);
+        }
+
+        stat.setRatingCount(countRating);
         this.wordSetStatRepo.save(stat);
 
         // notification

@@ -39,6 +39,8 @@ public class WordSetStat {
 
     private Long wordCount;
 
+    // Rating stats
+    private long ratingCount;
     private double ratingAvg;
 
     private double popularityScore;

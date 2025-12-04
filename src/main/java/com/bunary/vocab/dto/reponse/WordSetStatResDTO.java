@@ -21,6 +21,8 @@ public class WordSetStatResDTO {
 
     private Long wordCount;
 
+    // Rating stats
+    private Long ratingCount;
     private double ratingAvg;
 
     private double popularityScore;
