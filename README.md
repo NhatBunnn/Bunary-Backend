@@ -6,7 +6,27 @@
 
 ## 📝 Giới thiệu
 
-**BunBlog** là một dự án backend cho một nền tảng blog hiện đại, được xây dựng bằng **Java 21** và **Spring Boot 3**. Dự án cung cấp một bộ API RESTful mạnh mẽ để quản lý bài viết, người dùng, xác thực, và nhiều tính năng khác.
+**Bunary** là nền tảng học tiếng Anh thông minh, tập trung vào **học từ vựng bằng flashcard**:
+
+- Học theo **wordset** và **flashcard**, giúp ghi nhớ từ vựng hiệu quả hơn.
+- Theo dõi **tiến độ học tập của người dùng** để tối ưu lộ trình học.
+- Hỗ trợ **nâng cấp bằng tiền thật** hoặc dùng tính năng miễn phí.
+- Cho phép **follow các bộ từ vựng** của người khác để học và trao đổi.
+- Tích hợp các tính năng **thời gian thực** và **gợi ý học tập AI** trong tương lai.
+
+## 🏗️ Kiến trúc dự án - **Module-based Architecture**
+
+**Bunary** được tổ chức theo **module-based architecture** để tối ưu maintainability và mở rộng:
+
+- Các module tách riêng theo **domain / chức năng**: `user`, `wordset`, `flashcard`, `payment`, `progress`.
+- Mỗi module chứa đầy đủ:
+  - **Entity / Model**
+  - **Repository**
+  - **Service**
+  - **Controller**
+  - **DTO / Mapper** nếu cần
+- Giúp code **dễ bảo trì**, dễ **thêm tính năng mới**, và chuẩn bị cho việc mở rộng sang **microservice**.
+- 💡 Hiện tại dự án đang **refactor từ type-based sang module-based**, tối ưu hóa tổ chức code và cải thiện maintainability.
 
 ## ✨ Tính năng chính
 
