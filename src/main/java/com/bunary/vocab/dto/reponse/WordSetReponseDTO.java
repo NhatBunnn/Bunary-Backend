@@ -49,6 +49,4 @@ public class WordSetReponseDTO {
 
     public WordSetStatResDTO stat;
 
-    public List<UserWordsetHistoryResDTO> userLearnHistory;
-
 }

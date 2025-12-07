@@ -23,12 +23,10 @@ import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.mapper.CollectionMapper;
 import com.bunary.vocab.mapper.TagMapper;
 import com.bunary.vocab.mapper.UserMapper;
-import com.bunary.vocab.mapper.UserWordsetHistoryMapper;
 import com.bunary.vocab.mapper.WordMapper;
 import com.bunary.vocab.mapper.WordSetMapper;
 import com.bunary.vocab.mapper.WordSetStatMapper;
 import com.bunary.vocab.model.QUser;
-import com.bunary.vocab.model.QUserWordsetHistory;
 import com.bunary.vocab.model.QWordSet;
 import com.bunary.vocab.model.QWordSetStat;
 import com.bunary.vocab.model.Tag;
@@ -37,7 +35,6 @@ import com.bunary.vocab.model.Word;
 import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.model.WordSetStat;
 import com.bunary.vocab.model.enums.VisibilityEnum;
-import com.bunary.vocab.model.enums.WordSetLevelEnum;
 import com.bunary.vocab.model.relation.WordSetTag;
 import com.bunary.vocab.repository.TagRepository;
 import com.bunary.vocab.repository.UserRepository;
@@ -71,7 +68,6 @@ public class WordSetService implements IWordSetService {
     private final WordSetStatMapper wordSetStatMapper;
     private final TagMapper tagMapper;
     private final UserRepository userRepository;
-    private final UserWordsetHistoryMapper userWordsetHistoryMapper;
     private final TagRepository tagRepository;
     private final WordSetTagRepository wordSetTagRepository;
 
@@ -493,66 +489,6 @@ public class WordSetService implements IWordSetService {
                 .fetchOne();
 
         return new PageImpl<>(list, pageable, total);
-    }
-
-    @Transactional
-    public Page<WordSetReponseDTO> findAllRecentWordSetsByCurrentUser(Map<String, String> params, Pageable pageable) {
-
-        UUID userId = UUID.fromString(this.securityUtil.getCurrentUser().get());
-
-        QWordSet ws = QWordSet.wordSet;
-        QUser u = QUser.user;
-        QUserWordsetHistory uwh = QUserWordsetHistory.userWordsetHistory;
-
-        // build filter
-        BooleanBuilder builder = new BooleanBuilder();
-
-        // filter
-        String keyword = params.get("keyword");
-        if (keyword != null && !keyword.isEmpty()) {
-            builder.and(ws.title.lower().like("%" + keyword.toLowerCase() + "%"));
-        }
-
-        // sort
-        OrderSpecifier<?> order = uwh.lastLearnedAt.desc();
-        String sort = params.get("sort");
-        if (sort != null && !sort.isEmpty()) {
-            String[] parts = sort.split(",");
-            String field = parts[0];
-            String dir = parts.length > 1 ? parts[1] : "desc";
-
-            boolean asc = dir.equalsIgnoreCase("asc");
-            switch (field.toLowerCase()) {
-                case "lastLearnedat" -> order = asc ? uwh.lastLearnedAt.asc() : uwh.lastLearnedAt.desc();
-            }
-        }
-
-        List<WordSet> wordSets = queryFactory
-                .selectFrom(ws)
-                .leftJoin(ws.userWordsetHistories, uwh)
-                .leftJoin(uwh.user, u)
-                .where(builder.and(u.id.eq(userId)))
-                .orderBy(order)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        long total = queryFactory
-                .select(ws.count())
-                .from(ws)
-                .leftJoin(ws.userWordsetHistories, uwh)
-                .leftJoin(uwh.user, u)
-                .where(builder.and(u.id.eq(userId)))
-                .fetchOne();
-
-        List<WordSetReponseDTO> dtos = wordSets.stream().map((wsItem) -> {
-            WordSetReponseDTO wordSetReponseDTO = this.wordSetMapper.convertToWordSetReponseDTO(wsItem);
-            wordSetReponseDTO.setUserLearnHistory(
-                    this.userWordsetHistoryMapper.convertToResDTO(wsItem.getUser().getUserWordsetHistories()));
-            return wordSetReponseDTO;
-        }).collect(Collectors.toList());
-
-        return new PageImpl<>(dtos, pageable, total);
     }
 
     @Override

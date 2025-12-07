@@ -3,6 +3,8 @@ package com.bunary.vocab.model;
 import java.time.Instant;
 import java.util.List;
 
+import com.bunary.vocab.learning.model.UserWordSetDaily;
+import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 import com.bunary.vocab.model.enums.WordSetLevelEnum;
 import com.bunary.vocab.model.relation.WordSetTag;
@@ -84,10 +86,10 @@ public class WordSet {
     private WordSetStat wordSetStat;
 
     @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserWordsetHistory> userWordsetHistories;
+    private List<UserWordSetProgress> userWordSetProgresses;
 
     @OneToMany(mappedBy = "wordSet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserWordSetProgress> userWordSetProgresses;
+    private List<UserWordSetRecent> userWordSetRecents;
 
     @PrePersist
     protected void onCreate() {

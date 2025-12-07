@@ -33,8 +33,8 @@ public class UserStatsSvc implements IUserStatsSvc {
         UserStats userStats = userStatsRepo.findByUserId(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
-        userStats.setXp(userStats.getXp() + 10);
-        userStats.setLearnedWordSet(userStats.getLearnedWordSet() + 1);
+        userStats.setPoint(userStats.getPoint() + 10);
+        userStats.setLearnedWordSetsCount(userStats.getLearnedWordSetsCount() + 1);
 
         userStatsRepo.save(userStats);
 

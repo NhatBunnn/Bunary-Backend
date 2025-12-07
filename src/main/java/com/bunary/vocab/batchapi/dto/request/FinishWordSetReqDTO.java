@@ -1,6 +1,6 @@
 package com.bunary.vocab.batchapi.dto.request;
 
-import com.bunary.vocab.dto.reponse.UserWordsetHistoryResDTO;
+import com.bunary.vocab.learning.dto.request.UserWsRecentReqDTO;
 import com.bunary.vocab.user.dto.request.UserWsProgressReqDTO;
 
 import lombok.AllArgsConstructor;
@@ -12,5 +12,6 @@ import lombok.Setter;
 @Setter
 public class FinishWordSetReqDTO {
     private final UserWsProgressReqDTO progress;
-    private final UserWordsetHistoryResDTO history;
+
+    private final UserWsRecentReqDTO recent;
 }

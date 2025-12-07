@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.bunary.vocab.learning.model.UserWordSetDaily;
+import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
 import com.bunary.vocab.user.model.UserWordSetProgress;
@@ -122,9 +124,12 @@ public class User {
     private List<WordSetRating> wordSetRatings;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserWordsetHistory> userWordsetHistories;
+    private List<UserWordSetProgress> userWordSetProgresses;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserWordSetProgress> userWordSetProgresses;
+    private List<UserWordSetRecent> userWordSetRecents;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserWordSetDaily> userWordSetDaily;
 
 }

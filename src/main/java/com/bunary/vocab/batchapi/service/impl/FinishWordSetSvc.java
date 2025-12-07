@@ -6,11 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.batchapi.dto.request.FinishWordSetReqDTO;
 import com.bunary.vocab.batchapi.service.IFinishWordSetSvc;
+import com.bunary.vocab.learning.service.IUserWsRecentSvc;
 import com.bunary.vocab.security.SecurityUtil;
-import com.bunary.vocab.service.UserWordsetHistory.IUserWordsetHistoryService;
-import com.bunary.vocab.user.dto.response.UserStatsResDTO;
-import com.bunary.vocab.user.service.IUserStatsSvc;
-import com.bunary.vocab.user.service.IUserWsProgressSvc;
+import com.bunary.vocab.service.wordSetStat.IWordSetStatService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -18,9 +16,8 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class FinishWordSetSvc implements IFinishWordSetSvc {
-    private final IUserStatsSvc userStatsSvc;
-    private final IUserWsProgressSvc userWsProgressSvc;
-    private final IUserWordsetHistoryService userWordsetHistoryService;
+    private final IWordSetStatService wordSetStatService;
+    private final IUserWsRecentSvc userWsRecentSvc;
 
     private final SecurityUtil securityUtil;
 
@@ -29,9 +26,9 @@ public class FinishWordSetSvc implements IFinishWordSetSvc {
     public void finish(Long wordSetId, FinishWordSetReqDTO request) {
         UUID userId = securityUtil.getCurrentUserId();
 
-        this.userWordsetHistoryService.recordWordSetStudy(wordSetId);
+        this.userWsRecentSvc.record(wordSetId);
 
-        this.userWsProgressSvc.record(wordSetId, request.getProgress());
+        this.wordSetStatService.increaseStudy(wordSetId);
 
         /**
          * Update user stats
