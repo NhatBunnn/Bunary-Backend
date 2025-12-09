@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.batchapi.dto.request.FinishWordSetReqDTO;
 import com.bunary.vocab.batchapi.service.IFinishWordSetSvc;
+import com.bunary.vocab.learning.service.IUserWsDailySvc;
 import com.bunary.vocab.learning.service.IUserWsRecentSvc;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.wordSetStat.IWordSetStatService;
@@ -18,6 +19,7 @@ import lombok.AllArgsConstructor;
 public class FinishWordSetSvc implements IFinishWordSetSvc {
     private final IWordSetStatService wordSetStatService;
     private final IUserWsRecentSvc userWsRecentSvc;
+    private final IUserWsDailySvc userWsDailySvc;
 
     private final SecurityUtil securityUtil;
 
@@ -29,6 +31,8 @@ public class FinishWordSetSvc implements IFinishWordSetSvc {
         this.userWsRecentSvc.record(wordSetId);
 
         this.wordSetStatService.increaseStudy(wordSetId);
+
+        this.userWsDailySvc.record();
 
         /**
          * Update user stats

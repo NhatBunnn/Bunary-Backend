@@ -10,5 +10,6 @@ import com.bunary.vocab.learning.model.UserWordSetDaily;
 public interface UserWsDailyMapper {
 
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     UserWsDailyResDTO toResponseDto(UserWordSetDaily entity);
 }
