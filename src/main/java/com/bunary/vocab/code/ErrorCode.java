@@ -34,6 +34,9 @@ public enum ErrorCode {
     RATING_NOT_FOUND(404, "RATING_NOT_FOUND", "Rating not found"),
     RATING_ALREADY_EXISTS(409, "RATING_ALREADY_EXISTS", "User has already rated this wordset"),
 
+    // Follow
+    CANNOT_FOLLOW_YOURSELF(400, "CANNOT_FOLLOW_YOURSELF", "You cannot follow yourself"),
+
     // Email
     EMAIL_EXISTS(409, "EMAIL_EXISTS", "Email already exists"),
     EMAIL_INVALID(400, "EMAIL_INVALID", "Email format is invalid"),

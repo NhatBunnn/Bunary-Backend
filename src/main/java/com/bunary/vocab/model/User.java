@@ -12,6 +12,7 @@ import com.bunary.vocab.learning.model.UserWordSetDaily;
 import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
+import com.bunary.vocab.user.model.Follow;
 import com.bunary.vocab.user.model.UserWordSetProgress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -131,5 +132,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserWordSetDaily> userWordSetDaily;
+
+    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followers;
+
+    @OneToMany(mappedBy = "followee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followees;
 
 }

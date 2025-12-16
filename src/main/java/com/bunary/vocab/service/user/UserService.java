@@ -161,7 +161,7 @@ public class UserService implements IUserService {
             String dir = parts[1];
 
             switch (field.toLowerCase()) {
-                case "createdat":
+                case "createdAt":
                     order = dir.equalsIgnoreCase("desc") ? user.createdAt.desc() : user.createdAt.asc();
                     break;
                 default:

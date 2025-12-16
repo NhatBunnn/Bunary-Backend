@@ -3,6 +3,7 @@ package com.bunary.vocab.learning.dto.response;
 import java.time.LocalDate;
 
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserWsDailyResDTO {

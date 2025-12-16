@@ -129,11 +129,15 @@ public class UserWsDailySvc implements IUserWsDailySvc {
 
         // convert to DTO
         UserWsSummaryDTO summaryDto = UserWsSummaryDTO.builder()
-                .today(todayDto)
-                .thisMonth(monthDto)
-                .thisWeek(weekDto)
+                .charts(
+                        UserWsSummaryDTO.chartsDTO.builder()
+                                .today(todayDto)
+                                .thisWeek(weekDto)
+                                .thisMonth(monthDto)
+                                .build())
                 .totals(
                         UserWsSummaryDTO.TotalsDTO.builder()
+                                .today(todayDto)
                                 .thisWeek(calculateTotal(weekDto))
                                 .thisMonth(calculateTotal(monthDto))
                                 .build())
