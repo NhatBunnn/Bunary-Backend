@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.mapstruct.control.MappingControl.Use;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,9 @@ import com.bunary.vocab.repository.WordSetTagRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
 import com.bunary.vocab.util.wordSet.WordSetStatCalculator;
+import com.bunary.vocab.wordset.dto.event.ActorEventDTO;
+import com.bunary.vocab.wordset.dto.event.WordSetEventDTO;
+import com.bunary.vocab.wordset.event.WordsetCreatedEvent;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -71,6 +76,10 @@ public class WordSetService implements IWordSetService {
     private final TagRepository tagRepository;
     private final WordSetTagRepository wordSetTagRepository;
 
+    // Event Publisher
+    private final ApplicationEventPublisher publisher;
+
+    // QueryDSL
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -303,6 +312,23 @@ public class WordSetService implements IWordSetService {
         // end
         WordSetReponseDTO result = this.wordSetMapper.convertToWordSetReponseDTO(curWordSet);
         result.setTags(this.tagMapper.convertToResDTO(tags));
+
+        // event publish
+        ActorEventDTO actor = ActorEventDTO.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .avatar(user.getAvatar())
+                .build();
+
+        WordSetEventDTO wordSetEvent = WordSetEventDTO.builder()
+                .id(curWordSet.getId())
+                .title(curWordSet.getTitle())
+                .visibility(curWordSet.getVisibility())
+                .build();
+
+        publisher.publishEvent(new WordsetCreatedEvent(this,
+                wordSetEvent,
+                actor));
 
         return result;
     }

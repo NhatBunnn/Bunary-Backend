@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 public class FollowController {
         private final IFollowSvc followSvc;
 
-        @PostMapping("/users/{followeeId}/follows")
+        @PostMapping("/users/{followeeId}/follow")
         public ResponseEntity<SuccessReponseDTO> toggleFollow(@PathVariable UUID followeeId) throws Exception {
                 this.followSvc.toggleFollow(followeeId);
 
@@ -39,7 +39,7 @@ public class FollowController {
                                                 .build());
         }
 
-        @GetMapping("/users/me/follows")
+        @GetMapping("/users/me/followers")
         public ResponseEntity<SuccessReponseDTO> findAllFollowerByCurrentUser(
                         @RequestParam(required = false) String keyword,
                         @RequestParam(defaultValue = "0") int page,

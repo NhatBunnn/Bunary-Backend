@@ -1,23 +1,25 @@
-package com.bunary.vocab.notification.model;
+package com.bunary.vocab.notification.dto.response;
 
-import lombok.*;
+import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.bunary.vocab.notification.model.enums.NotificationType;
 import com.bunary.vocab.notification.model.enums.TargetType;
 
-import java.time.Instant;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "notifications")
-public class Notification {
+public class NotificationResDTO {
 
     @Id
     private String id;
@@ -26,19 +28,17 @@ public class Notification {
 
     private Actor actor;
 
-    private NotificationType type; // enum: RATE, COMMENT, FOLLOW, SYSTEM
+    private NotificationType type;
 
-    private TargetType targetType; // enum: WORDSET, POST, LESSON, USER
-    private String targetId; // ID của object liên quan
+    private TargetType targetType;
+    private String targetId;
 
     private String title;
     private String message;
 
-    private boolean isRead = false;
-
+    private boolean isRead;
     private Instant createdAt;
 
-    // Nested actor info
     @Getter
     @Setter
     @NoArgsConstructor
