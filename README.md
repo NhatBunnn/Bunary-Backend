@@ -1,4 +1,4 @@
-# BunBlog - Nền tảng Blog bằng Spring Boot
+# Bunary – học tiếng Anh qua flashcard và kết nối cộng đồng học tập
 
 [![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://www.java.com)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
