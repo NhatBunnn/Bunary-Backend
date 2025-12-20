@@ -71,16 +71,10 @@ public class UserController {
                                                 .build());
         }
 
-        @GetMapping("/users")
-        public ResponseEntity<?> getAllUsers(
-                        @RequestParam(required = false) Map<String, String> params,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "20") int size,
-                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+        @GetMapping("/users/suggestions")
+        public ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = "20") int pageSize) throws Exception {
 
-                Pageable pageable = PageableUtil.createPageable(page, size, sort);
-
-                Page<UserResponseDTO> result = this.userService.findAll(params, pageable);
+                Page<UserResponseDTO> result = this.userService.findAllSuggestions(pageSize);
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()

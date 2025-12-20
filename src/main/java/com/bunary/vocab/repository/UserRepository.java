@@ -20,7 +20,31 @@ import com.bunary.vocab.model.enums.AuthProviderEnum;
 public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
     User save(User user);
 
-    Page<User> findAll(Pageable pageable);
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE u.isEmailVerified = true
+            AND u.id != :currUserId
+            AND u NOT IN (
+                SELECT f.followee
+                FROM Follow f
+                WHERE f.follower.id = :currUserId
+            )
+            """)
+    Page<User> findAll(UUID currUserId, Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(u)
+            FROM User u
+            WHERE u.isEmailVerified = true
+            AND u.id != :currUserId
+            AND u NOT IN (
+                SELECT f.followee
+                FROM Follow f
+                WHERE f.follower.id = :currUserId
+            )
+            """)
+    long countForSuggestion(UUID currUserId);
 
     @Query("SELECT u FROM User u WHERE u.isEmailVerified = true")
     Page<User> findAllVerifiedUsers(Pageable pageable, @Param("myId") UUID myId);
@@ -33,8 +57,6 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     boolean existsByEmail(String email);
 
     long deleteByIsEmailVerified(boolean isVerifed);
-
-    Page<User> findAll(Specification specification, Pageable pageable);
 
     User findByEmail(String email);
 

@@ -1,8 +1,6 @@
 package com.bunary.vocab.service.user;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -18,13 +16,9 @@ public interface IUserService {
 
     User findByEmail(String email);
 
-    Page<UserResponseDTO> getAllUsers(Pageable pageable);
-
-    Page<UserResponseDTO> findAll(Map<String, String> params, Pageable pageable);
+    Page<UserResponseDTO> findAllSuggestions(int pageSize);
 
     UserResponseDTO findById(UUID userId);
-
-    // UserResponseDTO findByIdWithRoles(UUID userId);
 
     boolean existsByEmail(String email);
 

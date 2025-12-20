@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +22,14 @@ import com.bunary.vocab.exception.ApiException;
 import com.bunary.vocab.model.QUser;
 import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.UserRepository;
+import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.CloudinaryService.CloudinaryService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -35,6 +39,8 @@ public class UserService implements IUserService {
     private final UserMapper userMapper;
     private final CloudinaryService cloudinaryService;
     private final JPAQueryFactory queryFactory;
+
+    private final SecurityUtil securityUtil;
 
     @Override
     public User save(User user) {
@@ -52,25 +58,6 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
 
         return this.userMapper.convertToUserResponseDTO(user);
-    }
-
-    // @Override
-    // public UserResponseDTO findByIdWithRoles(UUID userId) {
-    // User user = this.userRepository.findById(userId)
-    // .orElseThrow(() -> new ApiException(ErrorCode.ID_NOT_FOUND));
-
-    // UserResponseDTO userDTO = this.userMapper.convertToUserResponseDTO(user);
-    // userDTO.getRoles().addAll(
-    // user.getRoles().stream()
-    // .map(r -> r.getName())
-    // .collect(Collectors.toSet()));
-
-    // return userDTO;
-    // }
-
-    @Override
-    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
-        return this.userMapper.convertToUserResponseDTO(this.userRepository.findAll(pageable));
     }
 
     @Override
@@ -137,57 +124,32 @@ public class UserService implements IUserService {
                 usersPage.getTotalElements());
     }
 
-    public Page<UserResponseDTO> findAll(Map<String, String> params, Pageable pageable) {
-        QUser user = QUser.user;
+    @Override
+    @Transactional
+    public Page<UserResponseDTO> findAllSuggestions(int pageSize) {
 
-        // Build dynamic filter
-        BooleanBuilder builder = new BooleanBuilder();
+        UUID curUserId = this.securityUtil.getCurrentUserId();
 
-        // only include verified emails
-        builder.and(user.isEmailVerified.eq(true));
+        Pageable pageable = PageRequest.of(0, pageSize);
 
-        // Filter keyword
-        String keyword = params.get("keyword");
-        if (keyword != null && !keyword.isEmpty()) {
-            builder.and(user.fullName.lower().like("%" + keyword.toLowerCase() + "%"));
+        long userCount = this.userRepository.countForSuggestion(curUserId);
+
+        if (userCount > pageable.getPageSize()) {
+
+            int maxOffset = (int) (userCount - pageable.getPageSize());
+            int randomOffset = ThreadLocalRandom.current().nextInt(0, maxOffset + 1);
+            int randomPage = randomOffset / pageable.getPageSize();
+
+            pageable = pageable.withPage(randomPage);
         }
 
-        // Dynamic sort
-        OrderSpecifier<?> order = user.createdAt.desc();
-        String sort = params.get("sort");
-        if (sort != null && !sort.isEmpty()) {
-            String[] parts = sort.split(",");
-            String field = parts[0];
-            String dir = parts[1];
+        Page<User> usersPage = this.userRepository.findAll(curUserId, pageable);
 
-            switch (field.toLowerCase()) {
-                case "createdAt":
-                    order = dir.equalsIgnoreCase("desc") ? user.createdAt.desc() : user.createdAt.asc();
-                    break;
-                default:
-                    break;
-            }
-        }
+        List<UserResponseDTO> users = usersPage.stream()
+                .map(u -> this.userMapper.convertToUserResponseDTO(u))
+                .collect(Collectors.toList());
 
-        // Main query
-        List<UserResponseDTO> userList = queryFactory
-                .select(Projections.bean(UserResponseDTO.class,
-                        user.id, user.avatar, user.email, user.fullName))
-                .from(user)
-                .where(builder)
-                .orderBy(order)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        // count query
-        Long total = queryFactory
-                .select(user.count())
-                .from(user)
-                .where(builder)
-                .fetchOne();
-
-        return new PageImpl<>(userList, pageable, total);
+        return new PageImpl<>(users, pageable, usersPage.getTotalElements());
     }
 
 }
