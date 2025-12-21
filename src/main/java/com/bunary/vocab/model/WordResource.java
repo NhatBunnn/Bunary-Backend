@@ -23,6 +23,13 @@ public class WordResource {
     @Column(columnDefinition = "TEXT")
     private String meaning;
 
+    @Column(name = "thumbnail", length = 1000)
+    private String thumbnail;
+
+    private String term;
+
+    private String partOfSpeech;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "wordResource", cascade = CascadeType.ALL, orphanRemoval = true)

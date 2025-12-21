@@ -19,6 +19,11 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "User not found"),
     USER_NOT_VERIFIED(403, "AUTH_NOT_VERIFIED", "Account not verified"),
 
+    // Friendship
+    FRIENDSHIP_NOT_FOUND(404, "FRIENDSHIP_NOT_FOUND", "Friendship not found"),
+    FRIENDSHIP_ALREADY_EXISTS(409, "FRIENDSHIP_ALREADY_EXISTS", "Friendship already exists"),
+    FRIENDSHIP_NOT_PENDING(400, "FRIENDSHIP_NOT_PENDING", "Friendship is not pending"),
+
     // Auth
     AUTH_INVALID(401, "AUTH_INVALID", "Invalid authentication"),
     AUTH_EXPIRED(401, "AUTH_EXPIRED", "Authentication expired"),

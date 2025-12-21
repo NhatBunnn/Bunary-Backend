@@ -6,4 +6,7 @@ public enum NotificationType {
     FOLLOW,
     SYSTEM,
     WORDSET_CREATED,
+
+    // Friend
+    FRIEND_REQUEST,
 }

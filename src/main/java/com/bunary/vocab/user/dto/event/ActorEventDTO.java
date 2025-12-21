@@ -1,4 +1,4 @@
-package com.bunary.vocab.wordset.dto.event;
+package com.bunary.vocab.user.dto.event;
 
 import java.util.UUID;
 

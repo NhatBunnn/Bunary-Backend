@@ -5,5 +5,6 @@ public enum TargetType {
     POST,
     LESSON,
     USER,
-    NONE
+    NONE,
+    FRIENDSHIP,
 }

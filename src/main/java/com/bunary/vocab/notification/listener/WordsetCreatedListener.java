@@ -4,7 +4,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.bunary.vocab.model.WordSet;
 import com.bunary.vocab.notification.dto.param.NotificationParam;
 import com.bunary.vocab.notification.model.enums.NotificationType;
 import com.bunary.vocab.notification.model.enums.TargetType;

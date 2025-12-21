@@ -2,7 +2,7 @@ package com.bunary.vocab.wordset.event;
 
 import org.springframework.context.ApplicationEvent;
 
-import com.bunary.vocab.wordset.dto.event.ActorEventDTO;
+import com.bunary.vocab.user.dto.event.ActorEventDTO;
 import com.bunary.vocab.wordset.dto.event.WordSetEventDTO;
 
 import lombok.Getter;
