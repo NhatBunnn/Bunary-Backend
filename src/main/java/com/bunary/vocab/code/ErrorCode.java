@@ -23,6 +23,7 @@ public enum ErrorCode {
     FRIENDSHIP_NOT_FOUND(404, "FRIENDSHIP_NOT_FOUND", "Friendship not found"),
     FRIENDSHIP_ALREADY_EXISTS(409, "FRIENDSHIP_ALREADY_EXISTS", "Friendship already exists"),
     FRIENDSHIP_NOT_PENDING(400, "FRIENDSHIP_NOT_PENDING", "Friendship is not pending"),
+    FRIEND_REQUEST_ALREADY_EXISTS(409, "RIEND_REQUEST_ALREADY_EXISTS", "Friend request already exists"),
 
     // Auth
     AUTH_INVALID(401, "AUTH_INVALID", "Invalid authentication"),

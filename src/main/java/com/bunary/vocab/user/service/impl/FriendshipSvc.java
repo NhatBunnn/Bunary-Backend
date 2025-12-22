@@ -17,6 +17,7 @@ import com.bunary.vocab.model.User;
 import com.bunary.vocab.repository.UserRepository;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.user.dto.event.ActorEventDTO;
+import com.bunary.vocab.user.dto.event.FriendRequestAcceptedEvent;
 import com.bunary.vocab.user.dto.event.FriendRequestSentEvent;
 import com.bunary.vocab.user.dto.response.FriendshipResDTO;
 import com.bunary.vocab.user.model.Friendship;
@@ -49,6 +50,18 @@ public class FriendshipSvc implements IFriendshipSvc {
         UUID currUserId = this.securityUtil.getCurrentUserId();
         User currentUser = this.userRepo.findById(currUserId).orElse(null);
 
+        // Check current user and addressee are not the same
+        if (addresseeId.equals(currUserId)) {
+            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        // Check friendship status
+        Friendship isExitsFriendship = this.friendshipRepo.findBetween(currUserId, addresseeId)
+                .orElse(null);
+
+        if (isExitsFriendship != null && isExitsFriendship.getFriendshipStatus() == FriendshipStatusEnum.PENDING)
+            throw new ApiException(ErrorCode.FRIEND_REQUEST_ALREADY_EXISTS);
+
         // Get addressee and check existence
         User addressee = this.userRepo.findById(addresseeId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
@@ -67,6 +80,7 @@ public class FriendshipSvc implements IFriendshipSvc {
                 .id(currentUser.getId())
                 .fullName(currentUser.getFullName())
                 .avatar(currentUser.getAvatar())
+                .username(currentUser.getUsername())
                 .build();
 
         publisher.publishEvent(new FriendRequestSentEvent(actor, addresseeId));
@@ -92,8 +106,10 @@ public class FriendshipSvc implements IFriendshipSvc {
 
     @Override
     public void acceptFriendRequest(UUID requesterId) {
+
         // Get current UserId
         UUID currUserId = this.securityUtil.getCurrentUserId();
+        User currentUser = this.userRepo.findById(currUserId).orElse(null);
 
         // Get addressee and check existence
         Friendship friendship = this.friendshipRepo.findByRequesterIdAndAddresseeId(requesterId, currUserId)
@@ -106,6 +122,16 @@ public class FriendshipSvc implements IFriendshipSvc {
         // Update
         friendship.setFriendshipStatus(FriendshipStatusEnum.ACCEPTED);
         this.friendshipRepo.save(friendship);
+
+        // Notification
+        ActorEventDTO actor = ActorEventDTO.builder()
+                .id(currentUser.getId())
+                .fullName(currentUser.getFullName())
+                .avatar(currentUser.getAvatar())
+                .username(currentUser.getUsername())
+                .build();
+
+        publisher.publishEvent(new FriendRequestAcceptedEvent(actor, requesterId));
 
     }
 

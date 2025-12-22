@@ -70,4 +70,12 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
 
     Optional<User> findByProviderAndProviderId(AuthProviderEnum provider, String providerId);
 
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE u.username = :username
+            AND u.isEmailVerified = true
+            """)
+    Optional<User> findByUsername(String username);
+
 }

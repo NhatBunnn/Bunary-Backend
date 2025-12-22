@@ -13,4 +13,5 @@ public class ActorEventDTO {
     private UUID id;
     private String fullName;
     private String avatar;
+    private String username;
 }

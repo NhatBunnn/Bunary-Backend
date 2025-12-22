@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.bunary.vocab.model.enums.GenderEnum;
+import com.bunary.vocab.profile.dto.response.ProfileResDTO;
+import com.bunary.vocab.user.model.enums.FriendshipStatusEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -26,10 +28,16 @@ public class UserResponseDTO {
     private String fullName;
     private String firstName;
     private String lastName;
+    private String username;
+    private String nickname;
     private String avatar;
     private String address;
     private Instant dateOfBirth;
     private GenderEnum gender;
+
+    private ProfileResDTO profile;
+
+    private FriendshipStatusEnum friendshipStatus;
 
     private Set<RoleResDTO> roles = new HashSet<>();
 

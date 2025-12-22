@@ -23,72 +23,85 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/api/v1")
 public class FriendshipController {
-    private final IFriendshipSvc friendshipSvc;
+        private final IFriendshipSvc friendshipSvc;
 
-    @PostMapping("/friends/request/{addresseeId}")
-    public ResponseEntity<?> sendFriendRequest(@PathVariable String addresseeId) throws Exception {
+        @PostMapping("/friends/request/{addresseeId}")
+        public ResponseEntity<?> sendFriendRequest(@PathVariable String addresseeId) throws Exception {
 
-        this.friendshipSvc.sendFriendRequest(UUID.fromString(addresseeId));
+                this.friendshipSvc.sendFriendRequest(UUID.fromString(addresseeId));
 
-        return ResponseEntity.status(201)
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(201)
-                        .message("Successfully")
-                        .build());
-    }
+                return ResponseEntity.status(201)
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("Successfully")
+                                                .build());
+        }
 
-    @DeleteMapping("/friends/request/{addresseeId}")
-    public ResponseEntity<?> unsendFriendRequest(@PathVariable String addresseeId) throws Exception {
+        @DeleteMapping("/friends/request/{addresseeId}")
+        public ResponseEntity<?> unsendFriendRequest(@PathVariable String addresseeId) throws Exception {
 
-        this.friendshipSvc.unsendFriendRequest(UUID.fromString(addresseeId));
+                this.friendshipSvc.unsendFriendRequest(UUID.fromString(addresseeId));
 
-        return ResponseEntity.status(204)
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(204)
-                        .message("Successfully")
-                        .build());
-    }
+                return ResponseEntity.status(204)
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(204)
+                                                .message("Successfully")
+                                                .build());
+        }
 
-    @PostMapping("/friends/request/{requesterId}/accept")
-    public ResponseEntity<?> acceptFriendRequest(@PathVariable String requesterId) throws Exception {
+        @PostMapping("/friends/request/{requesterId}/accept")
+        public ResponseEntity<?> acceptFriendRequest(@PathVariable String requesterId) throws Exception {
 
-        this.friendshipSvc.acceptFriendRequest(UUID.fromString(requesterId));
+                this.friendshipSvc.acceptFriendRequest(UUID.fromString(requesterId));
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("Successfully")
-                        .build());
-    }
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("Successfully")
+                                                .build());
+        }
 
-    @PostMapping("/friends/request/{requesterId}/reject")
-    public ResponseEntity<?> rejectFriendRequest(@PathVariable String requesterId) throws Exception {
+        @PostMapping("/friends/request/{requesterId}/reject")
+        public ResponseEntity<?> rejectFriendRequest(@PathVariable String requesterId) throws Exception {
 
-        this.friendshipSvc.rejectFriendRequest(UUID.fromString(requesterId));
+                this.friendshipSvc.rejectFriendRequest(UUID.fromString(requesterId));
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("Successfully")
-                        .build());
-    }
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("Successfully")
+                                                .build());
+        }
 
-    @GetMapping("/friends")
-    public ResponseEntity<?> findMyFriends(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+        @DeleteMapping("/friends/request/{requesterId}/remove")
+        public ResponseEntity<?> removeFriend(@PathVariable String requesterId) throws Exception {
 
-        Pageable pageable = PageableUtil.createPageable(page, size, sort);
+                this.friendshipSvc.removeFriend(UUID.fromString(requesterId));
 
-        this.friendshipSvc.findMyFriends(keyword, pageable);
+                return ResponseEntity.status(204)
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(204)
+                                                .message("Successfully")
+                                                .build());
 
-        return ResponseEntity.ok()
-                .body(SuccessReponseDTO.builder()
-                        .statusCode(200)
-                        .message("Successfully")
-                        .build());
-    }
+        }
+
+        @GetMapping("/friends")
+        public ResponseEntity<?> findMyFriends(
+                        @RequestParam(required = false) String keyword,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(defaultValue = "id,asc") String[] sort) throws Exception {
+
+                Pageable pageable = PageableUtil.createPageable(page, size, sort);
+
+                this.friendshipSvc.findMyFriends(keyword, pageable);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(200)
+                                                .message("Successfully")
+                                                .build());
+        }
 
 }

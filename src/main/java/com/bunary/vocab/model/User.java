@@ -12,8 +12,11 @@ import com.bunary.vocab.learning.model.UserWordSetDaily;
 import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
+import com.bunary.vocab.profile.model.Profile;
 import com.bunary.vocab.user.model.Follow;
+import com.bunary.vocab.user.model.Friendship;
 import com.bunary.vocab.user.model.UserWordSetProgress;
+import com.bunary.vocab.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.CascadeType;
@@ -27,6 +30,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -49,11 +53,18 @@ public class User {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
+    @Column(nullable = false)
     private String firstName;
 
+    @Column(nullable = false)
     private String lastName;
 
     private String fullName;
+
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    private String nickname;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -90,6 +101,7 @@ public class User {
     protected void onCreate() {
         createdAt = Instant.now();
         updateFullName();
+        updateUsername();
     }
 
     @PreUpdate
@@ -103,6 +115,12 @@ public class User {
                 + " "
                 + (lastName != null ? lastName : "");
         this.fullName = this.fullName.trim();
+    }
+
+    public void updateUsername() {
+        this.username = (firstName != null ? StringUtil.removeVietnameseAccent(firstName) : "")
+                + (lastName != null ? StringUtil.removeVietnameseAccent(lastName) : "");
+        this.username = this.username.trim();
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -138,5 +156,14 @@ public class User {
 
     @OneToMany(mappedBy = "followee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followees;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Profile profile;
+
+    @OneToMany(mappedBy = "requester", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friendship> requesters;
+
+    @OneToMany(mappedBy = "addressee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Friendship> addressees;
 
 }

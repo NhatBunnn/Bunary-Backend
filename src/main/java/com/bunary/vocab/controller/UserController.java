@@ -23,7 +23,6 @@ import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.scheduler.AccountCleanupTask;
 import com.bunary.vocab.security.SecurityUtil;
 import com.bunary.vocab.service.user.IUserService;
-import com.bunary.vocab.util.PageableUtil;
 
 import lombok.AllArgsConstructor;
 
@@ -95,7 +94,20 @@ public class UserController {
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.builder()
                                                 .statusCode(201)
-                                                .message("WordSets retrieved successfully")
+                                                .message("successfully")
+                                                .data(result)
+                                                .build());
+        }
+
+        @GetMapping("/users/username/{username}")
+        public ResponseEntity<?> findByUsername(@PathVariable String username) {
+
+                UserResponseDTO result = this.userService.findByUsername(username);
+
+                return ResponseEntity.ok()
+                                .body(SuccessReponseDTO.builder()
+                                                .statusCode(201)
+                                                .message("successfully")
                                                 .data(result)
                                                 .build());
         }
