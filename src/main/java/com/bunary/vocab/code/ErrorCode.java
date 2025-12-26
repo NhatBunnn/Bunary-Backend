@@ -43,6 +43,13 @@ public enum ErrorCode {
     // Follow
     CANNOT_FOLLOW_YOURSELF(400, "CANNOT_FOLLOW_YOURSELF", "You cannot follow yourself"),
 
+    // Post
+    POST_NOT_FOUND(404, "POST_NOT_FOUND", "Post not found"),
+    POST_MAX_3_IMAGES_EXCEEDED(400, "POST_MAX_IMAGES_EXCEEDED", "A post can have at most 3 images"),
+
+    // Cloudinary
+    UPLOAD_FAILED(500, "UPLOAD_FAILED", "Upload failed"),
+
     // Email
     EMAIL_EXISTS(409, "EMAIL_EXISTS", "Email already exists"),
     EMAIL_INVALID(400, "EMAIL_INVALID", "Email format is invalid"),

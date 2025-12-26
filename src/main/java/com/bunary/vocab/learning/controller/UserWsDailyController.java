@@ -1,12 +1,14 @@
 package com.bunary.vocab.learning.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
-import com.bunary.vocab.learning.dto.response.UserWsSummaryDTO;
+import com.bunary.vocab.learning.dto.response.UserWsDailyResDTO;
 import com.bunary.vocab.learning.service.IUserWsDailySvc;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +22,7 @@ public class UserWsDailyController {
     @GetMapping("/self")
     public ResponseEntity<SuccessReponseDTO> findAllByCurrentUser() {
 
-        UserWsSummaryDTO result = this.userWsDailySvc.findByPeriod();
+        List<UserWsDailyResDTO> result = this.userWsDailySvc.findLast30Days();
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()

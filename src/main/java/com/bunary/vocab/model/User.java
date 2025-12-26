@@ -12,6 +12,8 @@ import com.bunary.vocab.learning.model.UserWordSetDaily;
 import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
+import com.bunary.vocab.post.model.Post;
+import com.bunary.vocab.post.model.Reaction;
 import com.bunary.vocab.profile.model.Profile;
 import com.bunary.vocab.user.model.Follow;
 import com.bunary.vocab.user.model.Friendship;
@@ -165,5 +167,11 @@ public class User {
 
     @OneToMany(mappedBy = "addressee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Friendship> addressees;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reaction> reactions;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 
 }

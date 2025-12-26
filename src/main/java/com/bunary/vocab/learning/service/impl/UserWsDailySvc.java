@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -75,93 +76,38 @@ public class UserWsDailySvc implements IUserWsDailySvc {
     }
 
     @Override
-    public UserWsSummaryDTO findByPeriod() {
+    public List<UserWsDailyResDTO> findLast30Days() {
         // Get current user
         UUID currUserId = securityUtil.getCurrentUserId();
 
-        // Get date
+        // Zone & dates
         ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");
         LocalDate today = LocalDate.now(zone);
+        LocalDate startDate30 = today.minusDays(29);
+        Instant startInstant = startDate30.atStartOfDay(zone).toInstant();
+        Instant endInstant = today.plusDays(1).atStartOfDay(zone).toInstant();
 
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
-        LocalDate weekStart = today.with(DayOfWeek.MONDAY);
+        List<UserWordSetDaily> userWordSetDaily = userWsDailyRepo.findByUserAndPeriod(currUserId, startInstant,
+                endInstant);
 
-        Instant startDate = firstDayOfMonth.atStartOfDay(zone).toInstant();
-        Instant endDate = today.plusDays(1).atStartOfDay(zone).toInstant();
+        // Map ngày → DTO
+        Map<LocalDate, UserWsDailyResDTO> map = userWordSetDaily.stream()
+                .map(uwsr -> {
+                    UserWsDailyResDTO dto = this.userWsDailyMapper.toResponseDto(uwsr);
+                    dto.setCreatedAt(uwsr.getCreatedAt().atZone(zone).toLocalDate());
+                    return dto;
+                })
+                .collect(Collectors.toMap(UserWsDailyResDTO::getCreatedAt, dto -> dto));
 
-        List<UserWordSetDaily> userWordSetDaily = userWsDailyRepo.findByUserAndPeriod(currUserId, startDate,
-                endDate);
-
-        // Convert to DTO
-        List<UserWsDailyResDTO> userWsDailyResDTOs = userWordSetDaily.stream().map((uwsr) -> {
-            UserWsDailyResDTO todayDto = this.userWsDailyMapper.toResponseDto(uwsr);
-
-            LocalDate dto = uwsr
-                    .getCreatedAt()
-                    .atZone(zone)
-                    .toLocalDate();
-
-            todayDto.setCreatedAt(dto);
-
-            return todayDto;
-        }).toList();
-
-        // Map
-        Map<LocalDate, UserWsDailyResDTO> map = new LinkedHashMap<>();
-        for (UserWsDailyResDTO dto : userWsDailyResDTOs) {
-            map.put(dto.getCreatedAt(), dto);
-        }
-
-        // Get month
-        List<UserWsDailyResDTO> monthDto = new ArrayList<>();
-        for (LocalDate date = firstDayOfMonth; !date.isAfter(today); date = date.plusDays(1)) {
+        // Tạo list 30 ngày, fill default nếu không có dữ liệu
+        List<UserWsDailyResDTO> last30DaysDto = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            LocalDate date = today.minusDays(i); // hôm nay là ngày đầu tiên
             UserWsDailyResDTO dto = map.getOrDefault(date, UserWsDailyResDTO.builder().createdAt(date).build());
-            monthDto.add(dto);
+            last30DaysDto.add(dto);
         }
 
-        // Get today
-        UserWsDailyResDTO todayDto = monthDto.get(monthDto.size() - 1);
-
-        // Get week
-        List<UserWsDailyResDTO> weekDto = monthDto.stream()
-                .filter((dto) -> dto.getCreatedAt().isAfter(weekStart.minusDays(1)))
-                .toList();
-
-        // convert to DTO
-        UserWsSummaryDTO summaryDto = UserWsSummaryDTO.builder()
-                .charts(
-                        UserWsSummaryDTO.chartsDTO.builder()
-                                .today(todayDto)
-                                .thisWeek(weekDto)
-                                .thisMonth(monthDto)
-                                .build())
-                .totals(
-                        UserWsSummaryDTO.TotalsDTO.builder()
-                                .today(todayDto)
-                                .thisWeek(calculateTotal(weekDto))
-                                .thisMonth(calculateTotal(monthDto))
-                                .build())
-                .build();
-
-        return summaryDto;
-    }
-
-    private UserWsDailyResDTO calculateTotal(List<UserWsDailyResDTO> list) {
-        int totalPoint = 0;
-        int totalSpark = 0;
-        int totalLearned = 0;
-
-        for (UserWsDailyResDTO dto : list) {
-            totalPoint += dto.getPoint_earned();
-            totalSpark += dto.getSpark_earned();
-            totalLearned += dto.getLearned_count();
-        }
-
-        return UserWsDailyResDTO.builder()
-                .point_earned(totalPoint)
-                .spark_earned(totalSpark)
-                .learned_count(totalLearned)
-                .build();
+        return last30DaysDto;
     }
 
 }

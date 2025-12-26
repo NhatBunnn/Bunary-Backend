@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.exception.ApiException;
-import com.bunary.vocab.security.SecurityUtil;
-import com.bunary.vocab.user.dto.internal.UserStatsParamDTO;
 import com.bunary.vocab.user.dto.response.UserStatsResDTO;
 import com.bunary.vocab.user.mapper.UserStatsMapper;
 import com.bunary.vocab.user.model.UserStats;

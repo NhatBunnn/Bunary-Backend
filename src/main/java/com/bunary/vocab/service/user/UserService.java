@@ -125,14 +125,8 @@ public class UserService implements IUserService {
             user.setLastName(userDTO.getLastName());
         }
 
-        if (avatarFile != null) {
-            try {
-                String url = cloudinaryService.uploadFile(avatarFile);
-                user.setAvatar(url);
-            } catch (IOException e) {
-                throw new RuntimeException("Upload avatar failed", e);
-            }
-        }
+        String url = cloudinaryService.uploadFile(avatarFile);
+        user.setAvatar(url);
 
         if (userDTO.getAddress() != null) {
             user.setAddress(userDTO.getAddress());

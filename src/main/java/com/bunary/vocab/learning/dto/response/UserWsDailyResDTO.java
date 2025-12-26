@@ -1,6 +1,7 @@
 package com.bunary.vocab.learning.dto.response;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.bunary.vocab.dto.reponse.UserResponseDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,4 +29,6 @@ public class UserWsDailyResDTO {
     private UserResponseDTO user;
 
     private LocalDate createdAt;
+
+    private List<UserWsDailyResDTO> chart;
 }

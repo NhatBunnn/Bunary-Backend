@@ -10,6 +10,6 @@ public class UserStatsResDTO {
     private int xp = 0;
 
     // Number of word sets created by the user
-    private int learnedWordSet = 0;
-    private int learnedWord = 0;
+    private int learnedWordSetsCount = 0;
+    private int learnedWordsCount = 0;
 }

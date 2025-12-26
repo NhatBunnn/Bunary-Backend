@@ -1,11 +1,9 @@
 package com.bunary.vocab.controller;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
