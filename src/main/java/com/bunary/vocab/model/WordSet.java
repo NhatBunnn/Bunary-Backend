@@ -3,7 +3,6 @@ package com.bunary.vocab.model;
 import java.time.Instant;
 import java.util.List;
 
-import com.bunary.vocab.learning.model.UserWordSetDaily;
 import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.VisibilityEnum;
 import com.bunary.vocab.model.enums.WordSetLevelEnum;

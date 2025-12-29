@@ -1,7 +1,7 @@
 package com.bunary.vocab.batchapi.service;
 
-import com.bunary.vocab.batchapi.dto.request.FinishWordSetReqDTO;
+import com.bunary.vocab.batchapi.dto.response.FinishWordSetResDTO;
 
 public interface IFinishWordSetSvc {
-    void finish(Long wordSetId, FinishWordSetReqDTO request);
+    FinishWordSetResDTO finish(Long wordSetId);
 }

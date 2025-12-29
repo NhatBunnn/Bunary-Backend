@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
-import com.bunary.vocab.learning.model.UserWordSetDaily;
 import com.bunary.vocab.learning.model.UserWordSetRecent;
 import com.bunary.vocab.model.enums.AuthProviderEnum;
 import com.bunary.vocab.model.enums.GenderEnum;
@@ -17,6 +16,7 @@ import com.bunary.vocab.post.model.Reaction;
 import com.bunary.vocab.profile.model.Profile;
 import com.bunary.vocab.user.model.Follow;
 import com.bunary.vocab.user.model.Friendship;
+import com.bunary.vocab.user.model.UserStatDaily;
 import com.bunary.vocab.user.model.UserWordSetProgress;
 import com.bunary.vocab.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -151,7 +151,7 @@ public class User {
     private List<UserWordSetRecent> userWordSetRecents;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserWordSetDaily> userWordSetDaily;
+    private List<UserStatDaily> userStatDaily;
 
     @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers;

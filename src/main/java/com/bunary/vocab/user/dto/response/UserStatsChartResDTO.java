@@ -9,9 +9,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserStatsResDTO {
-    private Long id;
-
+public class UserStatsChartResDTO {
     // Learning stats
     private int learnedWordSetsCount;
     private int wordsetCreatedCount;
@@ -20,10 +18,6 @@ public class UserStatsResDTO {
     private int point;
     private int spark;
 
-    // Streak
-    private int streak;
-    private int max_streak;
-
     // Date
-    private LocalDate createdAt;
+    private LocalDate date;
 }

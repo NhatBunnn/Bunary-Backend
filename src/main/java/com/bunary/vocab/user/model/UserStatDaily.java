@@ -1,8 +1,7 @@
-package com.bunary.vocab.learning.model;
+package com.bunary.vocab.user.model;
 
 import com.bunary.vocab.common.model.base.BaseSoftDeleteEntity;
 import com.bunary.vocab.model.User;
-import com.bunary.vocab.model.WordSet;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,17 +20,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_wordset_daily")
-public class UserWordSetDaily extends BaseSoftDeleteEntity {
+@Table(name = "user_stat_daily")
+public class UserStatDaily extends BaseSoftDeleteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int point_earned;
-    private int spark_earned;
+    // Learning stats
+    private int learnedWordSetsCount = 0;
 
-    private int learned_count;
+    // Points & rewards
+    private int point = 0;
+    private int spark = 0;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

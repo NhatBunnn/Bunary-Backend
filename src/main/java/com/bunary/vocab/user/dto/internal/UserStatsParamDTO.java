@@ -1,20 +1,26 @@
 package com.bunary.vocab.user.dto.internal;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
 public class UserStatsParamDTO {
 
-    // Exp
-    private Integer xp;
+    // Learning stats
+    private int learnedWordSetsCount = 0;
 
-    // Learned
-    private Integer learnedWordSet;
-    private Integer learnedWord;
+    // Points & rewards
+    private int point;
+    private int spark;
 
     // Streak
-    private Integer streak;
-    private Integer maxStreak;
+    private int streak;
+    private int max_streak;
 }

@@ -2,6 +2,7 @@ package com.bunary.vocab.learning.dto.response;
 
 import java.util.List;
 
+import com.bunary.vocab.user.dto.response.UserStatDailyResDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
@@ -19,17 +20,17 @@ public class UserWsSummaryDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Builder
     public static class TotalsDTO {
-        private UserWsDailyResDTO today;
-        private UserWsDailyResDTO thisWeek;
-        private UserWsDailyResDTO thisMonth;
+        private UserStatDailyResDTO today;
+        private UserStatDailyResDTO thisWeek;
+        private UserStatDailyResDTO thisMonth;
     }
 
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Builder
     public static class chartsDTO {
-        private UserWsDailyResDTO today;
-        private List<UserWsDailyResDTO> thisWeek;
-        private List<UserWsDailyResDTO> thisMonth;
+        private UserStatDailyResDTO today;
+        private List<UserStatDailyResDTO> thisWeek;
+        private List<UserStatDailyResDTO> thisMonth;
     }
 }

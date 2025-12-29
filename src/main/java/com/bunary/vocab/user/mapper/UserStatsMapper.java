@@ -14,6 +14,7 @@ import com.bunary.vocab.user.model.UserStats;
 @Mapper(componentModel = "spring")
 public interface UserStatsMapper {
 
+    @Mapping(target = "createdAt", ignore = true)
     UserStatsResDTO toResponseDto(UserStats userStats);
 
     List<UserStatsResDTO> toResponseDtoList(List<UserStats> userStatsList);

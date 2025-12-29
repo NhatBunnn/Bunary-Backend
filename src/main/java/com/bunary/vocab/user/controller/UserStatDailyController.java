@@ -1,28 +1,30 @@
-package com.bunary.vocab.learning.controller;
+package com.bunary.vocab.user.controller;
 
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bunary.vocab.dto.SuccessReponseDTO;
-import com.bunary.vocab.learning.dto.response.UserWsDailyResDTO;
-import com.bunary.vocab.learning.service.IUserWsDailySvc;
+import com.bunary.vocab.user.dto.response.UserStatDailyResDTO;
+import com.bunary.vocab.user.dto.response.enums.StatsPeriodEnum;
+import com.bunary.vocab.user.service.IUserStatDailySvc;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/user-wordset-daily")
-public class UserWsDailyController {
-    private final IUserWsDailySvc userWsDailySvc;
+@RequestMapping("/api/v1")
+public class UserStatDailyController {
+    private final IUserStatDailySvc userWsDailySvc;
 
-    @GetMapping("/self")
-    public ResponseEntity<SuccessReponseDTO> findAllByCurrentUser() {
+    @GetMapping("/users/me/stats-daily")
+    public ResponseEntity<SuccessReponseDTO> findAllByCurrentUser(@RequestParam StatsPeriodEnum period) {
 
-        List<UserWsDailyResDTO> result = this.userWsDailySvc.findLast30Days();
+        UserStatDailyResDTO result = this.userWsDailySvc.findByPeriod(period);
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()

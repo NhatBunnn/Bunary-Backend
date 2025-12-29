@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bunary.vocab.batchapi.dto.request.FinishWordSetReqDTO;
+import com.bunary.vocab.batchapi.dto.response.FinishWordSetResDTO;
 import com.bunary.vocab.batchapi.service.IFinishWordSetSvc;
 import com.bunary.vocab.dto.SuccessReponseDTO;
 
@@ -21,16 +22,15 @@ public class FinishWordSetController {
 
     // thêm mode ( ví dụ: flashcard, test vào body sau)
     @PostMapping("/wordsets/{wordSetId}/finish")
-    public ResponseEntity<?> finish(
-            @PathVariable Long wordSetId,
-            @RequestBody FinishWordSetReqDTO request) throws Exception {
+    public ResponseEntity<?> finish(@PathVariable Long wordSetId) throws Exception {
 
-        this.finishWordSetSvc.finish(wordSetId, request);
+        FinishWordSetResDTO result = this.finishWordSetSvc.finish(wordSetId);
 
         return ResponseEntity.ok()
                 .body(SuccessReponseDTO.builder()
                         .statusCode(200)
                         .message("Successfully")
+                        .data(result)
                         .build());
     }
 

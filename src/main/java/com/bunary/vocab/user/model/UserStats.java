@@ -18,13 +18,12 @@ public class UserStats extends BaseSoftDeleteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Number of word sets created by the user
+    // Learning stats
     private int learnedWordSetsCount = 0;
-    private int learnedWordsCount = 0;
 
-    // Stats
-    private int point;
-    private int spark;
+    // Points & rewards
+    private int point = 0;
+    private int spark = 0;
 
     // Streak
     private int streak;

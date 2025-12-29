@@ -1,5 +1,6 @@
 package com.bunary.vocab.repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -73,4 +74,35 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long>, JpaSpec
         @EntityGraph(attributePaths = { "user" })
         @Query("SELECT ws FROM WordSet ws WHERE ws.id = :wordSetId")
         Optional<WordSet> findByIdWithUser(@Param("wordSetId") Long wordSetId);
+
+        @Query("""
+                        SELECT COUNT(ws.id)
+                        FROM WordSet ws
+                        WHERE ws.user.id = :userId
+                        AND ws.createdAt >= :start
+                        AND ws.createdAt < :end
+                        """)
+        Integer countByUserIdAndPeriod(
+                        @Param("userId") UUID userId,
+                        @Param("start") Instant start,
+                        @Param("end") Instant end);
+
+        @Query("""
+                        SELECT ws
+                        FROM WordSet ws
+                        WHERE ws.user.id = :userId
+                        AND ws.createdAt >= :start
+                        AND ws.createdAt < :end
+                        """)
+        List<WordSet> findByUserIdAndPeriod(
+                        @Param("userId") UUID userId,
+                        @Param("start") Instant start,
+                        @Param("end") Instant end);
+
+        @Query("""
+                           SELECT COUNT(ws.id)
+                           FROM WordSet ws
+                           WHERE ws.user.id = :userId
+                        """)
+        Integer findAllByCurrentUserId(@Param("userId") UUID userId);
 }
