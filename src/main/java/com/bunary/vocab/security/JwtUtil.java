@@ -28,7 +28,7 @@ public class JwtUtil {
     private SecretKey secretKey;
     private JwtDecoder jwtDecoder;
 
-    private static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
+    private static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS256;
 
     @PostConstruct
     public void init() {
