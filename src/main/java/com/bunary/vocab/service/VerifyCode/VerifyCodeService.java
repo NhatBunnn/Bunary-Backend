@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
+import com.bunary.vocab.auth.service.IOtpSvc;
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.AuthResponseDTO;
 import com.bunary.vocab.dto.reponse.VerifyCodeReponseDTO;
@@ -22,6 +23,12 @@ import com.bunary.vocab.service.user.IUserService;
 
 import lombok.AllArgsConstructor;
 
+/* 
+    // LEGACY CODE
+     * Old OTP verification flow using database.
+     * Replaced by Redis-based OTP verification.
+     */
+
 @AllArgsConstructor
 @Service
 public class VerifyCodeService implements IVerifyCodeService {
@@ -32,6 +39,7 @@ public class VerifyCodeService implements IVerifyCodeService {
     private final JwtUtil jwtUtil;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
+    private final IOtpSvc otpSvc;
 
     public String generate6Digits() {
         int n = secureRandom.nextInt(1_000_000);

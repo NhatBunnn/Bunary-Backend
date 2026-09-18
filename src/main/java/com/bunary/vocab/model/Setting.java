@@ -30,7 +30,6 @@ public class Setting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String type;
 
     @Column(name = "settings", columnDefinition = "json", nullable = false)

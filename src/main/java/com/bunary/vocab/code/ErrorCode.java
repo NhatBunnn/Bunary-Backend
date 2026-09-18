@@ -18,6 +18,7 @@ public enum ErrorCode {
     // User
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "User not found"),
     USER_NOT_VERIFIED(403, "AUTH_NOT_VERIFIED", "Account not verified"),
+    USER_ALREADY_VERIFIED(409, "USER_ALREADY_VERIFIED", "Account is already verified"),
 
     // Friendship
     FRIENDSHIP_NOT_FOUND(404, "FRIENDSHIP_NOT_FOUND", "Friendship not found"),
@@ -50,6 +51,14 @@ public enum ErrorCode {
     // Cloudinary
     UPLOAD_FAILED(500, "UPLOAD_FAILED", "Upload failed"),
 
+    // Otp
+    OTP_LOCKED(429, "OTP_LOCKED", "Too many verification attempts"),
+    OTP_NOT_FOUND(404, "OTP_NOT_FOUND", "Otp not found"),
+    OTP_INVALID(401, "OTP_INVALID", "Otp is invalid"),
+    OTP_EXPIRED(401, "OTP_EXPIRED", "Otp is expired"),
+    OTP_USED(400, "OTP_USED", "Otp is used"),
+    OTP_RESEND_TOO_SOON(429, "OTP_RESEND_TOO_SOON", "Please wait 30 seconds before resending the OTP"),
+
     // Email
     EMAIL_EXISTS(409, "EMAIL_EXISTS", "Email already exists"),
     EMAIL_INVALID(400, "EMAIL_INVALID", "Email format is invalid"),
@@ -57,7 +66,8 @@ public enum ErrorCode {
     EMAIL_CODE_EXPIRED(401, "EMAIL_CODE_EXPIRED", "Email verification code expired"),
     EMAIL_CODE_ATTEMPTS_EXCEEDED(429, "EMAIL_CODE_ATTEMPTS_EXCEEDED", "Too many verification attempts"),
     EMAIL_CODE_USED(400, "EMAIL_CODE_USED", "Email verification code already used"),
-    EMAIL_SEND_FAILED(500, "EMAIL_SEND_FAILED", "Failed to send email");
+    EMAIL_SEND_FAILED(500, "EMAIL_SEND_FAILED", "Failed to send email"),
+    EMAIL_CODE_NOT_FOUND(404, "EMAIL_CODE_NOT_FOUND", "Email verification code not found");
 
     private final int code;
     private final String errorCode;

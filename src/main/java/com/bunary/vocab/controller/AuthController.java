@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.*;
 
 import java.io.IOException;
+
+import com.bunary.vocab.auth.service.IOtpSvc;
 import com.bunary.vocab.dto.SuccessReponseDTO;
 import com.bunary.vocab.dto.reponse.AuthResponseDTO;
+import com.bunary.vocab.dto.reponse.OtpResponseDTO;
 import com.bunary.vocab.dto.reponse.VerifyCodeReponseDTO;
 import com.bunary.vocab.dto.request.UserRequestDTO;
 import com.bunary.vocab.exception.ApiException;
@@ -31,6 +34,9 @@ public class AuthController {
 
         @Autowired
         private IVerifyCodeService verifyCodeService;
+
+        @Autowired
+        private IOtpSvc otpSvc;
 
         @Value("${spring.security.oauth2.client.registration.google.client-id}")
         private String clientId;
@@ -54,8 +60,8 @@ public class AuthController {
 
         @PostMapping("/verify-email")
         public ResponseEntity<SuccessReponseDTO<AuthResponseDTO>> verifyCode(
-                        @RequestBody VerifyCodeReponseDTO verifyCode) {
-                AuthResponseDTO result = this.verifyCodeService.verifyCode(verifyCode);
+                        @RequestBody OtpResponseDTO otpResponse) {
+                AuthResponseDTO result = this.otpSvc.verifyOtp(otpResponse);
 
                 return ResponseEntity.ok()
                                 .header("Set-Cookie", result.getResponseCookie().toString())
@@ -66,15 +72,15 @@ public class AuthController {
                                                 .build());
         }
 
-        @PostMapping("/send-code")
+        @PostMapping("/send-otp")
         public ResponseEntity<SuccessReponseDTO<Boolean>> resendCode(@RequestBody UserRequestDTO userReq) {
-                boolean result = this.authService.sendCode(userReq);
+                this.otpSvc.sendOtp(userReq.getEmail());
 
                 return ResponseEntity.ok()
                                 .body(SuccessReponseDTO.<Boolean>builder()
                                                 .statusCode(200)
                                                 .message("Code sent successfully")
-                                                .data(result)
+                                                .data(true)
                                                 .build());
         }
 

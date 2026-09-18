@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.bunary.vocab.auth.service.IOtpSvc;
 import com.bunary.vocab.code.ErrorCode;
 import com.bunary.vocab.dto.reponse.AuthResponseDTO;
 import com.bunary.vocab.dto.reponse.VerifyCodeReponseDTO;
@@ -56,10 +57,11 @@ public class AuthService implements IAuthService {
     private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
     private final IRefreshTokenService refreshTokenService;
-    private final IVerifyCodeService verifyCodeService;
+    // private final IVerifyCodeService verifyCodeService;
     private final IRoleService roleService;
     private final SettingRepo settingRepo;
     private final UserRepository userRepository;
+    private final IOtpSvc otpSvc;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -72,18 +74,19 @@ public class AuthService implements IAuthService {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String redirectUri;
 
-    @Override
-    public boolean verifyCode(VerifyCodeReponseDTO verifyCode) {
-        AuthResponseDTO result = this.verifyCodeService.verifyCode(verifyCode);
-        if (result == null)
-            return false;
-        return true;
-    }
+    // @Override
+    // public boolean verifyCode(VerifyCodeReponseDTO verifyCode) {
+    // AuthResponseDTO result = this.verifyCodeService.verifyCode(verifyCode);
+    // if (result == null)
+    // return false;
+    // return true;
+    // }
 
-    @Override
-    public boolean sendCode(UserRequestDTO user) {
-        return this.verifyCodeService.sendCode(this.userService.findByEmail(user.getEmail()));
-    }
+    // @Override
+    // public boolean sendCode(UserRequestDTO user) {
+    // return
+    // this.verifyCodeService.sendCode(this.userService.findByEmail(user.getEmail()));
+    // }
 
     @Override
     @Transactional
@@ -224,6 +227,7 @@ public class AuthService implements IAuthService {
     @Override
     @Transactional
     public boolean register(UserRequestDTO user) throws Exception {
+
         boolean isEmailExit = this.userService.existsByEmail(user.getEmail());
 
         if (isEmailExit) {
@@ -231,19 +235,21 @@ public class AuthService implements IAuthService {
         }
 
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
+
         user.setPassword(hashPassword);
 
-        User currentUser = new User();
-        currentUser = this.userMapper.convertToUser(user);
+        User currentUser = this.userMapper.convertToUser(user);
 
         Role role = roleService.findByName("ROLE_USER");
+
         currentUser.getRoles().add(role);
 
         this.userService.save(currentUser);
 
-        this.verifyCodeService.sendCode(currentUser);
+        this.otpSvc.sendOtp(currentUser.getEmail());
 
         Setting setting = LearningSettingsFactory.defaultFlashCard();
+
         setting.setUser(currentUser);
 
         this.settingRepo.save(setting);
