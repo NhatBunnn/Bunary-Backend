@@ -80,7 +80,7 @@ public class SecurityConfig {
                                 "/oauth2/success.html",
                                 "/oauth2/error.html",
                                 "/api/v1/auth/verify-email",
-                                "/api/v1/auth/send-code",
+                                "/api/v1/auth/send-otp",
                                 "/removeaccount",
                                 "/api/v1/auth/refresh-Token",
                                 "/ws/**",
