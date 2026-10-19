@@ -8,7 +8,7 @@ import com.bunary.vocab.model.Setting;
 public class LearningSettingsFactory {
     public static Setting defaultFlashCard() {
         Setting setting = new Setting();
-        setting.setType("learning");
+        setting.setType("flashcard");
 
         Map<String, Boolean> front = Map.of(
                 "term", true,
